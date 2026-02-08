@@ -1574,6 +1574,10 @@
     root.setAttribute('data-issue', ISSUE_VISUAL_MAP[issueKey] || issueKey || 'none');
   }
 
+  function setStageVisual(stageKey) {
+    root.setAttribute('data-stage', stageKey || 'idle');
+  }
+
   function saveProgress() {
     var payload = {
       score: state.score,
@@ -1859,6 +1863,7 @@
       elements.stageName.textContent = pack.stage.idleTitle;
       elements.stageDesc.textContent = pack.stage.idleDesc;
       setIssueVisual('none');
+      setStageVisual('idle');
       return;
     }
 
@@ -1866,6 +1871,7 @@
       elements.stageName.textContent = pack.stage.diagnosisTitle;
       elements.stageDesc.textContent = pack.stage.diagnosisDesc;
       setIssueVisual(state.currentOrder.issues[0].key);
+      setStageVisual('diagnosis');
       return;
     }
 
@@ -1876,6 +1882,7 @@
         elements.stageName.textContent = pack.stage.repairTitle;
         elements.stageDesc.textContent = pack.stage.finishDesc;
         setIssueVisual('none');
+        setStageVisual('repair');
         return;
       }
 
@@ -1888,6 +1895,7 @@
         mode: issueMiniGame(issue.key, issue.mode)
       });
       setIssueVisual(issue.key);
+      setStageVisual('repair');
       return;
     }
 
@@ -1895,12 +1903,14 @@
       elements.stageName.textContent = pack.stage.finishTitle;
       elements.stageDesc.textContent = pack.stage.finishDesc;
       setIssueVisual('none');
+      setStageVisual('finishing');
       return;
     }
 
     elements.stageName.textContent = pack.stage.doneTitle;
     elements.stageDesc.textContent = pack.stage.doneDesc;
     setIssueVisual('none');
+    setStageVisual('done');
   }
 
   function renderStats() {

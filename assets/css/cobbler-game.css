@@ -228,6 +228,19 @@
 .cg-mini-wrap {
   display: grid;
   gap: 0.65rem;
+  order: 20;
+}
+
+.cg-shoe-scene {
+  order: 30;
+}
+
+.cobbler-game[data-stage="repair"] .cg-workshop .cg-shoe-scene {
+  order: 20;
+}
+
+.cobbler-game[data-stage="repair"] .cg-workshop .cg-mini-wrap {
+  order: 30;
 }
 
 .cg-mini {
