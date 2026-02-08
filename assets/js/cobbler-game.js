@@ -1736,7 +1736,6 @@
     sceneImage: root.querySelector('[data-shoe-scene-image]'),
     mainAction: root.querySelector('[data-main-action]'),
     date: root.querySelector('[data-stat-date]'),
-    dayHours: root.querySelector('[data-stat-day-hours]'),
     score: root.querySelector('[data-stat-score]'),
     money: root.querySelector('[data-stat-money]'),
     week: root.querySelector('[data-stat-week]'),
@@ -1818,7 +1817,6 @@
     !elements.sceneImage ||
     !elements.mainAction ||
     !elements.date ||
-    !elements.dayHours ||
     !elements.score ||
     !elements.money ||
     !elements.week ||
@@ -3952,7 +3950,6 @@
 
   function renderStats() {
     elements.date.textContent = formatCalendarDate(state.currentDate);
-    elements.dayHours.textContent = formatHours(state.dayHoursLeft) + ' / ' + formatHours(DAY_HOURS_LIMIT);
     elements.score.textContent = String(Math.round(state.score));
     elements.money.textContent = formatMoney(state.money);
     elements.week.textContent = String(state.week);

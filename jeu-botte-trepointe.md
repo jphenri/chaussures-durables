@@ -136,7 +136,6 @@ keywords:
 
       <div class="cg-stats">
         <p><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
-        <p><span data-i18n="dayHoursLabel">Heures du jour</span>: <strong data-stat-day-hours>8h / 8h</strong></p>
         <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
         <p><span data-i18n="cashLabel">Caisse</span>: <strong data-stat-money>$0</strong></p>
         <p><span data-i18n="weekLabel">Semaine</span>: <strong data-stat-week>1</strong></p>
