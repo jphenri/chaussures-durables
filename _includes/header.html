@@ -48,7 +48,7 @@
         <a href="{{ fr_home | relative_url }}" {% if current_path == fr_home %}aria-current="page"{% endif %}>Accueil</a>
         <a href="{{ fr_durable | relative_url }}" {% if current_path == fr_durable %}aria-current="page"{% endif %}>Durables</a>
         <a href="{{ fr_blog | relative_url }}" {% if current_path == fr_blog or is_post %}aria-current="page"{% endif %}>Blog</a>
-        <a href="{{ fr_projects | relative_url }}" {% if current_path == fr_projects %}aria-current="page"{% endif %}>Projets</a>
+        <a href="{{ fr_projects | relative_url }}" {% if current_path == fr_projects %}aria-current="page"{% endif %}>Modèles et services</a>
         <a href="{{ fr_contact | relative_url }}" {% if current_path == fr_contact %}aria-current="page"{% endif %}>Contact</a>
       {% else %}
         {% assign en_home = '/en/' %}
@@ -60,7 +60,7 @@
         <a href="{{ en_home | relative_url }}" {% if current_path == en_home %}aria-current="page"{% endif %}>Home</a>
         <a href="{{ en_durable | relative_url }}" {% if current_path == en_durable %}aria-current="page"{% endif %}>Durable Shoes</a>
         <a href="{{ en_blog | relative_url }}" {% if current_path == en_blog or is_post %}aria-current="page"{% endif %}>Blog</a>
-        <a href="{{ en_projects | relative_url }}" {% if current_path == en_projects %}aria-current="page"{% endif %}>Projects</a>
+        <a href="{{ en_projects | relative_url }}" {% if current_path == en_projects %}aria-current="page"{% endif %}>Models and services</a>
         <a href="{{ en_contact | relative_url }}" {% if current_path == en_contact %}aria-current="page"{% endif %}>Contact</a>
       {% endif %}
 

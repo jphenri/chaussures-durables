@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Schéma Goodyear 360</title>
+  <desc id="desc">Coupe simplifiée d'une chaussure trépointe Goodyear 360 degrés.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8f3"/>
+      <stop offset="100%" stop-color="#f6e1d3"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
+  <text x="70" y="86" font-size="44" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">GOODYEAR 360° (TRÉPOINTE TOUR COMPLET)</text>
+
+  <g transform="translate(116 170)">
+    <path d="M0 178c0-34 30-56 64-56h488c104 0 178 26 214 70H0z" fill="#f8d9ca"/>
+    <path d="M70 122h620" stroke="#ab2a22" stroke-width="30" stroke-linecap="round"/>
+    <path d="M80 156h650" stroke="#5a4a43" stroke-width="34" stroke-linecap="round"/>
+    <path d="M100 96h560" stroke="#ffead8" stroke-width="24" stroke-linecap="round"/>
+    <path d="M68 122h620" stroke="#fff8f3" stroke-width="6" stroke-linecap="round" stroke-dasharray="4 14"/>
+    <path d="M78 156h650" stroke="#ffcfb8" stroke-width="6" stroke-linecap="round" stroke-dasharray="5 13"/>
+    <circle cx="690" cy="139" r="20" fill="#ab2a22"/>
+    <circle cx="690" cy="139" r="9" fill="#fff8f3"/>
+  </g>
+
+  <g fill="#5a4a43" font-size="24" font-family="'Nunito Sans','Segoe UI',sans-serif">
+    <text x="790" y="236">Trépointe cousue jusqu'au talon</text>
+    <text x="790" y="280">Semelle fixée tout autour (360°)</text>
+    <text x="790" y="326">Plus de rigidité structurelle</text>
+    <text x="790" y="370">Bonne tenue pour gros gabarits</text>
+    <text x="790" y="414">Souvent associée aux derbies/boots</text>
+  </g>
+
+  <g stroke="#7a1d18" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M750 229H685"/>
+    <path d="M750 274H698"/>
+    <path d="M750 318H632"/>
+    <path d="M750 362H610"/>
+    <path d="M750 406H585"/>
+  </g>
+
+  <text x="70" y="558" font-size="28" fill="#7a1d18" font-family="'Nunito Sans','Segoe UI',sans-serif">Version plus robuste du Goodyear : idéale pour les usages intensifs et les semelles épaisses.</text>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Schéma Goodyear 270</title>
+  <desc id="desc">Coupe simplifiée d'une chaussure trépointe Goodyear 270 degrés.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8f3"/>
+      <stop offset="100%" stop-color="#f8e7dd"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
+  <text x="70" y="86" font-size="44" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">GOODYEAR 270° (TRÉPOINTE CLASSIQUE)</text>
+
+  <g transform="translate(120 180)">
+    <path d="M0 170c0-28 24-48 52-48h470c82 0 146 18 176 50H0z" fill="#f6d5c5"/>
+    <rect x="58" y="112" width="614" height="26" rx="8" fill="#ab2a22"/>
+    <rect x="78" y="144" width="640" height="28" rx="10" fill="#5a4a43"/>
+    <rect x="88" y="86" width="550" height="22" rx="7" fill="#ffecd8"/>
+    <path d="M72 122h570" stroke="#fff8f3" stroke-width="6" stroke-linecap="round" stroke-dasharray="4 14"/>
+    <path d="M92 155h600" stroke="#ffcfb8" stroke-width="6" stroke-linecap="round" stroke-dasharray="5 12"/>
+    <rect x="220" y="96" width="270" height="16" rx="6" fill="#d8b8a4"/>
+  </g>
+
+  <g fill="#5a4a43" font-size="24" font-family="'Nunito Sans','Segoe UI',sans-serif">
+    <text x="810" y="245">Tige + première de montage</text>
+    <text x="810" y="290">Trépointe (cousue à 270°)</text>
+    <text x="810" y="334">Semelle d'usure</text>
+    <text x="810" y="378">Liège de confort</text>
+    <text x="810" y="422">Double couture = ressemelage facile</text>
+  </g>
+
+  <g stroke="#7a1d18" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M770 236H650"/>
+    <path d="M770 282H640"/>
+    <path d="M770 325H680"/>
+    <path d="M770 369H500"/>
+    <path d="M770 413H695"/>
+  </g>
+
+  <text x="70" y="558" font-size="28" fill="#7a1d18" font-family="'Nunito Sans','Segoe UI',sans-serif">Équilibre idéal entre élégance, robustesse et entretien chez le cordonnier.</text>
+</svg>

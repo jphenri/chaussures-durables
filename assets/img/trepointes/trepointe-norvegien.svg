@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Schéma Cousu Norvégien</title>
+  <desc id="desc">Coupe simplifiée d'une chaussure en montage norvégien avec double couture visible.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8f3"/>
+      <stop offset="100%" stop-color="#f5e0d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
+  <text x="70" y="86" font-size="44" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">COUSU NORVÉGIEN (TRÈS ROBUSTE)</text>
+
+  <g transform="translate(108 168)">
+    <path d="M0 186c0-36 31-61 66-61h482c108 0 186 29 224 76H0z" fill="#f7d9c9"/>
+    <path d="M82 112h560l48 44H34z" fill="#ab2a22"/>
+    <path d="M52 158h666" stroke="#5a4a43" stroke-width="34" stroke-linecap="round"/>
+    <path d="M88 114h565" stroke="#fff8f3" stroke-width="6" stroke-dasharray="4 14" stroke-linecap="round"/>
+    <path d="M80 136h566" stroke="#fff8f3" stroke-width="6" stroke-dasharray="4 14" stroke-linecap="round"/>
+    <path d="M92 158h576" stroke="#ffcfb8" stroke-width="6" stroke-dasharray="5 12" stroke-linecap="round"/>
+    <circle cx="680" cy="136" r="16" fill="#7a1d18"/>
+    <circle cx="680" cy="136" r="7" fill="#fff8f3"/>
+  </g>
+
+  <g fill="#5a4a43" font-size="24" font-family="'Nunito Sans','Segoe UI',sans-serif">
+    <text x="792" y="228">Double couture très visible</text>
+    <text x="792" y="272">Fixation profonde tige + trépointe</text>
+    <text x="792" y="316">Excellente résistance à l'humidité</text>
+    <text x="792" y="360">Idéal pour randonnée urbaine / hiver</text>
+    <text x="792" y="404">Ressemelable, mais travail plus technique</text>
+  </g>
+
+  <g stroke="#7a1d18" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M752 221H662"/>
+    <path d="M752 265H646"/>
+    <path d="M752 310H657"/>
+    <path d="M752 353H625"/>
+    <path d="M752 398H635"/>
+  </g>
+
+  <text x="70" y="558" font-size="28" fill="#7a1d18" font-family="'Nunito Sans','Segoe UI',sans-serif">Montage patrimonial pour les environnements exigeants : solide, étanche et durable.</text>
+</svg>

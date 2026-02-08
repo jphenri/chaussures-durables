@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Schéma Storm Welt</title>
+  <desc id="desc">Coupe simplifiée d'une trépointe relevée type storm welt.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8f3"/>
+      <stop offset="100%" stop-color="#f3ded2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
+  <text x="70" y="86" font-size="44" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">STORM WELT (TRÉPOINTE RELEVÉE)</text>
+
+  <g transform="translate(112 176)">
+    <path d="M0 176c0-30 26-52 56-52h474c95 0 164 23 202 66H0z" fill="#f9ddcf"/>
+    <path d="M60 118c0-12 10-22 22-22h520c12 0 22 10 22 22v12H60z" fill="#ab2a22"/>
+    <path d="M52 146h618" stroke="#5a4a43" stroke-width="32" stroke-linecap="round"/>
+    <path d="M48 112l28-30h560l26 30" stroke="#ab2a22" stroke-width="10" fill="none" stroke-linejoin="round"/>
+    <path d="M65 120h560" stroke="#fff8f3" stroke-width="6" stroke-dasharray="4 14" stroke-linecap="round"/>
+    <path d="M74 147h580" stroke="#ffcfb8" stroke-width="6" stroke-dasharray="5 12" stroke-linecap="round"/>
+    <path d="M610 54c20 17 31 40 31 65" stroke="#7a1d18" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <g fill="#5a4a43" font-size="24" font-family="'Nunito Sans','Segoe UI',sans-serif">
+    <text x="792" y="230">Bourrelet relevé contre l'eau</text>
+    <text x="792" y="274">Canalise pluie et éclaboussures</text>
+    <text x="792" y="318">Très apprécié sur boots d'hiver</text>
+    <text x="792" y="362">Ressemelage toujours possible</text>
+    <text x="792" y="406">Look plus utilitaire / outdoor chic</text>
+  </g>
+
+  <g stroke="#7a1d18" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M752 223H668"/>
+    <path d="M752 267H626"/>
+    <path d="M752 312H653"/>
+    <path d="M752 355H646"/>
+    <path d="M752 399H664"/>
+  </g>
+
+  <text x="70" y="558" font-size="28" fill="#7a1d18" font-family="'Nunito Sans','Segoe UI',sans-serif">Le meilleur choix pour le climat humide quand on veut rester sur une chaussure élégante et réparable.</text>
+</svg>

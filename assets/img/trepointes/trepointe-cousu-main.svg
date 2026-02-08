@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Schéma Cousu Main</title>
+  <desc id="desc">Coupe simplifiée d'une trépointe cousue main pour chaussure haut de gamme.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8f3"/>
+      <stop offset="100%" stop-color="#f7e4da"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
+  <text x="70" y="86" font-size="44" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">TRÉPOINTE COUSUE MAIN (HAND-WELTED)</text>
+
+  <g transform="translate(110 174)">
+    <path d="M0 180c0-33 28-56 60-56h486c100 0 174 25 210 70H0z" fill="#f7d9cb"/>
+    <rect x="68" y="104" width="610" height="30" rx="10" fill="#ab2a22"/>
+    <rect x="78" y="144" width="642" height="34" rx="12" fill="#5a4a43"/>
+    <rect x="98" y="80" width="558" height="22" rx="7" fill="#ffecd8"/>
+    <path d="M76 120h592" stroke="#fff8f3" stroke-width="6" stroke-dasharray="2 11" stroke-linecap="round"/>
+    <path d="M90 160h610" stroke="#ffcfb8" stroke-width="6" stroke-dasharray="3 10" stroke-linecap="round"/>
+
+    <g transform="translate(520 24)">
+      <path d="M0 0l18 20-38 46-24-4z" fill="#ffcfb8"/>
+      <circle cx="20" cy="22" r="10" fill="#7a1d18"/>
+      <path d="M30 30l28 18" stroke="#7a1d18" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="62" cy="49" r="6" fill="#7a1d18"/>
+    </g>
+  </g>
+
+  <g fill="#5a4a43" font-size="24" font-family="'Nunito Sans','Segoe UI',sans-serif">
+    <text x="790" y="232">Couture de trépointe réalisée à la main</text>
+    <text x="790" y="276">Tolérances fines et ajustement personnalisé</text>
+    <text x="790" y="320">Confort progressif haut de gamme</text>
+    <text x="790" y="364">Ressemelages successifs de grande qualité</text>
+    <text x="790" y="408">Temps de fabrication plus long</text>
+  </g>
+
+  <g stroke="#7a1d18" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M750 225H677"/>
+    <path d="M750 269H650"/>
+    <path d="M750 313H648"/>
+    <path d="M750 357H694"/>
+    <path d="M750 401H718"/>
+  </g>
+
+  <text x="70" y="558" font-size="28" fill="#7a1d18" font-family="'Nunito Sans','Segoe UI',sans-serif">Le choix passion pour une paire d'exception : longévité, précision et réparabilité maximale.</text>
+</svg>

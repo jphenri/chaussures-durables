@@ -543,6 +543,54 @@ code {
   color: var(--ink-soft);
 }
 
+.welt-types {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 1rem 0 1.2rem;
+}
+
+.welt-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.9rem;
+}
+
+.welt-card h3 {
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
+}
+
+.welt-image {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(171, 42, 34, 0.2);
+  margin-bottom: 0.75rem;
+}
+
+.welt-meta {
+  margin-bottom: 0.65rem;
+}
+
+.welt-meta p {
+  margin-bottom: 0.5rem;
+}
+
+.brand-links {
+  margin-top: 0.3rem;
+}
+
+.brand-links li {
+  margin-bottom: 0.35rem;
+}
+
+.source-note {
+  font-size: 0.88rem;
+  color: #7d665d;
+  margin-top: 0.8rem;
+}
+
 .prose figure {
   margin: 1rem 0;
 }
