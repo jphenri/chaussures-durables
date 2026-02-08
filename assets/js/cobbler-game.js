@@ -10,89 +10,519 @@
 
   var ISSUE_LIBRARY = [
     {
-      key: 'soleLoose',
-      mode: 'clicks',
-      repairTypes: [
-        {
-          key: 'regluePress',
-          materialOptions: ['contactGlue', 'resinCement', 'solePrimer'],
-          toolOptions: ['solePress', 'clamp', 'spatula'],
-          best: { material: 'contactGlue', tool: 'solePress' },
-          okMaterials: ['resinCement', 'solePrimer'],
-          okTools: ['clamp']
-        },
-        {
-          key: 'stitchResecure',
-          materialOptions: ['waxedThread', 'seamTape', 'contactGlue'],
-          toolOptions: ['awl', 'curvedNeedle', 'stitchPliers'],
-          best: { material: 'waxedThread', tool: 'awl' },
-          okMaterials: ['seamTape', 'contactGlue'],
-          okTools: ['curvedNeedle', 'stitchPliers']
-        }
-      ]
-    },
-    {
-      key: 'heelWorn',
+      key: 'premiumShine',
       mode: 'timing',
+      minLevel: 1,
+      difficulty: 1,
+      baseSeconds: 60,
+      rewardTier: 1,
+      risk: 'low',
+      text: {
+        fr: {
+          label: 'Cirage premium',
+          brokenDesc: 'Cuir terne sans brillance.',
+          solution: 'Brosser, appliquer la creme puis lustrer.',
+          miniGame: 'Barre de precision'
+        },
+        en: {
+          label: 'Premium shine',
+          brokenDesc: 'Leather looks dull and lacks shine.',
+          solution: 'Brush, apply cream, then buff.',
+          miniGame: 'Timing bar'
+        }
+      },
       repairTypes: [
         {
-          key: 'topLiftReplace',
-          materialOptions: ['rubberTopLift', 'heelNails', 'contactGlue'],
-          toolOptions: ['heelHammer', 'edgeTrimmer', 'clamp'],
-          best: { material: 'rubberTopLift', tool: 'heelHammer' },
-          okMaterials: ['heelNails', 'contactGlue'],
-          okTools: ['edgeTrimmer']
-        },
-        {
-          key: 'heelRebuild',
-          materialOptions: ['heelLeather', 'resinCement', 'heelNails'],
-          toolOptions: ['sandingBlock', 'heelHammer', 'clamp'],
-          best: { material: 'heelLeather', tool: 'sandingBlock' },
-          okMaterials: ['resinCement', 'heelNails'],
-          okTools: ['heelHammer']
+          key: 'premiumPolish',
+          text: {
+            fr: { label: 'Polissage premium', desc: 'Finition miroir sur cuir lisse.' },
+            en: { label: 'Premium polish', desc: 'Mirror-like finish on smooth leather.' }
+          },
+          materialOptions: ['polishCream', 'conditioningCream', 'nourishingOil'],
+          toolOptions: ['horseBrush', 'softCloth', 'burnisher'],
+          best: { material: 'polishCream', tool: 'horseBrush' },
+          okMaterials: ['conditioningCream'],
+          okTools: ['softCloth']
         }
       ]
     },
     {
-      key: 'looseStitch',
+      key: 'deepCleaning',
       mode: 'clicks',
+      minLevel: 1,
+      difficulty: 1,
+      baseSeconds: 60,
+      rewardTier: 1,
+      risk: 'none',
+      text: {
+        fr: {
+          label: 'Nettoyage profond',
+          brokenDesc: 'Salete et poussiere incrustees sur la tige.',
+          solution: 'Nettoyer en passes regulieres puis essuyer.',
+          miniGame: 'Glisser et frotter'
+        },
+        en: {
+          label: 'Deep cleaning',
+          brokenDesc: 'Embedded dirt and dust on the upper.',
+          solution: 'Clean with even passes, then wipe.',
+          miniGame: 'Swipe and scrub'
+        }
+      },
       repairTypes: [
         {
-          key: 'lockStitch',
+          key: 'deepClean',
+          text: {
+            fr: { label: 'Nettoyage atelier', desc: 'Retire les impuretes sans abimer la fleur.' },
+            en: { label: 'Workshop clean', desc: 'Remove impurities without damaging the grain.' }
+          },
+          materialOptions: ['leatherCleaner', 'saddleSoap', 'conditioningCream'],
+          toolOptions: ['softCloth', 'horseBrush', 'spatula'],
+          best: { material: 'leatherCleaner', tool: 'softCloth' },
+          okMaterials: ['saddleSoap'],
+          okTools: ['horseBrush']
+        }
+      ]
+    },
+    {
+      key: 'leatherHydration',
+      mode: 'clicks',
+      minLevel: 1,
+      difficulty: 1,
+      baseSeconds: 60,
+      rewardTier: 1,
+      risk: 'none',
+      text: {
+        fr: {
+          label: 'Rehydratation cuir',
+          brokenDesc: 'Le cuir est sec et manque de souplesse.',
+          solution: 'Appliquer une huile puis travailler en cercles.',
+          miniGame: 'Mouvement circulaire'
+        },
+        en: {
+          label: 'Leather rehydration',
+          brokenDesc: 'Leather is dry and losing flexibility.',
+          solution: 'Apply oil and work in circular motions.',
+          miniGame: 'Circular motion'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'rehydrateLeather',
+          text: {
+            fr: { label: 'Hydratation profonde', desc: 'Nourrit la fibre pour eviter la casse.' },
+            en: { label: 'Deep hydration', desc: 'Feeds fibers to prevent cracking.' }
+          },
+          materialOptions: ['nourishingOil', 'conditioningCream', 'leatherFiller'],
+          toolOptions: ['softCloth', 'horseBrush', 'burnisher'],
+          best: { material: 'nourishingOil', tool: 'softCloth' },
+          okMaterials: ['conditioningCream'],
+          okTools: ['horseBrush']
+        }
+      ]
+    },
+    {
+      key: 'replaceTopLiftMission',
+      mode: 'clicks',
+      minLevel: 3,
+      difficulty: 2,
+      baseSeconds: 120,
+      rewardTier: 2,
+      risk: 'medium',
+      text: {
+        fr: {
+          label: 'Remplacer top-lift',
+          brokenDesc: 'Le talon est use et desequilibre.',
+          solution: 'Repositionner puis fixer un nouveau top-lift.',
+          miniGame: 'Alignement et clics rapides'
+        },
+        en: {
+          label: 'Replace top-lift',
+          brokenDesc: 'Heel is worn and unbalanced.',
+          solution: 'Re-align then fix a new top-lift.',
+          miniGame: 'Alignment plus fast clicks'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'topLiftReplaceMission',
+          text: {
+            fr: { label: 'Pose top-lift', desc: 'Replace le bonbout pour retrouver l equilibre.' },
+            en: { label: 'Top-lift fitting', desc: 'Replace heel cap to restore balance.' }
+          },
+          materialOptions: ['rubberTopLift', 'contactGlue', 'heelNails'],
+          toolOptions: ['heelHammer', 'alignmentJig', 'clamp'],
+          best: { material: 'rubberTopLift', tool: 'heelHammer' },
+          okMaterials: ['contactGlue', 'heelNails'],
+          okTools: ['alignmentJig']
+        }
+      ]
+    },
+    {
+      key: 'halfSoleMission',
+      mode: 'timing',
+      minLevel: 5,
+      difficulty: 3,
+      baseSeconds: 180,
+      rewardTier: 3,
+      risk: 'medium',
+      text: {
+        fr: {
+          label: 'Demi-semelle',
+          brokenDesc: 'Avant-pied use avec accroche reduite.',
+          solution: 'Poser et presser une demi-semelle ajustee.',
+          miniGame: 'Placement precis'
+        },
+        en: {
+          label: 'Half sole',
+          brokenDesc: 'Forefoot is worn with reduced grip.',
+          solution: 'Place and press a fitted half sole.',
+          miniGame: 'Precise placement'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'halfSoleInstall',
+          text: {
+            fr: { label: 'Pose demi-semelle', desc: 'Renforce l avant-pied sans ressemelage complet.' },
+            en: { label: 'Half sole install', desc: 'Reinforce forefoot without full resole.' }
+          },
+          materialOptions: ['halfSolePiece', 'contactGlue', 'solePrimer'],
+          toolOptions: ['solePress', 'alignmentJig', 'clamp'],
+          best: { material: 'halfSolePiece', tool: 'solePress' },
+          okMaterials: ['contactGlue', 'solePrimer'],
+          okTools: ['alignmentJig']
+        }
+      ]
+    },
+    {
+      key: 'upperStitchMission',
+      mode: 'clicks',
+      minLevel: 5,
+      difficulty: 3,
+      baseSeconds: 180,
+      rewardTier: 3,
+      risk: 'high',
+      text: {
+        fr: {
+          label: 'Couture tige',
+          brokenDesc: 'Couture lache sur la tige.',
+          solution: 'Recoudre avec cadence stable et tension constante.',
+          miniGame: 'Rythme et sequence'
+        },
+        en: {
+          label: 'Upper stitching',
+          brokenDesc: 'Loose stitch line on the upper.',
+          solution: 'Restitch with stable pace and constant tension.',
+          miniGame: 'Rhythm sequence'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'upperRestitch',
+          text: {
+            fr: { label: 'Recousu tige', desc: 'Reprend la ligne de couture sur la tige.' },
+            en: { label: 'Upper restitch', desc: 'Rebuild stitch line on the upper.' }
+          },
           materialOptions: ['waxedThread', 'seamTape', 'contactGlue'],
           toolOptions: ['curvedNeedle', 'awl', 'stitchPliers'],
           best: { material: 'waxedThread', tool: 'curvedNeedle' },
           okMaterials: ['seamTape'],
           okTools: ['awl', 'stitchPliers']
-        },
-        {
-          key: 'doubleStitch',
-          materialOptions: ['waxedThread', 'contactGlue', 'solePrimer'],
-          toolOptions: ['stitchPliers', 'awl', 'curvedNeedle'],
-          best: { material: 'waxedThread', tool: 'stitchPliers' },
-          okMaterials: ['contactGlue'],
-          okTools: ['awl']
         }
       ]
     },
     {
-      key: 'dryLeather',
-      mode: 'timing',
+      key: 'heelLiningMission',
+      mode: 'clicks',
+      minLevel: 3,
+      difficulty: 2,
+      baseSeconds: 120,
+      rewardTier: 2,
+      risk: 'low',
+      text: {
+        fr: {
+          label: 'Reparer doublure talon',
+          brokenDesc: 'Doublure talon usee et decollee.',
+          solution: 'Reposer une doublure propre et presser.',
+          miniGame: 'Glisser et presser'
+        },
+        en: {
+          label: 'Heel lining repair',
+          brokenDesc: 'Heel lining is worn and detached.',
+          solution: 'Fit a clean lining and press.',
+          miniGame: 'Slide and press'
+        }
+      },
       repairTypes: [
         {
-          key: 'deepCondition',
-          materialOptions: ['conditioningCream', 'nourishingOil', 'leatherFiller'],
-          toolOptions: ['horseBrush', 'burnisher', 'spatula'],
-          best: { material: 'conditioningCream', tool: 'horseBrush' },
-          okMaterials: ['nourishingOil'],
-          okTools: ['burnisher']
+          key: 'heelLiningPatch',
+          text: {
+            fr: { label: 'Patch doublure', desc: 'Renove la doublure interne du contrefort.' },
+            en: { label: 'Lining patch', desc: 'Refresh inner heel counter lining.' }
+          },
+          materialOptions: ['heelLiningLeather', 'contactGlue', 'nourishingOil'],
+          toolOptions: ['clamp', 'softCloth', 'spatula'],
+          best: { material: 'heelLiningLeather', tool: 'clamp' },
+          okMaterials: ['contactGlue'],
+          okTools: ['softCloth']
+        }
+      ]
+    },
+    {
+      key: 'recolorMission',
+      mode: 'timing',
+      minLevel: 5,
+      difficulty: 3,
+      baseSeconds: 180,
+      rewardTier: 3,
+      risk: 'medium',
+      text: {
+        fr: {
+          label: 'Recoloration cuir',
+          brokenDesc: 'Couleur fanee et nuance irreguliere.',
+          solution: 'Teinter de maniere homogene puis fixer.',
+          miniGame: 'Melange couleur'
         },
+        en: {
+          label: 'Leather recolor',
+          brokenDesc: 'Color is faded and uneven.',
+          solution: 'Apply dye evenly then fix the tone.',
+          miniGame: 'Color mixing'
+        }
+      },
+      repairTypes: [
         {
-          key: 'crackFill',
-          materialOptions: ['leatherFiller', 'conditioningCream', 'resinCement'],
-          toolOptions: ['spatula', 'burnisher', 'sandingBlock'],
-          best: { material: 'leatherFiller', tool: 'spatula' },
-          okMaterials: ['conditioningCream'],
+          key: 'recolorUpper',
+          text: {
+            fr: { label: 'Recoloration complete', desc: 'Restaure une teinte uniforme sur la tige.' },
+            en: { label: 'Full recolor', desc: 'Restore consistent color on upper.' }
+          },
+          materialOptions: ['leatherDye', 'colorFixative', 'conditioningCream'],
+          toolOptions: ['softCloth', 'horseBrush', 'spatula'],
+          best: { material: 'leatherDye', tool: 'softCloth' },
+          okMaterials: ['colorFixative'],
+          okTools: ['horseBrush']
+        }
+      ]
+    },
+    {
+      key: 'fullResoleMission',
+      mode: 'timing',
+      minLevel: 7,
+      difficulty: 4,
+      baseSeconds: 300,
+      rewardTier: 4,
+      risk: 'high',
+      text: {
+        fr: {
+          label: 'Ressemelage complet',
+          brokenDesc: 'Semelle usee sur toute la longueur.',
+          solution: 'Deposer, recoller, recoudre et presser la nouvelle semelle.',
+          miniGame: 'Multi-etapes successives'
+        },
+        en: {
+          label: 'Full resole',
+          brokenDesc: 'Outsole is worn across full length.',
+          solution: 'Remove, reglue, restitch, and press a new outsole.',
+          miniGame: 'Multi-step sequence'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'fullResole',
+          text: {
+            fr: { label: 'Ressemelage atelier', desc: 'Remplace totalement la semelle exterieure.' },
+            en: { label: 'Workshop resole', desc: 'Complete outsole replacement.' }
+          },
+          materialOptions: ['newOutsole', 'contactGlue', 'waxedThread'],
+          toolOptions: ['stitchMachine', 'solePress', 'awl'],
+          best: { material: 'newOutsole', tool: 'stitchMachine' },
+          okMaterials: ['contactGlue'],
+          okTools: ['solePress']
+        }
+      ]
+    },
+    {
+      key: 'corkReplaceMission',
+      mode: 'timing',
+      minLevel: 7,
+      difficulty: 4,
+      baseSeconds: 240,
+      rewardTier: 4,
+      risk: 'medium',
+      text: {
+        fr: {
+          label: 'Remplacement liege',
+          brokenDesc: 'Confort disparu et amorti interne tasse.',
+          solution: 'Redoser le liege puis lisser.',
+          miniGame: 'Dosage et lissage'
+        },
+        en: {
+          label: 'Cork replacement',
+          brokenDesc: 'Comfort is gone and inner fill collapsed.',
+          solution: 'Dose new cork and smooth the bed.',
+          miniGame: 'Dose and smooth'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'replaceCork',
+          text: {
+            fr: { label: 'Recharge liege', desc: 'Reconstitue le lit de confort interne.' },
+            en: { label: 'Cork refill', desc: 'Rebuild internal comfort bed.' }
+          },
+          materialOptions: ['corkFiller', 'contactGlue', 'solePrimer'],
+          toolOptions: ['spatula', 'burnisher', 'clamp'],
+          best: { material: 'corkFiller', tool: 'spatula' },
+          okMaterials: ['solePrimer'],
+          okTools: ['burnisher']
+        }
+      ]
+    },
+    {
+      key: 'weltRestitchMission',
+      mode: 'timing',
+      minLevel: 7,
+      difficulty: 4,
+      baseSeconds: 240,
+      rewardTier: 4,
+      risk: 'high',
+      text: {
+        fr: {
+          label: 'Reprise couture trepointe',
+          brokenDesc: 'Couture welt lache et ouvertures visibles.',
+          solution: 'Reprendre la ligne de couture avec precision.',
+          miniGame: 'Mini-jeu precision'
+        },
+        en: {
+          label: 'Welt restitch',
+          brokenDesc: 'Welt stitch is loose with visible gaps.',
+          solution: 'Restitch the welt line with precision.',
+          miniGame: 'Precision mini-game'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'weltRestitch',
+          text: {
+            fr: { label: 'Recousu trepointe', desc: 'Verrouille la couture entre empeigne et semelle.' },
+            en: { label: 'Welt restitching', desc: 'Lock seam between upper and sole.' }
+          },
+          materialOptions: ['waxedThread', 'seamTape', 'contactGlue'],
+          toolOptions: ['awl', 'curvedNeedle', 'stitchMachine'],
+          best: { material: 'waxedThread', tool: 'awl' },
+          okMaterials: ['seamTape'],
+          okTools: ['curvedNeedle']
+        }
+      ]
+    },
+    {
+      key: 'weltReplaceMission',
+      mode: 'clicks',
+      minLevel: 9,
+      difficulty: 5,
+      baseSeconds: 360,
+      rewardTier: 5,
+      risk: 'veryHigh',
+      text: {
+        fr: {
+          label: 'Remplacement trepointe',
+          brokenDesc: 'Welt endommagee et couture compromise.',
+          solution: 'Deposer puis reposer une trepointe neuve.',
+          miniGame: 'Sequence complexe'
+        },
+        en: {
+          label: 'Welt replacement',
+          brokenDesc: 'Welt is damaged and seam is compromised.',
+          solution: 'Remove and fit a new welt strip.',
+          miniGame: 'Complex sequence'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'weltReplace',
+          text: {
+            fr: { label: 'Pose trepointe neuve', desc: 'Remplace la trepointe de bout en bout.' },
+            en: { label: 'New welt fitting', desc: 'Replace welt from end to end.' }
+          },
+          materialOptions: ['newWeltStrip', 'waxedThread', 'contactGlue'],
+          toolOptions: ['stitchMachine', 'curvedNeedle', 'alignmentJig'],
+          best: { material: 'newWeltStrip', tool: 'stitchMachine' },
+          okMaterials: ['waxedThread'],
+          okTools: ['curvedNeedle']
+        }
+      ]
+    },
+    {
+      key: 'shankReplaceMission',
+      mode: 'timing',
+      minLevel: 9,
+      difficulty: 5,
+      baseSeconds: 360,
+      rewardTier: 5,
+      risk: 'veryHigh',
+      text: {
+        fr: {
+          label: 'Remplacement cambrion',
+          brokenDesc: 'Instabilite interne et maintien du pied reduit.',
+          solution: 'Deposer puis ajuster un nouveau cambrion.',
+          miniGame: 'Demontage precis'
+        },
+        en: {
+          label: 'Shank replacement',
+          brokenDesc: 'Internal instability with poor arch support.',
+          solution: 'Remove and fit a new shank.',
+          miniGame: 'Precise disassembly'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'shankReplace',
+          text: {
+            fr: { label: 'Pose cambrion', desc: 'Restaure la rigidite structurelle centrale.' },
+            en: { label: 'Shank fitting', desc: 'Restore central structural stiffness.' }
+          },
+          materialOptions: ['steelShank', 'leatherShank', 'contactGlue'],
+          toolOptions: ['lastingPliers', 'alignmentJig', 'clamp'],
+          best: { material: 'steelShank', tool: 'lastingPliers' },
+          okMaterials: ['leatherShank'],
+          okTools: ['alignmentJig']
+        }
+      ]
+    },
+    {
+      key: 'tornLeatherMission',
+      mode: 'timing',
+      minLevel: 9,
+      difficulty: 5,
+      baseSeconds: 300,
+      rewardTier: 5,
+      risk: 'high',
+      text: {
+        fr: {
+          label: 'Reparation cuir dechire',
+          brokenDesc: 'Tige abimee avec dechirement visible.',
+          solution: 'Poser un patch discret puis lisser la surface.',
+          miniGame: 'Placement invisible'
+        },
+        en: {
+          label: 'Torn leather repair',
+          brokenDesc: 'Upper is damaged with a visible tear.',
+          solution: 'Set an invisible patch and smooth the surface.',
+          miniGame: 'Invisible placement'
+        }
+      },
+      repairTypes: [
+        {
+          key: 'invisiblePatch',
+          text: {
+            fr: { label: 'Patch invisible', desc: 'Masque la dechirure et reforce la zone.' },
+            en: { label: 'Invisible patch', desc: 'Hide tear and reinforce the area.' }
+          },
+          materialOptions: ['leatherPatch', 'leatherFiller', 'contactGlue'],
+          toolOptions: ['spatula', 'burnisher', 'softCloth'],
+          best: { material: 'leatherPatch', tool: 'spatula' },
+          okMaterials: ['leatherFiller'],
           okTools: ['burnisher']
         }
       ]
@@ -100,13 +530,71 @@
   ];
 
   var ISSUE_MAP = {};
+  var REPAIR_TYPE_TEXT = {};
   for (var libraryIndex = 0; libraryIndex < ISSUE_LIBRARY.length; libraryIndex += 1) {
-    ISSUE_MAP[ISSUE_LIBRARY[libraryIndex].key] = ISSUE_LIBRARY[libraryIndex];
+    var issueDef = ISSUE_LIBRARY[libraryIndex];
+    ISSUE_MAP[issueDef.key] = issueDef;
+
+    for (var repairTextIndex = 0; repairTextIndex < issueDef.repairTypes.length; repairTextIndex += 1) {
+      REPAIR_TYPE_TEXT[issueDef.repairTypes[repairTextIndex].key] =
+        issueDef.repairTypes[repairTextIndex].text || null;
+    }
   }
 
   var CLIENT_NAMES = {
     fr: ['Camille', 'Nora', 'Amine', 'Lucas', 'Sarah', 'Milo', 'Lina', 'Yanis', 'Jules', 'Maude'],
     en: ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Drew', 'Parker', 'Avery', 'Quinn']
+  };
+
+  var LEVEL_BRACKETS = {
+    fr: [
+      { min: 1, max: 2, label: 'Debutant' },
+      { min: 3, max: 4, label: 'Apprenti' },
+      { min: 5, max: 6, label: 'Intermediaire' },
+      { min: 7, max: 8, label: 'Expert' },
+      { min: 9, max: 10, label: 'Maitre cordonnier' }
+    ],
+    en: [
+      { min: 1, max: 2, label: 'Beginner' },
+      { min: 3, max: 4, label: 'Apprentice' },
+      { min: 5, max: 6, label: 'Intermediate' },
+      { min: 7, max: 8, label: 'Expert' },
+      { min: 9, max: 10, label: 'Master cobbler' }
+    ]
+  };
+
+  var RISK_LABELS = {
+    fr: {
+      none: 'Aucun',
+      low: 'Faible',
+      medium: 'Moyen',
+      high: 'Eleve',
+      veryHigh: 'Tres eleve'
+    },
+    en: {
+      none: 'None',
+      low: 'Low',
+      medium: 'Medium',
+      high: 'High',
+      veryHigh: 'Very high'
+    }
+  };
+
+  var ISSUE_VISUAL_MAP = {
+    premiumShine: 'dryLeather',
+    deepCleaning: 'dryLeather',
+    leatherHydration: 'dryLeather',
+    replaceTopLiftMission: 'heelWorn',
+    halfSoleMission: 'soleLoose',
+    upperStitchMission: 'looseStitch',
+    heelLiningMission: 'heelWorn',
+    recolorMission: 'dryLeather',
+    fullResoleMission: 'soleLoose',
+    corkReplaceMission: 'soleLoose',
+    weltRestitchMission: 'looseStitch',
+    weltReplaceMission: 'soleLoose',
+    shankReplaceMission: 'heelWorn',
+    tornLeatherMission: 'dryLeather'
   };
 
   var I18N = {
@@ -268,7 +756,20 @@
         heelLeather: 'Cuir de talon',
         conditioningCream: 'Creme nourrissante',
         nourishingOil: 'Huile nourrissante',
-        leatherFiller: 'Pate de rebouchage cuir'
+        leatherFiller: 'Pate de rebouchage cuir',
+        polishCream: 'Creme de cirage',
+        leatherCleaner: 'Nettoyant cuir',
+        saddleSoap: 'Savon glycerine',
+        halfSolePiece: 'Piece demi-semelle',
+        heelLiningLeather: 'Doublure cuir talon',
+        leatherDye: 'Teinture cuir',
+        colorFixative: 'Fixateur couleur',
+        newOutsole: 'Semelle neuve',
+        corkFiller: 'Liege technique',
+        newWeltStrip: 'Trepointe neuve',
+        steelShank: 'Cambrion acier',
+        leatherShank: 'Cambrion cuir',
+        leatherPatch: 'Patch cuir'
       },
       tools: {
         solePress: 'Presse semelle',
@@ -281,7 +782,11 @@
         edgeTrimmer: 'Coupe-bord',
         sandingBlock: 'Bloc de poncage',
         horseBrush: 'Brosse crin',
-        burnisher: 'Lissoir'
+        burnisher: 'Lissoir',
+        softCloth: 'Chiffon doux',
+        alignmentJig: 'Gabarit alignement',
+        stitchMachine: 'Machine couture',
+        lastingPliers: 'Pince de montage'
       },
       setupRating: {
         excellent: 'excellent',
@@ -480,7 +985,20 @@
         heelLeather: 'Heel leather',
         conditioningCream: 'Conditioning cream',
         nourishingOil: 'Nourishing oil',
-        leatherFiller: 'Leather filler paste'
+        leatherFiller: 'Leather filler paste',
+        polishCream: 'Polish cream',
+        leatherCleaner: 'Leather cleaner',
+        saddleSoap: 'Saddle soap',
+        halfSolePiece: 'Half sole piece',
+        heelLiningLeather: 'Heel lining leather',
+        leatherDye: 'Leather dye',
+        colorFixative: 'Color fixative',
+        newOutsole: 'New outsole',
+        corkFiller: 'Technical cork',
+        newWeltStrip: 'New welt strip',
+        steelShank: 'Steel shank',
+        leatherShank: 'Leather shank',
+        leatherPatch: 'Leather patch'
       },
       tools: {
         solePress: 'Sole press',
@@ -493,7 +1011,11 @@
         edgeTrimmer: 'Edge trimmer',
         sandingBlock: 'Sanding block',
         horseBrush: 'Horsehair brush',
-        burnisher: 'Burnisher'
+        burnisher: 'Burnisher',
+        softCloth: 'Soft cloth',
+        alignmentJig: 'Alignment jig',
+        stitchMachine: 'Stitching machine',
+        lastingPliers: 'Lasting pliers'
       },
       setupRating: {
         excellent: 'excellent',
@@ -697,8 +1219,50 @@
     return '★★★★★'.slice(0, safe) + '☆☆☆☆☆'.slice(0, 5 - safe);
   }
 
+  function starsDifficulty(value) {
+    return starsString(clamp(Math.round(value), 1, 5));
+  }
+
   function levelFromReputation(reputation) {
     return clamp(1 + Math.floor(reputation / 60), 1, 10);
+  }
+
+  function levelBracketLabel(level) {
+    var list = LEVEL_BRACKETS[state.lang] || LEVEL_BRACKETS.fr;
+
+    for (var i = 0; i < list.length; i += 1) {
+      if (level >= list[i].min && level <= list[i].max) {
+        return list[i].label;
+      }
+    }
+
+    return list[list.length - 1].label;
+  }
+
+  function riskLabel(riskKey) {
+    var labels = RISK_LABELS[state.lang] || RISK_LABELS.fr;
+    return labels[riskKey] || labels.medium;
+  }
+
+  function rewardLabel(tier) {
+    var safe = clamp(Math.round(tier || 1), 1, 5);
+    return '$$$$$'.slice(0, safe);
+  }
+
+  function riskWeight(riskKey) {
+    if (riskKey === 'none') {
+      return 0;
+    }
+    if (riskKey === 'low') {
+      return 1;
+    }
+    if (riskKey === 'medium') {
+      return 2;
+    }
+    if (riskKey === 'high') {
+      return 3;
+    }
+    return 4;
   }
 
   function randomItem(items) {
@@ -721,8 +1285,33 @@
     return ISSUE_MAP[issueKey] || null;
   }
 
+  function issueTextFromDefinition(issueKey) {
+    var definition = issueDefinition(issueKey);
+
+    if (!definition || !definition.text || !definition.text[state.lang]) {
+      return null;
+    }
+
+    return definition.text[state.lang];
+  }
+
   function issueText(issueKey) {
-    return langPack().issues[issueKey];
+    if (langPack().issues[issueKey]) {
+      return langPack().issues[issueKey];
+    }
+
+    var issueDefinitionText = issueTextFromDefinition(issueKey);
+
+    if (issueDefinitionText) {
+      return issueDefinitionText;
+    }
+
+    return {
+      label: issueKey,
+      brokenDesc: issueKey,
+      solution: issueKey,
+      miniGame: modeText('timing')
+    };
   }
 
   function issueLabel(issueKey) {
@@ -737,12 +1326,31 @@
     return issueText(issueKey).solution;
   }
 
+  function issueMiniGame(issueKey, modeKey) {
+    var details = issueText(issueKey);
+    if (details && details.miniGame) {
+      return details.miniGame;
+    }
+    return modeText(modeKey);
+  }
+
   function modeText(mode) {
     return langPack().modes[mode];
   }
 
   function repairTypeText(typeKey) {
-    return langPack().repairTypes[typeKey];
+    if (langPack().repairTypes[typeKey]) {
+      return langPack().repairTypes[typeKey];
+    }
+
+    if (REPAIR_TYPE_TEXT[typeKey] && REPAIR_TYPE_TEXT[typeKey][state.lang]) {
+      return REPAIR_TYPE_TEXT[typeKey][state.lang];
+    }
+
+    return {
+      label: typeKey,
+      desc: ''
+    };
   }
 
   function repairTypeLabel(typeKey) {
@@ -803,7 +1411,7 @@
   }
 
   function setIssueVisual(issueKey) {
-    root.setAttribute('data-issue', issueKey || 'none');
+    root.setAttribute('data-issue', ISSUE_VISUAL_MAP[issueKey] || issueKey || 'none');
   }
 
   function saveProgress() {
@@ -1000,6 +1608,16 @@
       broken.textContent = langPack().ui.brokenPrefix + ': ' + issueBrokenDesc(issue.key);
       line.appendChild(broken);
 
+      var missionMeta = document.createElement('span');
+      var missionMinutes = Math.max(1, Math.round((issue.baseSeconds || 60) / 60));
+      missionMeta.className = 'cg-issue-solution';
+      missionMeta.textContent =
+        starsDifficulty(issue.difficulty || 1) +
+        ' | ' + missionMinutes + ' min' +
+        ' | ' + rewardLabel(issue.rewardTier || 1) +
+        ' | ' + riskLabel(issue.risk || 'medium');
+      line.appendChild(missionMeta);
+
       if (issue.selectedRepairType) {
         var chosenType = document.createElement('span');
         chosenType.className = 'cg-issue-solution';
@@ -1029,13 +1647,21 @@
       return;
     }
 
-    var difficultyLabel = state.currentOrder.issues.length > 1
+    var avgDifficulty = 1;
+    var totalDifficulty = 0;
+    for (var i = 0; i < state.currentOrder.issues.length; i += 1) {
+      totalDifficulty += state.currentOrder.issues[i].difficulty || 1;
+    }
+    avgDifficulty = totalDifficulty / Math.max(1, state.currentOrder.issues.length);
+
+    var missionTypeLabel = state.currentOrder.issues.length > 1
       ? langPack().difficulty.double
       : langPack().difficulty.single;
 
     elements.orderClient.textContent = state.currentOrder.client;
     elements.orderDifficulty.textContent =
-      difficultyLabel + ' | ' + langPack().levelWord + ' ' + state.level;
+      starsDifficulty(avgDifficulty) + ' ' + levelBracketLabel(state.level) + ' | ' +
+      missionTypeLabel + ' | ' + langPack().levelWord + ' ' + state.level;
     elements.orderTimer.textContent = formatTimer(state.orderSecondsLeft);
 
     renderIssues();
@@ -1075,7 +1701,7 @@
         total: String(state.currentOrder.issues.length),
         issue: issueLabel(issue.key),
         repairType: issue.selectedRepairType ? repairTypeLabel(issue.selectedRepairType) : pack.ui.noRepairType,
-        mode: modeText(issue.mode)
+        mode: issueMiniGame(issue.key, issue.mode)
       });
       setIssueVisual(issue.key);
       return;
@@ -1290,14 +1916,21 @@
 
   function pickIssueSet(level) {
     var issueCount = 1;
-    if (level >= 2) {
-      var chance = Math.min(0.35 + level * 0.09, 0.85);
+    if (level >= 4) {
+      var chance = Math.min(0.18 + (level - 3) * 0.12, 0.72);
       if (Math.random() < chance) {
         issueCount = 2;
       }
     }
 
-    var pool = ISSUE_LIBRARY.slice();
+    var pool = ISSUE_LIBRARY.filter(function (definition) {
+      return level >= (definition.minLevel || 1);
+    });
+
+    if (pool.length === 0) {
+      pool = ISSUE_LIBRARY.slice(0, 3);
+    }
+
     var selected = [];
 
     while (selected.length < issueCount && pool.length > 0) {
@@ -1309,18 +1942,23 @@
   }
 
   function buildIssueTask(definition, level, issueCount) {
-    var hardness = level + (issueCount - 1) * 1.5;
+    var missionDifficulty = definition.difficulty || 1;
+    var hardness = missionDifficulty * 1.8 + level * 0.85 + (issueCount - 1) * 1.7;
 
     return {
       key: definition.key,
       mode: definition.mode,
       status: 'pending',
-      timingZone: clamp(34 - hardness * 2.2, 10, 34),
-      timingSpeed: 35 + hardness * 5.5,
-      requiredClicks: Math.round(10 + hardness * 2.3),
-      clickDurationMs: Math.round(clamp(7800 - hardness * 330, 3800, 7800)),
-      decayRate: clamp(0.16 + hardness * 0.02, 0.16, 0.42),
-      gainPerClick: clamp(1.05 + hardness * 0.05, 1.05, 1.85),
+      difficulty: missionDifficulty,
+      rewardTier: definition.rewardTier || missionDifficulty,
+      risk: definition.risk || 'medium',
+      baseSeconds: definition.baseSeconds || 60,
+      timingZone: clamp(40 - hardness * 2.1, 8, 36),
+      timingSpeed: 28 + hardness * 4.6,
+      requiredClicks: Math.round(8 + hardness * 2.1),
+      clickDurationMs: Math.round(clamp(9200 - hardness * 320, 3000, 9200)),
+      decayRate: clamp(0.14 + hardness * 0.018, 0.14, 0.5),
+      gainPerClick: clamp(1 + hardness * 0.045, 1, 2.4),
       selectedRepairType: '',
       selectedMaterial: '',
       selectedTool: ''
@@ -1330,12 +1968,17 @@
   function generateOrder() {
     var selected = pickIssueSet(state.level);
     var issues = [];
+    var totalSeconds = 0;
 
     for (var i = 0; i < selected.length; i += 1) {
-      issues.push(buildIssueTask(selected[i], state.level, selected.length));
+      var task = buildIssueTask(selected[i], state.level, selected.length);
+      totalSeconds += task.baseSeconds;
+      issues.push(task);
     }
 
-    var limit = clamp(72 - state.level * 3 - (issues.length - 1) * 8, 32, 72);
+    var pressureCut = Math.round((state.level - 1) * 3.2);
+    var multiRepairCut = Math.round((issues.length - 1) * 14);
+    var limit = clamp(totalSeconds - pressureCut - multiRepairCut, 55, 420);
 
     return {
       id: 'CMD-' + Date.now().toString(36).slice(-6).toUpperCase(),
@@ -1668,13 +2311,14 @@
 
     if (success) {
       issue.status = 'fixed';
-      applyReward(24 + state.level * 2 + qualityBonus);
+      applyReward(10 + (issue.rewardTier || 1) * 9 + state.level * 2 + qualityBonus);
       addLog(interpolate(langPack().logs.repairSuccess, {
         issue: issueLabel(issue.key)
       }));
     } else {
+      var riskPower = riskWeight(issue.risk || 'medium');
       issue.status = 'rough';
-      applyPenalty(14, 1, interpolate(langPack().logs.repairFail, {
+      applyPenalty(10 + riskPower * 3, riskPower >= 3 ? 2 : 1, interpolate(langPack().logs.repairFail, {
         issue: issueLabel(issue.key)
       }));
     }
@@ -1722,10 +2366,14 @@
     }
 
     var rough = state.currentOrder.issues.length - fixed;
+    var tierTotal = 0;
+    for (var tierIndex = 0; tierIndex < state.currentOrder.issues.length; tierIndex += 1) {
+      tierTotal += state.currentOrder.issues[tierIndex].rewardTier || 1;
+    }
 
     state.completedOrders += 1;
 
-    var reputationGain = state.satisfaction * 4 + fixed * 3 + (finishSuccess ? 4 : 0) - rough * 2;
+    var reputationGain = state.satisfaction * 4 + fixed * 3 + tierTotal * 2 + (finishSuccess ? 4 : 0) - rough * 2;
     reputationGain = Math.max(2, reputationGain);
 
     var previousLevel = state.level;
