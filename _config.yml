@@ -1,13 +1,13 @@
 # _config.yml
 
 title: "Chaussures Durables"
-description: "Chaussures durables et reparables: conseils, histoire, et savoir-faire des cordonniers locaux."
+description: "Chaussures durables et réparables : conseils, histoire et savoir-faire des cordonniers locaux."
 url: "https://jphenri.github.io"
 baseurl: "/chaussures-durables"
 repository_url: "https://github.com/jphenri/chaussures-durables"
 
 author: "J.P. Henri"
-author_title: "Editeur mode durable"
+author_title: "Éditeur mode durable"
 author_country: "CA"
 author_locality: "Gatineau"
 lang: "fr"

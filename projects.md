@@ -1,28 +1,28 @@
 ---
 layout: page
-title: "Modeles et services"
-description: "Exemples de chaussures reparables et services de cordonnerie locale pour faire durer chaque paire."
+title: "Modèles et services"
+description: "Exemples de chaussures réparables et services de cordonnerie locale pour faire durer chaque paire."
 lang: fr
 lang_ref: projects
 permalink: /projects/
 keywords:
-  - chaussure trepointe
-  - modele reparable
+  - chaussure trépointe
+  - modèle réparable
   - cordonnerie locale
-  - services de reparation
+  - services de réparation
 ---
 
-Exemples de modeles durables et reparables a mettre en avant sur le site:
+Exemples de modèles durables et réparables à mettre en avant sur le site :
 
-- **Chaussure trepointe (Goodyear welt):** reference pour le ressemelage multiple.
-- **Derby cousu Blake:** plus souple, ideal pour la ville et l'usage quotidien.
-- **Botte montage norvegien:** robuste, adaptee a la pluie et aux saisons froides.
-- **Mocassin semelle cuir + patin:** elegant et facilement entretenu en atelier.
+- **Chaussure trépointe (Goodyear welt) :** référence pour le ressemelage multiple.
+- **Derby cousu Blake :** plus souple, idéal pour la ville et l’usage quotidien.
+- **Botte montage norvégien :** robuste, adaptée à la pluie et aux saisons froides.
+- **Mocassin semelle cuir + patin :** élégant et facilement entretenu en atelier.
 
-Services de cordonnerie locale a proposer:
+Services de cordonnerie locale à proposer :
 
-- Diagnostic d'usure et plan d'entretien
-- Pose de patins antiderapants
+- Diagnostic d’usure et plan d’entretien
+- Pose de patins antidérapants
 - Remplacement talons et bonbouts
 - Ressemelage complet
 - Nettoyage, recoloration et nourrissage cuir
