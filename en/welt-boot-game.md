@@ -25,6 +25,9 @@ keywords:
 
   <div class="cg-layout">
     <aside class="cg-panel cg-order" aria-live="polite">
+      <div class="cg-order-cta">
+        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">New client</button>
+      </div>
       <h2 data-i18n="orderTitle">Order</h2>
       <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
       <p><span data-i18n="difficultyLabel">Difficulty</span>: <strong data-order-difficulty>-</strong></p>
@@ -129,7 +132,6 @@ keywords:
       </div>
 
       <div class="cg-actions">
-        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">New client</button>
         <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Reset progress</button>
       </div>
 

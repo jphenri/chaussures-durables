@@ -62,6 +62,14 @@
   margin: 0 0 0.45rem;
 }
 
+.cg-order-cta {
+  margin-bottom: 0.75rem;
+}
+
+.cg-order-cta .btn {
+  width: 100%;
+}
+
 .cg-issues {
   margin: 0;
   padding-left: 1.05rem;
