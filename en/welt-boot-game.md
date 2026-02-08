@@ -17,7 +17,7 @@ keywords:
   - browser game
 ---
 
-<div class="cobbler-game" data-cobbler-game data-lang="en" data-issue="none">
+<div class="cobbler-game" data-cobbler-game data-lang="en" data-issue="none" data-scene-base="{{ '/assets/img/sora/' | relative_url }}">
   <div class="cg-topbar">
     <p class="cg-intro" data-i18n="introText">Run your workshop: diagnose, repair, finish, and grow your reputation.</p>
     <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
@@ -110,10 +110,7 @@ keywords:
       </div>
 
       <div class="cg-shoe-scene" aria-hidden="true">
-        <div class="cg-shoe-upper"></div>
-        <div class="cg-shoe-stitch"></div>
-        <div class="cg-shoe-sole"></div>
-        <div class="cg-shoe-heel"></div>
+        <img src="{{ '/assets/img/sora/mission-premium-shine.png' | relative_url }}" alt="" loading="lazy" decoding="async" data-shoe-scene-image>
       </div>
     </section>
 

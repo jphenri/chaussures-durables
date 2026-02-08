@@ -597,6 +597,23 @@
     tornLeatherMission: 'dryLeather'
   };
 
+  var ISSUE_SCENE_IMAGE_MAP = {
+    premiumShine: 'mission-premium-shine.png',
+    deepCleaning: 'mission-deep-cleaning.png',
+    leatherHydration: 'mission-leather-hydration.png',
+    replaceTopLiftMission: 'boot-broken.png',
+    halfSoleMission: 'boot-broken.png',
+    upperStitchMission: 'boot-broken.png',
+    heelLiningMission: 'boot-broken.png',
+    recolorMission: 'mission-premium-shine.png',
+    fullResoleMission: 'boot-deconstructed.png',
+    corkReplaceMission: 'boot-deconstructed.png',
+    weltRestitchMission: 'boot-broken.png',
+    weltReplaceMission: 'boot-deconstructed.png',
+    shankReplaceMission: 'boot-deconstructed.png',
+    tornLeatherMission: 'boot-broken.png'
+  };
+
   var I18N = {
     fr: {
       ui: {
@@ -659,7 +676,11 @@
         mainActionLocked: 'Action en cours',
         mainActionDiagnosis: 'Valider diagnostic',
         mainActionRepair: 'Lancer reparation',
-        mainActionFinish: 'Lancer finition'
+        mainActionFinish: 'Lancer finition',
+        sceneAltIdle: 'Illustration atelier de cordonnerie.',
+        sceneAltIssue: 'Illustration mission: {issue}.',
+        sceneAltFinishing: 'Illustration botte en finition.',
+        sceneAltDone: 'Illustration botte reparee.'
       },
       status: {
         pending: 'en attente',
@@ -903,7 +924,11 @@
         mainActionLocked: 'Action running',
         mainActionDiagnosis: 'Confirm diagnosis',
         mainActionRepair: 'Start repair',
-        mainActionFinish: 'Start finishing'
+        mainActionFinish: 'Start finishing',
+        sceneAltIdle: 'Cobbler workshop illustration.',
+        sceneAltIssue: 'Mission illustration: {issue}.',
+        sceneAltFinishing: 'Boot finishing illustration.',
+        sceneAltDone: 'Repaired boot illustration.'
       },
       status: {
         pending: 'pending',
@@ -1126,6 +1151,7 @@
     actionTiming: root.querySelector('[data-action-timing]'),
     actionClicks: root.querySelector('[data-action-clicks]'),
     actionFinish: root.querySelector('[data-action-finish]'),
+    sceneImage: root.querySelector('[data-shoe-scene-image]'),
     mainAction: root.querySelector('[data-main-action]'),
     score: root.querySelector('[data-stat-score]'),
     best: root.querySelector('[data-stat-best]'),
@@ -1175,6 +1201,7 @@
     !elements.actionTiming ||
     !elements.actionClicks ||
     !elements.actionFinish ||
+    !elements.sceneImage ||
     !elements.mainAction ||
     !elements.score ||
     !elements.best ||
@@ -1570,6 +1597,62 @@
     elements.logList.innerHTML = '';
   }
 
+  function sceneBasePath() {
+    var base = root.getAttribute('data-scene-base') || '';
+
+    if (!base) {
+      return '';
+    }
+
+    return base.charAt(base.length - 1) === '/' ? base : (base + '/');
+  }
+
+  function sceneFileForIssue(issueKey) {
+    return ISSUE_SCENE_IMAGE_MAP[issueKey] || 'boot-broken.png';
+  }
+
+  function sceneFileForStage(stageKey, issueKey) {
+    if (stageKey === 'finishing' || stageKey === 'done') {
+      return 'boot-repaired.png';
+    }
+
+    if (issueKey) {
+      return sceneFileForIssue(issueKey);
+    }
+
+    return 'mission-premium-shine.png';
+  }
+
+  function sceneAltForStage(stageKey, issueKey) {
+    var ui = langPack().ui;
+
+    if (stageKey === 'finishing') {
+      return ui.sceneAltFinishing;
+    }
+
+    if (stageKey === 'done') {
+      return ui.sceneAltDone;
+    }
+
+    if (issueKey) {
+      return interpolate(ui.sceneAltIssue, {
+        issue: issueLabel(issueKey)
+      });
+    }
+
+    return ui.sceneAltIdle;
+  }
+
+  function updateSceneImage(stageKey, issueKey) {
+    var src = sceneBasePath() + sceneFileForStage(stageKey, issueKey);
+    var alt = sceneAltForStage(stageKey, issueKey);
+
+    if (src && elements.sceneImage.getAttribute('src') !== src) {
+      elements.sceneImage.setAttribute('src', src);
+    }
+    elements.sceneImage.setAttribute('alt', alt);
+  }
+
   function setIssueVisual(issueKey) {
     root.setAttribute('data-issue', ISSUE_VISUAL_MAP[issueKey] || issueKey || 'none');
   }
@@ -1864,6 +1947,7 @@
       elements.stageDesc.textContent = pack.stage.idleDesc;
       setIssueVisual('none');
       setStageVisual('idle');
+      updateSceneImage('idle', null);
       return;
     }
 
@@ -1872,6 +1956,7 @@
       elements.stageDesc.textContent = pack.stage.diagnosisDesc;
       setIssueVisual(state.currentOrder.issues[0].key);
       setStageVisual('diagnosis');
+      updateSceneImage('diagnosis', state.currentOrder.issues[0].key);
       return;
     }
 
@@ -1883,6 +1968,7 @@
         elements.stageDesc.textContent = pack.stage.finishDesc;
         setIssueVisual('none');
         setStageVisual('repair');
+        updateSceneImage('repair', null);
         return;
       }
 
@@ -1896,6 +1982,7 @@
       });
       setIssueVisual(issue.key);
       setStageVisual('repair');
+      updateSceneImage('repair', issue.key);
       return;
     }
 
@@ -1904,6 +1991,7 @@
       elements.stageDesc.textContent = pack.stage.finishDesc;
       setIssueVisual('none');
       setStageVisual('finishing');
+      updateSceneImage('finishing', null);
       return;
     }
 
@@ -1911,6 +1999,7 @@
     elements.stageDesc.textContent = pack.stage.doneDesc;
     setIssueVisual('none');
     setStageVisual('done');
+    updateSceneImage('done', null);
   }
 
   function renderStats() {
