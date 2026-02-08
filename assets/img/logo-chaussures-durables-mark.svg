@@ -1,22 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
   <title id="title">Chaussures Durables Mark</title>
-  <desc id="desc">Stylized mark with stitched shoe to represent durable and repairable footwear.</desc>
+  <desc id="desc">Icône Chaussures Durables: silhouette de soulier, couture visible et semelle robuste.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#7a1d18"/>
-      <stop offset="100%" stop-color="#e25745"/>
+      <stop offset="100%" stop-color="#be3e2f"/>
     </linearGradient>
-    <linearGradient id="shoe" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#fff5ed"/>
-      <stop offset="100%" stop-color="#ffe2d4"/>
+    <linearGradient id="badge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8f3"/>
+      <stop offset="100%" stop-color="#f8e4d6"/>
     </linearGradient>
   </defs>
 
-  <rect width="256" height="256" rx="52" fill="url(#bg)"/>
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  <rect x="18" y="18" width="220" height="220" rx="46" fill="none" stroke="rgba(255,247,241,0.34)" stroke-width="2"/>
 
-  <path d="M44 156c0-13 13-20 28-20h37c10 0 20-3 29-9l18-12c8-5 17 3 14 12l-4 11c19 4 34 20 34 40H44c0-9 6-16 14-18h117c-3-5-8-8-16-8H72c-15 0-28 2-28 4z" fill="url(#shoe)"/>
-  <path d="M72 151h85" stroke="#ab2a22" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 10"/>
-  <path d="M56 178h144" stroke="#fef7f3" stroke-width="6" stroke-linecap="round"/>
-  <path d="M183 87l10 8-22 28-13-1z" fill="#ffcfb8"/>
-  <circle cx="194" cy="93" r="6" fill="#fff5ed"/>
+  <circle cx="128" cy="128" r="84" fill="url(#badge)"/>
+
+  <path d="M58 146c0-18 15-30 34-30h50c24 0 42-8 58-26l18 14c-14 23-37 36-72 36H98c-8 0-14 3-18 6z" fill="#ab2a22"/>
+  <path d="M58 156h146" stroke="#4b3e39" stroke-width="16" stroke-linecap="round"/>
+  <path d="M68 146h116" stroke="#fff6f1" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 8"/>
+
+  <rect x="156" y="146" width="26" height="26" rx="7" fill="#5a4a43"/>
 </svg>
