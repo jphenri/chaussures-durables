@@ -48,6 +48,30 @@ keywords:
       <p class="cg-stage-name" data-stage-name>Workshop ready</p>
       <p class="cg-stage-desc" data-stage-desc>Press “New client” to start an order.</p>
 
+      <section class="cg-mini cg-diagnosis-panel" data-diagnosis-panel hidden>
+        <h3 data-i18n="diagnosisPanelTitle">Detailed diagnosis</h3>
+        <p data-i18n="diagnosisPanelHelp">Inspect what is broken and choose a repair type for each issue.</p>
+        <div class="cg-diagnosis-list" data-diagnosis-list></div>
+      </section>
+
+      <section class="cg-mini cg-repair-plan" data-repair-plan hidden>
+        <h3 data-i18n="repairPlanTitle">Repair setup</h3>
+        <p class="cg-repair-line"><span data-i18n="repairIssueLabel">Target issue</span>: <strong data-repair-issue>-</strong></p>
+        <p class="cg-repair-line"><span data-i18n="repairTypeLabel">Chosen type</span>: <strong data-repair-type>-</strong></p>
+
+        <label class="cg-field-label" for="repair-material-en" data-i18n="repairMaterialLabel">Material</label>
+        <select id="repair-material-en" data-repair-material>
+          <option value="">Choose a material</option>
+        </select>
+
+        <label class="cg-field-label" for="repair-tool-en" data-i18n="repairToolLabel">Tool</label>
+        <select id="repair-tool-en" data-repair-tool>
+          <option value="">Choose a tool</option>
+        </select>
+
+        <p class="cg-repair-hint" data-repair-hint>The right material + tool combo makes the repair mini-game easier.</p>
+      </section>
+
       <div class="cg-shoe-scene" aria-hidden="true">
         <div class="cg-shoe-upper"></div>
         <div class="cg-shoe-stitch"></div>
@@ -120,5 +144,24 @@ keywords:
     <ul data-log-list>
       <li>Workshop ready.</li>
     </ul>
+  </section>
+
+  <section class="cg-panel cg-gallery">
+    <h2>Boot states (visuals)</h2>
+    <div class="cg-gallery-grid">
+      <figure>
+        <img src="{{ '/assets/img/sora/boot-broken.svg' | relative_url }}" alt="Broken boot with detached outsole" loading="lazy" decoding="async">
+        <figcaption>Broken boot</figcaption>
+      </figure>
+      <figure>
+        <img src="{{ '/assets/img/sora/boot-deconstructed.svg' | relative_url }}" alt="Deconstructed boot laid out in repair parts" loading="lazy" decoding="async">
+        <figcaption>Deconstructed boot</figcaption>
+      </figure>
+      <figure>
+        <img src="{{ '/assets/img/sora/boot-repaired.svg' | relative_url }}" alt="Repaired boot ready for delivery" loading="lazy" decoding="async">
+        <figcaption>Repaired boot</figcaption>
+      </figure>
+    </div>
+    <p class="cg-gallery-note">These visuals are local placeholders. I can replace them with Sora renders as soon as the API key is available.</p>
   </section>
 </div>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="t d">
+  <title id="t">Botte reparee</title>
+  <desc id="d">Illustration placeholder d'une botte reparee.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e8f1df"/>
+      <stop offset="100%" stop-color="#d6e8cd"/>
+    </linearGradient>
+    <linearGradient id="boot" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a7684c"/>
+      <stop offset="100%" stop-color="#74412f"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <text x="28" y="44" fill="#1d6a3e" font-size="32" font-family="Arial, sans-serif" font-weight="700">Botte reparee</text>
+  <g transform="translate(90 110)">
+    <path d="M50 140 C118 22, 302 22, 424 116 L424 170 L50 170 Z" fill="url(#boot)"/>
+    <path d="M64 170 L434 170 L430 196 L46 196 Z" fill="#3f3a36"/>
+    <path d="M354 150 L426 150 L430 204 L344 204 Z" fill="#25211e"/>
+    <path d="M148 140 L316 132" stroke="#f6e6cf" stroke-width="4" stroke-dasharray="6 6"/>
+    <circle cx="470" cy="50" r="34" fill="#2f8f4f"/>
+    <path d="M454 52 L466 66 L490 38" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

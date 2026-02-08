@@ -48,6 +48,30 @@ keywords:
       <p class="cg-stage-name" data-stage-name>Atelier prêt</p>
       <p class="cg-stage-desc" data-stage-desc>Clique sur “Nouveau client” pour commencer une commande.</p>
 
+      <section class="cg-mini cg-diagnosis-panel" data-diagnosis-panel hidden>
+        <h3 data-i18n="diagnosisPanelTitle">Diagnostic détaillé</h3>
+        <p data-i18n="diagnosisPanelHelp">Observe ce qui est brisé puis choisis un type de réparation pour chaque problème.</p>
+        <div class="cg-diagnosis-list" data-diagnosis-list></div>
+      </section>
+
+      <section class="cg-mini cg-repair-plan" data-repair-plan hidden>
+        <h3 data-i18n="repairPlanTitle">Plan de réparation</h3>
+        <p class="cg-repair-line"><span data-i18n="repairIssueLabel">Problème ciblé</span>: <strong data-repair-issue>-</strong></p>
+        <p class="cg-repair-line"><span data-i18n="repairTypeLabel">Type choisi</span>: <strong data-repair-type>-</strong></p>
+
+        <label class="cg-field-label" for="repair-material" data-i18n="repairMaterialLabel">Matériel</label>
+        <select id="repair-material" data-repair-material>
+          <option value="">Choisir un matériel</option>
+        </select>
+
+        <label class="cg-field-label" for="repair-tool" data-i18n="repairToolLabel">Outil</label>
+        <select id="repair-tool" data-repair-tool>
+          <option value="">Choisir un outil</option>
+        </select>
+
+        <p class="cg-repair-hint" data-repair-hint>Le bon combo matériel + outil facilite le mini-jeu de réparation.</p>
+      </section>
+
       <div class="cg-shoe-scene" aria-hidden="true">
         <div class="cg-shoe-upper"></div>
         <div class="cg-shoe-stitch"></div>
@@ -120,5 +144,24 @@ keywords:
     <ul data-log-list>
       <li>Atelier prêt.</li>
     </ul>
+  </section>
+
+  <section class="cg-panel cg-gallery">
+    <h2>Etats de botte (visuels)</h2>
+    <div class="cg-gallery-grid">
+      <figure>
+        <img src="{{ '/assets/img/sora/boot-broken.svg' | relative_url }}" alt="Botte brisée avec semelle ouverte" loading="lazy" decoding="async">
+        <figcaption>Botte brisée</figcaption>
+      </figure>
+      <figure>
+        <img src="{{ '/assets/img/sora/boot-deconstructed.svg' | relative_url }}" alt="Botte déconstruite en pièces de réparation" loading="lazy" decoding="async">
+        <figcaption>Botte déconstruite</figcaption>
+      </figure>
+      <figure>
+        <img src="{{ '/assets/img/sora/boot-repaired.svg' | relative_url }}" alt="Botte réparée prête à être livrée" loading="lazy" decoding="async">
+        <figcaption>Botte réparée</figcaption>
+      </figure>
+    </div>
+    <p class="cg-gallery-note">Ces visuels sont des placeholders locaux. Je peux les remplacer par les rendus Sora dès que la clé API est disponible.</p>
   </section>
 </div>
