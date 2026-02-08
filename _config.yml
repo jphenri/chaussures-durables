@@ -1,0 +1,42 @@
+# _config.yml
+
+title: "Basic GH Page Template"
+description: "My reusable GitHub Pages + Jekyll theme with blog."
+url: "https://jphenri.github.io"
+baseurl: "/basic-gh-page-template"
+repository_url: "https://github.com/jphenri/basic-gh-page-template"
+
+author: "J.P. Henri"
+author_title: "IT Analyst & AI Consultant"
+author_country: "CA"
+author_locality: "Gatineau"
+lang: "fr"
+default_lang: "fr"
+languages:
+  - fr
+  - en
+timezone: "America/Toronto"
+
+markdown: kramdown
+highlighter: rouge
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+collections:
+  posts:
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
+      lang: "fr"
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: page

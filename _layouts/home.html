@@ -1,0 +1,130 @@
+---
+layout: default
+---
+
+{% assign current_lang = page.lang | default: site.default_lang %}
+{% assign repo_url = site.repository_url | default: 'https://github.com/jphenri/basic-gh-page-template' %}
+{% if current_lang == 'en' %}
+  {% assign blog_url = '/en/blog/' %}
+  {% assign projects_url = '/en/projects/' %}
+{% else %}
+  {% assign blog_url = '/blog/' %}
+  {% assign projects_url = '/projects/' %}
+{% endif %}
+
+<section class="hero">
+  <div class="container hero-inner">
+    {% if current_lang == "fr" %}
+      <p class="hero-kicker">Jekyll · GitHub Pages · Bilingue FR/EN</p>
+      <h1 class="hero-title">Un template <span>GitHub Pages</span> prêt à cloner</h1>
+      <p class="hero-subtitle">
+        Lance un site vitrine rapide, léger et SEO-friendly avec blog intégré,
+        navigation bilingue et base de styles propre.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="{{ blog_url | relative_url }}">Voir le blog</a>
+        <a class="btn btn-outline" href="{{ repo_url }}">Voir le dépôt GitHub</a>
+      </div>
+      <div class="hero-badges">
+        <span class="tag">Jekyll</span>
+        <span class="tag">GitHub Actions</span>
+        <span class="tag">SEO de base</span>
+      </div>
+    {% else %}
+      <p class="hero-kicker">Jekyll · GitHub Pages · FR/EN ready</p>
+      <h1 class="hero-title">A <span>GitHub Pages</span> template ready to clone</h1>
+      <p class="hero-subtitle">
+        Launch a fast and lightweight website with built-in blog, bilingual navigation,
+        and clean starter styles.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="{{ blog_url | relative_url }}">Open blog</a>
+        <a class="btn btn-outline" href="{{ repo_url }}">Open GitHub repo</a>
+      </div>
+      <div class="hero-badges">
+        <span class="tag">Jekyll</span>
+        <span class="tag">GitHub Actions</span>
+        <span class="tag">Starter SEO</span>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section section-soft">
+  <div class="container">
+    {% if current_lang == "fr" %}
+      <h2>Ce que ce template inclut</h2>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <h3>Structure claire</h3>
+          <p>Layouts, includes et pages organisés pour démarrer vite sans sacrifier la qualité.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Blog bilingue</h3>
+          <p>Articles filtrés par langue et switch FR/EN intégré dans la navigation.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Déploiement automatique</h3>
+          <p>Workflow GitHub Actions déjà prêt pour publier sur GitHub Pages.</p>
+        </article>
+      </div>
+      <p class="section-more"><a href="{{ projects_url | relative_url }}">Voir les projets exemple →</a></p>
+    {% else %}
+      <h2>What this template ships with</h2>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <h3>Clear structure</h3>
+          <p>Organized layouts, includes, and pages to move fast without a messy setup.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Bilingual blog</h3>
+          <p>Posts filtered by language with a built-in FR/EN switch in the header.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Auto deployment</h3>
+          <p>GitHub Actions workflow already configured to publish to GitHub Pages.</p>
+        </article>
+      </div>
+      <p class="section-more"><a href="{{ projects_url | relative_url }}">View sample projects →</a></p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    {% if current_lang == "fr" %}
+      <h2>Articles récents</h2>
+    {% else %}
+      <h2>Recent posts</h2>
+    {% endif %}
+
+    {% assign lang_posts = site.posts | where: "lang", current_lang %}
+
+    {% if lang_posts.size > 0 %}
+      <div class="post-list">
+        {% for post in lang_posts limit: 5 %}
+          <article class="post-card">
+            <p class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</p>
+            <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+            <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 160 }}</p>
+          </article>
+        {% endfor %}
+      </div>
+      <p class="section-more">
+        {% if current_lang == "fr" %}
+          <a href="{{ blog_url | relative_url }}">Tous les articles →</a>
+        {% else %}
+          <a href="{{ blog_url | relative_url }}">All posts →</a>
+        {% endif %}
+      </p>
+    {% else %}
+      <p class="empty-state">
+        {% if current_lang == "fr" %}
+          Aucun article publié pour le moment. Ajoute un fichier dans <code>_posts/</code>.
+        {% else %}
+          No posts published yet. Add a markdown file in <code>_posts/</code>.
+        {% endif %}
+      </p>
+    {% endif %}
+  </div>
+</section>

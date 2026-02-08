@@ -1,0 +1,81 @@
+{% assign current_lang = page.lang | default: site.default_lang | default: 'fr' %}
+{% assign current_ref = page.lang_ref | default: '' %}
+{% assign current_path = page.url | default: '/' %}
+{% assign is_post = page.layout == 'post' %}
+
+{% assign page_matches = site.pages | where: 'lang_ref', current_ref %}
+{% assign post_matches = site.posts | where: 'lang_ref', current_ref %}
+{% assign candidates = page_matches | concat: post_matches %}
+{% assign alt_page = nil %}
+{% if current_ref != '' %}
+  {% for p in candidates %}
+    {% if p.lang != current_lang %}
+      {% assign alt_page = p %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="site-title" href="{% if current_lang == 'en' %}{{ '/en/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}">
+      {{ site.title }}
+    </a>
+
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-nav"
+      aria-label="{% if current_lang == 'en' %}Open menu{% else %}Ouvrir le menu{% endif %}"
+    >
+      {% if current_lang == 'en' %}
+        Menu
+      {% else %}
+        Menu
+      {% endif %}
+    </button>
+
+    <nav class="site-nav" id="primary-nav" aria-label="{% if current_lang == 'en' %}Main navigation{% else %}Navigation principale{% endif %}">
+      {% if current_lang == 'fr' %}
+        {% assign fr_home = '/' %}
+        {% assign fr_blog = '/blog/' %}
+        {% assign fr_projects = '/projects/' %}
+        {% assign fr_contact = '/contact/' %}
+
+        <a href="{{ fr_home | relative_url }}" {% if current_path == fr_home %}aria-current="page"{% endif %}>Accueil</a>
+        <a href="{{ fr_blog | relative_url }}" {% if current_path == fr_blog or is_post %}aria-current="page"{% endif %}>Blog</a>
+        <a href="{{ fr_projects | relative_url }}" {% if current_path == fr_projects %}aria-current="page"{% endif %}>Projets</a>
+        <a href="{{ fr_contact | relative_url }}" {% if current_path == fr_contact %}aria-current="page"{% endif %}>Contact</a>
+      {% else %}
+        {% assign en_home = '/en/' %}
+        {% assign en_blog = '/en/blog/' %}
+        {% assign en_projects = '/en/projects/' %}
+        {% assign en_contact = '/en/contact/' %}
+
+        <a href="{{ en_home | relative_url }}" {% if current_path == en_home %}aria-current="page"{% endif %}>Home</a>
+        <a href="{{ en_blog | relative_url }}" {% if current_path == en_blog or is_post %}aria-current="page"{% endif %}>Blog</a>
+        <a href="{{ en_projects | relative_url }}" {% if current_path == en_projects %}aria-current="page"{% endif %}>Projects</a>
+        <a href="{{ en_contact | relative_url }}" {% if current_path == en_contact %}aria-current="page"{% endif %}>Contact</a>
+      {% endif %}
+
+      <span class="lang-switch" aria-label="{% if current_lang == 'en' %}Language selector{% else %}Sélecteur de langue{% endif %}">
+        {% if current_lang == 'fr' %}
+          <strong>FR</strong>
+          {% if alt_page %}
+            · <a href="{{ alt_page.url | relative_url }}">EN</a>
+          {% else %}
+            · <span class="lang-disabled">EN</span>
+          {% endif %}
+        {% else %}
+          {% if alt_page %}
+            <a href="{{ alt_page.url | relative_url }}">FR</a>
+          {% else %}
+            <span class="lang-disabled">FR</span>
+          {% endif %}
+          · <strong>EN</strong>
+        {% endif %}
+      </span>
+    </nav>
+  </div>
+</header>

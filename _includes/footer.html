@@ -1,0 +1,26 @@
+{% assign current_lang = page.lang | default: site.default_lang | default: 'fr' %}
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>
+      © {{ site.time | date: '%Y' }} {{ site.title }}
+      {% if current_lang == "en" %}
+        · Built with Jekyll and GitHub Pages.
+      {% else %}
+        · Construit avec Jekyll et GitHub Pages.
+      {% endif %}
+    </p>
+
+    <p class="footer-links">
+      {% if current_lang == "en" %}
+        <a href="{{ '/en/blog/' | relative_url }}">Blog</a>
+        <a href="{{ '/en/projects/' | relative_url }}">Projects</a>
+        <a href="{{ '/en/contact/' | relative_url }}">Contact</a>
+      {% else %}
+        <a href="{{ '/blog/' | relative_url }}">Blog</a>
+        <a href="{{ '/projects/' | relative_url }}">Projets</a>
+        <a href="{{ '/contact/' | relative_url }}">Contact</a>
+      {% endif %}
+    </p>
+  </div>
+</footer>

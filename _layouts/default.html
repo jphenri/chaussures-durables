@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: 'fr' }}">
+  <head>
+    {% include head.html %}
+  </head>
+  <body class="theme-surface">
+    {% assign current_lang = page.lang | default: site.default_lang | default: 'fr' %}
+    <a class="skip-link" href="#main-content">
+      {% if current_lang == "en" %}Skip to content{% else %}Aller au contenu{% endif %}
+    </a>
+    <div class="site">
+      {% include header.html %}
+      <main class="site-main" id="main-content">
+        {{ content }}
+      </main>
+      {% include footer.html %}
+    </div>
+    <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+  </body>
+</html>
