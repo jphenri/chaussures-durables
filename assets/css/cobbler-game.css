@@ -109,6 +109,27 @@
   font-size: 0.86rem;
 }
 
+.cg-queue-item {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.cg-queue-item-main {
+  display: block;
+  line-height: 1.35;
+}
+
+.cg-queue-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.cg-queue-actions .btn {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+
 .cg-issues {
   margin: 0;
   padding-left: 1.05rem;

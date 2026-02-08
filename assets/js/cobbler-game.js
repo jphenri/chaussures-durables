@@ -13,6 +13,7 @@
   var SUPPLY_COOLDOWN_HOURS = 8;
   var QUEUE_WEEK_PENALTY_RATE = 0.3;
   var QUEUE_MAX_ITEMS = 12;
+  var INCOMING_TARGET = 3;
 
   var STARTING_STOCK = {
     contactGlue: 2,
@@ -173,6 +174,23 @@
       }
     }
   ];
+
+  var SERVICE_MATERIAL_WEAR = {
+    premiumShine: { polishCream: 1, conditioningCream: 1 },
+    deepCleaning: { leatherCleaner: 1, saddleSoap: 1 },
+    leatherHydration: { nourishingOil: 1, conditioningCream: 1 },
+    replaceTopLiftMission: { rubberTopLift: 1, heelNails: 2, contactGlue: 1 },
+    halfSoleMission: { halfSolePiece: 1, contactGlue: 1, solePrimer: 1 },
+    upperStitchMission: { waxedThread: 1, seamTape: 1 },
+    heelLiningMission: { heelLiningLeather: 1, contactGlue: 1 },
+    recolorMission: { leatherDye: 1, colorFixative: 1 },
+    fullResoleMission: { newOutsole: 1, contactGlue: 1, waxedThread: 1 },
+    corkReplaceMission: { corkFiller: 1, contactGlue: 1 },
+    weltRestitchMission: { waxedThread: 1, seamTape: 1 },
+    weltReplaceMission: { newWeltStrip: 1, waxedThread: 1, contactGlue: 1 },
+    shankReplaceMission: { steelShank: 1, contactGlue: 1 },
+    tornLeatherMission: { leatherPatch: 1, leatherFiller: 1, contactGlue: 1 }
+  };
 
   var ISSUE_LIBRARY = [
     {
@@ -979,6 +997,13 @@
         levelLabel: 'Niveau',
         satisfactionLabel: 'Satisfaction client',
         newOrderBtn: 'Nouveau client',
+        incomingTitle: 'Demandes entrantes',
+        incomingSummaryDefault: 'Nouvelles demandes en attente.',
+        incomingSummaryTemplate: '{count} demande(s) en attente.',
+        incomingEmpty: 'Aucune demande entrante.',
+        incomingItemTemplate: '{client} - {service} ({hours} / {price})',
+        acceptJobBtn: 'Accepter',
+        declineJobBtn: 'Refuser',
         queueTitle: 'File clients',
         queueClientLabel: 'Client',
         queueServiceLabel: 'Service',
@@ -1223,9 +1248,11 @@
       logs: {
         workshopReady: 'Atelier pret pour une nouvelle commande.',
         noOrder: 'Aucune commande active. Lance un nouveau client.',
-        noQueueOrder: 'File vide: ajoute un client et un service dans la file.',
+        noQueueOrder: 'Aucune commande acceptee: choisis une demande entrante et accepte-la.',
         miniLocked: 'Mini-jeu en cours: termine l\'action actuelle.',
         newOrder: 'Nouveau client: {client}. Probleme(s): {issues}.',
+        incomingAccepted: 'Demande acceptee: {client} ({service}).',
+        incomingDeclined: 'Demande refusee: {client} ({service}).',
         queueAdded: 'Client ajoute a la file: {client} ({service}, {hours}).',
         queueSelectionMissing: 'Selection incomplete: choisis client et service.',
         queueCapacityReached: 'File pleine: termine des commandes avant d\'en ajouter.',
@@ -1243,7 +1270,9 @@
         repairSetupPenalty: 'Setup fragile: la reparation sera plus difficile.',
         repairExpected: 'Reference {issue}: materiel {material}, outil {tool}, resultat attendu {result}.',
         repairNoMaterialStock: 'Stock insuffisant pour {material}. Commande des materiaux.',
+        repairMissingMaterials: 'Stock insuffisant pour lancer ce service: {materials}.',
         repairMaterialConsumed: 'Consommation atelier: {material} -1 (reste {remaining}).',
+        repairMaterialsConsumedBatch: 'Materiaux utilises: {materials}.',
         repairMaterialWhy: 'Materiel: {explanation}',
         repairToolWhy: 'Outil: {explanation}',
         repairStarted: 'Reparation lancee sur: {issue}.',
@@ -1300,6 +1329,13 @@
         levelLabel: 'Level',
         satisfactionLabel: 'Client satisfaction',
         newOrderBtn: 'New client',
+        incomingTitle: 'Incoming requests',
+        incomingSummaryDefault: 'New requests waiting for your decision.',
+        incomingSummaryTemplate: '{count} request(s) waiting.',
+        incomingEmpty: 'No incoming request.',
+        incomingItemTemplate: '{client} - {service} ({hours} / {price})',
+        acceptJobBtn: 'Accept',
+        declineJobBtn: 'Decline',
         queueTitle: 'Client queue',
         queueClientLabel: 'Client',
         queueServiceLabel: 'Service',
@@ -1544,9 +1580,11 @@
       logs: {
         workshopReady: 'Workshop ready for a new order.',
         noOrder: 'No active order. Start a new client.',
-        noQueueOrder: 'Queue is empty: add a client and service first.',
+        noQueueOrder: 'No accepted order yet: review incoming requests and accept one.',
         miniLocked: 'Mini-game running: finish the current action first.',
         newOrder: 'New client: {client}. Issue(s): {issues}.',
+        incomingAccepted: 'Request accepted: {client} ({service}).',
+        incomingDeclined: 'Request declined: {client} ({service}).',
         queueAdded: 'Client queued: {client} ({service}, {hours}).',
         queueSelectionMissing: 'Incomplete selection: choose client and service.',
         queueCapacityReached: 'Queue is full: complete orders before adding more.',
@@ -1564,7 +1602,9 @@
         repairSetupPenalty: 'Weak setup: repair mini-game is harder.',
         repairExpected: 'Reference {issue}: material {material}, tool {tool}, expected result {result}.',
         repairNoMaterialStock: 'Not enough stock for {material}. Order materials first.',
+        repairMissingMaterials: 'Not enough stock to start this service: {materials}.',
         repairMaterialConsumed: 'Workshop usage: {material} -1 ({remaining} left).',
+        repairMaterialsConsumedBatch: 'Materials used: {materials}.',
         repairMaterialWhy: 'Material: {explanation}',
         repairToolWhy: 'Tool: {explanation}',
         repairStarted: 'Repair started on: {issue}.',
@@ -1608,9 +1648,8 @@
     orderDifficulty: root.querySelector('[data-order-difficulty]'),
     orderTimer: root.querySelector('[data-order-timer]'),
     issuesList: root.querySelector('[data-order-issues]'),
-    queueClient: root.querySelector('[data-queue-client]'),
-    queueService: root.querySelector('[data-queue-service]'),
-    queueAdd: root.querySelector('[data-queue-add]'),
+    incomingSummary: root.querySelector('[data-incoming-summary]'),
+    incomingList: root.querySelector('[data-incoming-list]'),
     queueSummary: root.querySelector('[data-queue-summary]'),
     queueList: root.querySelector('[data-queue-list]'),
     stepDiagnosis: root.querySelector('[data-step-item="diagnosis"]'),
@@ -1688,9 +1727,8 @@
     !elements.orderDifficulty ||
     !elements.orderTimer ||
     !elements.issuesList ||
-    !elements.queueClient ||
-    !elements.queueService ||
-    !elements.queueAdd ||
+    !elements.incomingSummary ||
+    !elements.incomingList ||
     !elements.queueSummary ||
     !elements.queueList ||
     !elements.stepDiagnosis ||
@@ -1769,6 +1807,7 @@
     week: 1,
     weekHoursLeft: WEEK_HOURS_LIMIT,
     ownedUpgrades: [],
+    incomingLeads: [],
     clientQueue: [],
     stock: Object.assign({}, STARTING_STOCK),
     hoursSinceSupplyOrder: SUPPLY_COOLDOWN_HOURS,
@@ -1917,8 +1956,75 @@
     return count;
   }
 
+  function availableServiceKeysForHours(maxHours) {
+    var keys = [];
+    for (var i = 0; i < ISSUE_LIBRARY.length; i += 1) {
+      var key = ISSUE_LIBRARY[i].key;
+      if (!isServiceUnlocked(key)) {
+        continue;
+      }
+      if (serviceHours(key) <= maxHours) {
+        keys.push(key);
+      }
+    }
+    return keys;
+  }
+
   function materialStock(materialKey) {
     return Math.max(0, Number(state.stock[materialKey]) || 0);
+  }
+
+  function materialWearForIssue(issueKey, selectedMaterial) {
+    var base = SERVICE_MATERIAL_WEAR[issueKey] || {};
+    var usage = {};
+    var keys = Object.keys(base);
+
+    for (var i = 0; i < keys.length; i += 1) {
+      if (langPack().materials[keys[i]]) {
+        usage[keys[i]] = Math.max(0, Math.round(base[keys[i]] || 0));
+      }
+    }
+
+    if (selectedMaterial && langPack().materials[selectedMaterial]) {
+      usage[selectedMaterial] = (usage[selectedMaterial] || 0) + 1;
+    }
+
+    return usage;
+  }
+
+  function materialUsageMissingList(usage) {
+    var missing = [];
+    var keys = Object.keys(usage || {});
+
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      var required = Math.max(0, Math.round(usage[key] || 0));
+      if (required <= 0) {
+        continue;
+      }
+      if (!hasStockForMaterial(key, required)) {
+        missing.push(materialLabel(key) + ' x' + String(required));
+      }
+    }
+
+    return missing;
+  }
+
+  function consumeMaterialUsage(usage) {
+    var lines = [];
+    var keys = Object.keys(usage || {});
+
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      var qty = Math.max(0, Math.round(usage[key] || 0));
+      if (qty <= 0) {
+        continue;
+      }
+      consumeMaterial(key, qty);
+      lines.push(materialLabel(key) + ' -' + String(qty) + ' (' + formatStockCount(materialStock(key)) + ')');
+    }
+
+    return lines;
   }
 
   function formatHoursRemaining(value) {
@@ -1960,17 +2066,6 @@
     return hours;
   }
 
-  function queuedCapacityHoursLeft() {
-    var reservedCurrent = state.currentOrder && state.stage !== 'done'
-      ? (state.currentOrder.estimatedHours || 0)
-      : 0;
-    return Math.max(0, state.weekHoursLeft - reservedCurrent - queueHoursPlanned());
-  }
-
-  function canQueueWithinWeek(issueKey) {
-    return serviceHours(issueKey) <= queuedCapacityHoursLeft();
-  }
-
   function queuePenaltyForEntry(entry) {
     return Math.max(20, Math.round(serviceFee(entry.issueKey) * QUEUE_WEEK_PENALTY_RATE));
   }
@@ -1984,6 +2079,43 @@
     }
 
     return penalty;
+  }
+
+  function createIncomingLead() {
+    var candidates = availableServiceKeysForHours(state.weekHoursLeft);
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    return {
+      id: 'L-' + Date.now().toString(36).toUpperCase() + '-' + String(Math.floor(Math.random() * 1000)),
+      client: randomItem(CLIENT_NAMES[state.lang]),
+      issueKey: randomItem(candidates),
+      weekAdded: state.week
+    };
+  }
+
+  function refillIncomingLeads() {
+    if (state.weekSummary) {
+      return;
+    }
+
+    while (state.incomingLeads.length < INCOMING_TARGET) {
+      var lead = createIncomingLead();
+      if (!lead) {
+        break;
+      }
+      state.incomingLeads.push(lead);
+    }
+  }
+
+  function removeIncomingLeadById(leadId) {
+    for (var i = 0; i < state.incomingLeads.length; i += 1) {
+      if (state.incomingLeads[i].id === leadId) {
+        return state.incomingLeads.splice(i, 1)[0];
+      }
+    }
+    return null;
   }
 
   function hasStockForMaterial(materialKey, amount) {
@@ -2022,10 +2154,6 @@
       }
     }
     return -1;
-  }
-
-  function hasQueuedServiceForRemainingHours() {
-    return queuedOrderFitIndex() !== -1;
   }
 
   function weeklyRentAmount(weekNumber) {
@@ -2441,6 +2569,7 @@
       week: state.week,
       weekHoursLeft: state.weekHoursLeft,
       ownedUpgrades: state.ownedUpgrades,
+      incomingLeads: state.incomingLeads,
       clientQueue: state.clientQueue,
       stock: state.stock,
       hoursSinceSupplyOrder: state.hoursSinceSupplyOrder,
@@ -2494,6 +2623,26 @@
             state.ownedUpgrades.indexOf(parsed.ownedUpgrades[upgradeIndex]) === -1
           ) {
             state.ownedUpgrades.push(parsed.ownedUpgrades[upgradeIndex]);
+          }
+        }
+      }
+
+      state.incomingLeads = [];
+      if (Array.isArray(parsed.incomingLeads)) {
+        for (var leadIndex = 0; leadIndex < parsed.incomingLeads.length; leadIndex += 1) {
+          var lead = parsed.incomingLeads[leadIndex];
+          if (
+            lead &&
+            typeof lead.client === 'string' &&
+            ISSUE_MAP[lead.issueKey] &&
+            state.incomingLeads.length < INCOMING_TARGET
+          ) {
+            state.incomingLeads.push({
+              id: lead.id || ('L-' + Date.now().toString(36) + '-' + leadIndex),
+              client: lead.client,
+              issueKey: lead.issueKey,
+              weekAdded: clamp(Number(lead.weekAdded) || state.week, 1, 999)
+            });
           }
         }
       }
@@ -2639,12 +2788,6 @@
       return;
     }
 
-    panelElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-      inline: 'nearest'
-    });
-
     window.setTimeout(function () {
       if (actionButton) {
         actionButton.focus();
@@ -2653,7 +2796,7 @@
       if (autoClick && actionButton && !actionButton.disabled) {
         actionButton.click();
       }
-    }, 160);
+    }, 80);
   }
 
   function hideWeekPopup() {
@@ -2669,11 +2812,7 @@
       return true;
     }
 
-    if (state.clientQueue.length === 0) {
-      return false;
-    }
-
-    return !hasQueuedServiceForRemainingHours();
+    return availableServiceKeysForHours(state.weekHoursLeft).length === 0;
   }
 
   function upgradeStatus(upgrade) {
@@ -2766,46 +2905,57 @@
     }
   }
 
-  function queueServiceOptionLabel(issueKey) {
-    return (
-      issueLabel(issueKey) +
-      ' | ' +
-      formatHours(serviceHours(issueKey)) +
-      ' | ' +
-      formatMoney(serviceFee(issueKey))
-    );
-  }
-
   function renderQueuePanel() {
     var ui = langPack().ui;
-    var clients = CLIENT_NAMES[state.lang] || CLIENT_NAMES.fr;
-    var selectedClient = elements.queueClient.value;
-    var selectedService = elements.queueService.value;
+    refillIncomingLeads();
 
-    populateSelect(
-      elements.queueClient,
-      clients,
-      ui.queueClientLabel + '...',
-      selectedClient,
-      function (name) {
-        return name;
-      }
-    );
+    elements.incomingList.innerHTML = '';
+    if (state.incomingLeads.length === 0) {
+      var incomingEmpty = document.createElement('li');
+      incomingEmpty.textContent = ui.incomingEmpty;
+      elements.incomingList.appendChild(incomingEmpty);
+      elements.incomingSummary.textContent = ui.incomingSummaryDefault;
+    } else {
+      for (var incomingIndex = 0; incomingIndex < state.incomingLeads.length; incomingIndex += 1) {
+        var lead = state.incomingLeads[incomingIndex];
+        var incomingItem = document.createElement('li');
+        incomingItem.className = 'cg-queue-item';
 
-    var serviceKeys = [];
-    for (var i = 0; i < ISSUE_LIBRARY.length; i += 1) {
-      if (isServiceUnlocked(ISSUE_LIBRARY[i].key)) {
-        serviceKeys.push(ISSUE_LIBRARY[i].key);
+        var incomingMain = document.createElement('span');
+        incomingMain.className = 'cg-queue-item-main';
+        incomingMain.textContent = interpolate(ui.incomingItemTemplate, {
+          client: lead.client,
+          service: issueLabel(lead.issueKey),
+          hours: formatHours(serviceHours(lead.issueKey)),
+          price: formatMoney(serviceFee(lead.issueKey))
+        });
+        incomingItem.appendChild(incomingMain);
+
+        var incomingActions = document.createElement('div');
+        incomingActions.className = 'cg-queue-actions';
+
+        var acceptBtn = document.createElement('button');
+        acceptBtn.type = 'button';
+        acceptBtn.className = 'btn';
+        acceptBtn.setAttribute('data-incoming-accept', lead.id);
+        acceptBtn.textContent = ui.acceptJobBtn;
+        incomingActions.appendChild(acceptBtn);
+
+        var declineBtn = document.createElement('button');
+        declineBtn.type = 'button';
+        declineBtn.className = 'btn btn-outline';
+        declineBtn.setAttribute('data-incoming-decline', lead.id);
+        declineBtn.textContent = ui.declineJobBtn;
+        incomingActions.appendChild(declineBtn);
+
+        incomingItem.appendChild(incomingActions);
+        elements.incomingList.appendChild(incomingItem);
       }
+
+      elements.incomingSummary.textContent = interpolate(ui.incomingSummaryTemplate, {
+        count: String(state.incomingLeads.length)
+      });
     }
-
-    populateSelect(
-      elements.queueService,
-      serviceKeys,
-      ui.queueServiceLabel + '...',
-      selectedService,
-      queueServiceOptionLabel
-    );
 
     elements.queueList.innerHTML = '';
 
@@ -2818,6 +2968,7 @@
       for (var queueIndex = 0; queueIndex < state.clientQueue.length; queueIndex += 1) {
         var entry = state.clientQueue[queueIndex];
         var item = document.createElement('li');
+        item.className = 'cg-queue-item';
         item.textContent = interpolate(ui.queueItemTemplate, {
           client: entry.client,
           service: issueLabel(entry.issueKey),
@@ -2831,11 +2982,6 @@
         hours: formatHours(queueHoursPlanned())
       });
     }
-
-    elements.queueAdd.disabled =
-      state.weekSummary !== null ||
-      state.clientQueue.length >= QUEUE_MAX_ITEMS ||
-      serviceKeys.length === 0;
   }
 
   function supplyPackById(packId) {
@@ -3031,6 +3177,7 @@
     var missedQueue = state.clientQueue.slice();
     var queuePenalty = totalQueuePenalty(missedQueue);
     var rent = weeklyRentAmount(state.week);
+    state.incomingLeads = [];
     state.clientQueue = [];
     state.money -= (rent + queuePenalty);
 
@@ -3086,6 +3233,7 @@
     state.weeklyOrders = 0;
     state.weekSummary = null;
     state.completionSummary = null;
+    state.incomingLeads = [];
     hideWeekPopup();
     hideCompletionPopup();
     hideSupplyPopup();
@@ -3811,7 +3959,7 @@
     stopOrderTimer();
 
     if (state.clientQueue.length === 0) {
-      if (state.weeklyOrders > 0 || state.weekHoursLeft < WEEK_HOURS_LIMIT) {
+      if (shouldEndWeek()) {
         endCurrentWeek();
         return;
       }
@@ -3822,7 +3970,12 @@
 
     var queueIndex = queuedOrderFitIndex();
     if (queueIndex === -1) {
-      endCurrentWeek();
+      if (shouldEndWeek()) {
+        endCurrentWeek();
+      } else {
+        addLog(langPack().logs.noQueueOrder);
+        renderAll();
+      }
       return;
     }
 
@@ -4355,9 +4508,12 @@
       return;
     }
 
-    if (!hasStockForMaterial(issue.selectedMaterial, 1)) {
-      applyPenalty(6, 1, interpolate(langPack().logs.repairNoMaterialStock, {
-        material: materialLabel(issue.selectedMaterial)
+    var materialUsage = materialWearForIssue(issue.key, issue.selectedMaterial);
+    var missingMaterials = materialUsageMissingList(materialUsage);
+
+    if (missingMaterials.length > 0) {
+      applyPenalty(6, 1, interpolate(langPack().logs.repairMissingMaterials, {
+        materials: missingMaterials.join(', ')
       }));
       renderAll();
       return;
@@ -4395,11 +4551,12 @@
       applyPenalty(setupProfile.startPenalty, 0, langPack().logs.repairSetupPenalty);
     }
 
-    consumeMaterial(issue.selectedMaterial, 1);
-    addLog(interpolate(langPack().logs.repairMaterialConsumed, {
-      material: materialLabel(issue.selectedMaterial),
-      remaining: String(materialStock(issue.selectedMaterial))
-    }));
+    var consumedLines = consumeMaterialUsage(materialUsage);
+    if (consumedLines.length > 0) {
+      addLog(interpolate(langPack().logs.repairMaterialsConsumedBatch, {
+        materials: consumedLines.join(', ')
+      }));
+    }
     renderRepairPlan();
 
     addLog(interpolate(langPack().logs.repairStarted, {
@@ -4480,6 +4637,7 @@
     state.week = 1;
     state.weekHoursLeft = WEEK_HOURS_LIMIT;
     state.ownedUpgrades = [];
+    state.incomingLeads = [];
     state.clientQueue = [];
     state.stock = cloneStartingStock();
     state.hoursSinceSupplyOrder = SUPPLY_COOLDOWN_HOURS;
@@ -4578,7 +4736,7 @@
     buyUpgrade(target.getAttribute('data-upgrade-buy'));
   }
 
-  function handleQueueAdd() {
+  function acceptIncomingLead(leadId) {
     if (state.weekSummary) {
       addLog(langPack().logs.weekNeedsSummary);
       showWeekPopup();
@@ -4590,34 +4748,59 @@
       return;
     }
 
-    var client = elements.queueClient.value || '';
-    var issueKey = elements.queueService.value || '';
-
-    if (!client || !issueKey) {
-      addLog(langPack().logs.queueSelectionMissing);
-      return;
-    }
-
-    if (!canQueueWithinWeek(issueKey)) {
-      addLog(langPack().logs.queueWeekCapacity);
+    var lead = removeIncomingLeadById(leadId);
+    if (!lead) {
       return;
     }
 
     state.clientQueue.push({
       id: 'Q-' + Date.now().toString(36).toUpperCase() + '-' + String(state.clientQueue.length + 1),
-      client: client,
-      issueKey: issueKey,
+      client: lead.client,
+      issueKey: lead.issueKey,
       weekAdded: state.week
     });
 
-    addLog(interpolate(langPack().logs.queueAdded, {
-      client: client,
-      service: issueLabel(issueKey),
-      hours: formatHours(serviceHours(issueKey))
+    addLog(interpolate(langPack().logs.incomingAccepted, {
+      client: lead.client,
+      service: issueLabel(lead.issueKey)
     }));
 
+    refillIncomingLeads();
     saveProgress();
     renderAll();
+  }
+
+  function declineIncomingLead(leadId) {
+    var lead = removeIncomingLeadById(leadId);
+    if (!lead) {
+      return;
+    }
+
+    addLog(interpolate(langPack().logs.incomingDeclined, {
+      client: lead.client,
+      service: issueLabel(lead.issueKey)
+    }));
+
+    refillIncomingLeads();
+    saveProgress();
+    renderAll();
+  }
+
+  function handleIncomingLeadAction(event) {
+    var target = event.target;
+
+    if (!target) {
+      return;
+    }
+
+    if (target.hasAttribute('data-incoming-accept')) {
+      acceptIncomingLead(target.getAttribute('data-incoming-accept'));
+      return;
+    }
+
+    if (target.hasAttribute('data-incoming-decline')) {
+      declineIncomingLead(target.getAttribute('data-incoming-decline'));
+    }
   }
 
   function placeSupplyOrder(packId) {
@@ -4749,7 +4932,7 @@
   elements.langToggle.addEventListener('click', switchLanguage);
 
   elements.newOrder.addEventListener('click', startNewOrder);
-  elements.queueAdd.addEventListener('click', handleQueueAdd);
+  elements.incomingList.addEventListener('click', handleIncomingLeadAction);
   elements.openSupply.addEventListener('click', handleSupplyOpen);
   elements.supplyClose.addEventListener('click', handleSupplyClose);
   elements.resetSave.addEventListener('click', resetProgress);

@@ -30,12 +30,12 @@ keywords:
       </div>
 
       <section class="cg-queue-builder">
+        <h3 data-i18n="incomingTitle">Incoming requests</h3>
+        <p class="cg-queue-summary" data-incoming-summary data-i18n="incomingSummaryDefault">New requests waiting for your decision.</p>
+        <ul class="cg-queue-list" data-incoming-list>
+          <li data-i18n="incomingEmpty">No incoming request.</li>
+        </ul>
         <h3 data-i18n="queueTitle">Client queue</h3>
-        <label class="cg-field-label" for="queue-client-en" data-i18n="queueClientLabel">Client</label>
-        <select id="queue-client-en" data-queue-client></select>
-        <label class="cg-field-label" for="queue-service-en" data-i18n="queueServiceLabel">Service</label>
-        <select id="queue-service-en" data-queue-service></select>
-        <button class="btn" type="button" data-queue-add data-i18n="queueAddBtn">Add to queue</button>
         <p class="cg-queue-summary" data-queue-summary data-i18n="queueSummaryDefault">No queued client.</p>
         <ul class="cg-queue-list" data-queue-list>
           <li data-i18n="queueEmpty">No queued client.</li>
