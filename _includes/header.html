@@ -19,15 +19,8 @@
 <header class="site-header">
   <div class="container header-inner">
     <a class="site-title" href="{% if current_lang == 'en' %}{{ '/en/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}">
-      <img
-        class="site-title-logo"
-        src="{{ '/assets/img/logo-chaussures-durables.svg' | relative_url }}"
-        alt="{{ site.title }}"
-        width="220"
-        height="52"
-        loading="eager"
-        decoding="async"
-      >
+      <img src="{{ '/assets/img/logo-chaussures-durables-mark.svg' | relative_url }}" alt="" width="28" height="28" loading="eager" decoding="async">
+      <span>{{ site.title }}</span>
     </a>
 
     <button
