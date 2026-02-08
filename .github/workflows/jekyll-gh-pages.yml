@@ -25,11 +25,16 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.pages_artifact.outputs.name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Compute artifact name
+        id: pages_artifact
+        run: echo "name=github-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
@@ -37,6 +42,8 @@ jobs:
           destination: ./_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          name: ${{ steps.pages_artifact.outputs.name }}
 
   # Deployment job
   deploy:
@@ -49,3 +56,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ needs.build.outputs.artifact_name }}

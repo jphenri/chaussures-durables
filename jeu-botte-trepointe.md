@@ -26,7 +26,7 @@ keywords:
   <div class="cg-layout">
     <aside class="cg-panel cg-order" aria-live="polite">
       <div class="cg-order-cta">
-        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">Nouveau client</button>
+        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">Demarrer une commande</button>
       </div>
 
       <section class="cg-queue-builder">
@@ -135,10 +135,13 @@ keywords:
       </div>
 
       <div class="cg-stats">
+        <p><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
+        <p><span data-i18n="dayHoursLabel">Heures du jour</span>: <strong data-stat-day-hours>8h / 8h</strong></p>
         <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
         <p><span data-i18n="cashLabel">Caisse</span>: <strong data-stat-money>$0</strong></p>
         <p><span data-i18n="weekLabel">Semaine</span>: <strong data-stat-week>1</strong></p>
         <p><span data-i18n="hoursLeftLabel">Heures restantes</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
+        <p><span data-i18n="marketingLabel">Marketing</span>: <strong data-stat-marketing>Aucun</strong></p>
         <p><span data-i18n="servicesUnlockedLabel">Services debloques</span>: <strong data-stat-services>2</strong></p>
         <p><span data-i18n="bestScoreLabel">Meilleur score</span>: <strong data-stat-best>0</strong></p>
         <p><span data-i18n="completedLabel">Commandes complétées</span>: <strong data-stat-completed>0</strong></p>
@@ -149,6 +152,8 @@ keywords:
       </div>
 
       <div class="cg-actions">
+        <button class="btn" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Attendre demain</button>
+        <button class="btn" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Lancer marketing</button>
         <button class="btn" type="button" data-open-supply data-i18n="openSupplyBtn">Commander materiaux</button>
         <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Réinitialiser progression</button>
       </div>
@@ -187,7 +192,7 @@ keywords:
     <section class="cg-popup" role="dialog" aria-modal="true" aria-labelledby="cg-popup-title">
       <h2 id="cg-popup-title" data-i18n="completionPopupTitle">Commande terminee</h2>
       <p data-completion-popup-message data-i18n="completionPopupDefault">Pret pour un nouveau client ?</p>
-      <button class="btn btn-primary" type="button" data-completion-new-order data-i18n="completionPopupAction">Nouveau client</button>
+      <button class="btn btn-primary" type="button" data-completion-new-order data-i18n="completionPopupAction">Demarrer une commande</button>
     </section>
   </div>
 
@@ -216,7 +221,7 @@ keywords:
   <div class="cg-popup-overlay" data-supply-popup hidden>
     <section class="cg-popup cg-supply-popup" role="dialog" aria-modal="true" aria-labelledby="cg-supply-popup-title">
       <h2 id="cg-supply-popup-title" data-i18n="supplyPopupTitle">Commander materiaux</h2>
-      <p class="cg-week-summary" data-supply-popup-summary data-i18n="supplyPopupDefault">Commande possible toutes les 8h de production.</p>
+      <p class="cg-week-summary" data-supply-popup-summary data-i18n="supplyPopupDefault">Commande possible toutes les 8h. Livraison le lendemain.</p>
       <ul class="cg-week-upgrades cg-supply-list" data-supply-list></ul>
       <button class="btn btn-outline" type="button" data-supply-close data-i18n="closeSupplyBtn">Fermer</button>
     </section>

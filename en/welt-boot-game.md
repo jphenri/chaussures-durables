@@ -26,7 +26,7 @@ keywords:
   <div class="cg-layout">
     <aside class="cg-panel cg-order" aria-live="polite">
       <div class="cg-order-cta">
-        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">New client</button>
+        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">Start order</button>
       </div>
 
       <section class="cg-queue-builder">
@@ -135,10 +135,13 @@ keywords:
       </div>
 
       <div class="cg-stats">
+        <p><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
+        <p><span data-i18n="dayHoursLabel">Day hours</span>: <strong data-stat-day-hours>8h / 8h</strong></p>
         <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
         <p><span data-i18n="cashLabel">Cash</span>: <strong data-stat-money>$0</strong></p>
         <p><span data-i18n="weekLabel">Week</span>: <strong data-stat-week>1</strong></p>
         <p><span data-i18n="hoursLeftLabel">Hours left</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
+        <p><span data-i18n="marketingLabel">Marketing</span>: <strong data-stat-marketing>None</strong></p>
         <p><span data-i18n="servicesUnlockedLabel">Unlocked services</span>: <strong data-stat-services>2</strong></p>
         <p><span data-i18n="bestScoreLabel">Best score</span>: <strong data-stat-best>0</strong></p>
         <p><span data-i18n="completedLabel">Completed orders</span>: <strong data-stat-completed>0</strong></p>
@@ -149,6 +152,8 @@ keywords:
       </div>
 
       <div class="cg-actions">
+        <button class="btn" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
+        <button class="btn" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Run marketing</button>
         <button class="btn" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
         <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Reset progress</button>
       </div>
@@ -187,7 +192,7 @@ keywords:
     <section class="cg-popup" role="dialog" aria-modal="true" aria-labelledby="cg-popup-title-en">
       <h2 id="cg-popup-title-en" data-i18n="completionPopupTitle">Order completed</h2>
       <p data-completion-popup-message data-i18n="completionPopupDefault">Ready for a new client?</p>
-      <button class="btn btn-primary" type="button" data-completion-new-order data-i18n="completionPopupAction">New client</button>
+      <button class="btn btn-primary" type="button" data-completion-new-order data-i18n="completionPopupAction">Start order</button>
     </section>
   </div>
 
@@ -216,7 +221,7 @@ keywords:
   <div class="cg-popup-overlay" data-supply-popup hidden>
     <section class="cg-popup cg-supply-popup" role="dialog" aria-modal="true" aria-labelledby="cg-supply-popup-title-en">
       <h2 id="cg-supply-popup-title-en" data-i18n="supplyPopupTitle">Order materials</h2>
-      <p class="cg-week-summary" data-supply-popup-summary data-i18n="supplyPopupDefault">You can place one supply order every 8 production hours.</p>
+      <p class="cg-week-summary" data-supply-popup-summary data-i18n="supplyPopupDefault">You can order every 8 hours. Delivery arrives the next day.</p>
       <ul class="cg-week-upgrades cg-supply-list" data-supply-list></ul>
       <button class="btn btn-outline" type="button" data-supply-close data-i18n="closeSupplyBtn">Close</button>
     </section>

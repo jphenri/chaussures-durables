@@ -8,12 +8,15 @@
   var STORAGE_KEY = 'cobblerWorkshopSaveV2';
   var MAX_LOG_ITEMS = 16;
   var WEEK_HOURS_LIMIT = 40;
-  var BASE_WEEKLY_RENT = 240;
+  var DAY_HOURS_LIMIT = 8;
   var STARTING_CASH = 180;
   var SUPPLY_COOLDOWN_HOURS = 8;
   var QUEUE_WEEK_PENALTY_RATE = 0.3;
   var QUEUE_MAX_ITEMS = 12;
-  var INCOMING_TARGET = 3;
+  var MONTHLY_RENT = 700;
+  var MARKETING_COST = 180;
+  var MARKETING_DURATION_DAYS = 7;
+  var START_DATE_ISO = '2026-01-05';
 
   var STARTING_STOCK = {
     contactGlue: 2,
@@ -996,7 +999,12 @@
         reputationLabel: 'Reputation',
         levelLabel: 'Niveau',
         satisfactionLabel: 'Satisfaction client',
-        newOrderBtn: 'Nouveau client',
+        newOrderBtn: 'Demarrer une commande',
+        dateLabel: 'Date',
+        dayHoursLabel: 'Heures du jour',
+        marketingLabel: 'Marketing',
+        marketingNone: 'Aucun',
+        marketingActive: 'Actif ({days}j)',
         incomingTitle: 'Demandes entrantes',
         incomingSummaryDefault: 'Nouvelles demandes en attente.',
         incomingSummaryTemplate: '{count} demande(s) en attente.',
@@ -1005,6 +1013,9 @@
         acceptJobBtn: 'Accepter',
         declineJobBtn: 'Refuser',
         queueTitle: 'File clients',
+        queueSelectBtn: 'Choisir',
+        queueHoldBtn: 'Mettre en attente',
+        queueSelectedBadge: 'Selectionnee',
         queueClientLabel: 'Client',
         queueServiceLabel: 'Service',
         queueAddBtn: 'Ajouter a la file',
@@ -1057,7 +1068,7 @@
         mainActionFinish: 'Lancer finition',
         completionPopupTitle: 'Commande terminee',
         completionPopupDefault: 'Pret pour un nouveau client ?',
-        completionPopupAction: 'Nouveau client',
+        completionPopupAction: 'Demarrer une commande',
         completionPopupSummary: 'Commande livree: {stars}/5 etoiles, {fixed}/{total} reparations solides. Pret pour un nouveau client ?',
         cashLabel: 'Caisse',
         weekLabel: 'Semaine',
@@ -1075,9 +1086,12 @@
         weekHoursUsedLabel: 'Heures utilisees',
         weekUpgradeTitle: 'Ameliorer les outils',
         weekNextBtn: 'Lancer la semaine suivante',
+        waitNextDayBtn: 'Attendre demain',
+        buyMarketingBtn: 'Lancer marketing',
         openSupplyBtn: 'Commander materiaux',
         supplyPopupTitle: 'Commander materiaux',
-        supplyPopupDefault: 'Commande possible toutes les 8h de production.',
+        supplyPopupDefault: 'Commande possible toutes les 8h. Livraison le lendemain.',
+        supplyIncomingLabel: 'Livraisons en attente',
         closeSupplyBtn: 'Fermer',
         supplyBuyBtn: 'Commander',
         supplyOwnedStockLabel: 'Stock',
@@ -1249,10 +1263,14 @@
         workshopReady: 'Atelier pret pour une nouvelle commande.',
         noOrder: 'Aucune commande active. Lance un nouveau client.',
         noQueueOrder: 'Aucune commande acceptee: choisis une demande entrante et accepte-la.',
+        weekendClosed: 'Atelier ferme le weekend. Utilise "Attendre demain" pour passer au jour ouvrable.',
+        dayNoHoursLeft: 'Journee terminee (8h). Attends demain pour reprendre.',
         miniLocked: 'Mini-jeu en cours: termine l\'action actuelle.',
         newOrder: 'Nouveau client: {client}. Probleme(s): {issues}.',
         incomingAccepted: 'Demande acceptee: {client} ({service}).',
         incomingDeclined: 'Demande refusee: {client} ({service}).',
+        queueSelected: 'Commande choisie: {client} ({service}).',
+        queueBackToWaiting: 'Commande remise en attente: {client} ({service}).',
         queueAdded: 'Client ajoute a la file: {client} ({service}, {hours}).',
         queueSelectionMissing: 'Selection incomplete: choisis client et service.',
         queueCapacityReached: 'File pleine: termine des commandes avant d\'en ajouter.',
@@ -1293,10 +1311,17 @@
         weekQueuePenalty: 'Commandes non terminees en file: {count}. Penalite: {penalty}.',
         weekStarted: 'Semaine {week} demarree. Capacite: {hours}.',
         weekNeedsSummary: 'Semaine terminee: consulte le resume pour payer le loyer et upgrader.',
+        dayAdvanced: 'Jour suivant: {date}.',
+        waitBlockedActiveOrder: 'Termine la commande en cours avant d attendre le lendemain.',
+        monthRentPaid: 'Loyer mensuel paye: {amount}.',
         supplyBought: 'Commande materiaux: {pack} pour {cost}.',
+        supplyOrderedDelivery: 'Commande planifiee: {pack} x{qty}, livraison le {date}.',
+        supplyDelivered: 'Livraison recue: {pack} x{qty}.',
         supplyNeedCash: 'Commande refusee: fonds insuffisants pour {pack}.',
         supplyLocked: 'Commande refusee: prerequis manquant pour {pack}.',
         supplyCooldown: 'Commande indisponible. Attends encore {hours}.',
+        marketingBought: 'Campagne marketing active pour {days} jours.',
+        marketingNeedCash: 'Fonds insuffisants pour lancer le marketing.',
         upgradeBought: 'Outil achete: {upgrade}. Services debloques: {services}.',
         upgradeNeedCash: 'Achat refuse: fonds insuffisants pour {upgrade}.',
         upgradeLocked: 'Achat refuse: prerequis manquant pour {upgrade}.',
@@ -1304,7 +1329,8 @@
         progressReset: 'Progression reinitialisee.'
       },
       prompts: {
-        reset: 'Reinitialiser score, reputation et commandes sauvegardees ?'
+        reset: 'Reinitialiser score, reputation et commandes sauvegardees ?',
+        supplyQuantity: 'Quantite a commander (1-20) ?'
       },
       languageToggleLabel: 'Passer en anglais'
     },
@@ -1328,7 +1354,12 @@
         reputationLabel: 'Reputation',
         levelLabel: 'Level',
         satisfactionLabel: 'Client satisfaction',
-        newOrderBtn: 'New client',
+        newOrderBtn: 'Start order',
+        dateLabel: 'Date',
+        dayHoursLabel: 'Day hours',
+        marketingLabel: 'Marketing',
+        marketingNone: 'None',
+        marketingActive: 'Active ({days}d)',
         incomingTitle: 'Incoming requests',
         incomingSummaryDefault: 'New requests waiting for your decision.',
         incomingSummaryTemplate: '{count} request(s) waiting.',
@@ -1337,6 +1368,9 @@
         acceptJobBtn: 'Accept',
         declineJobBtn: 'Decline',
         queueTitle: 'Client queue',
+        queueSelectBtn: 'Select',
+        queueHoldBtn: 'Hold',
+        queueSelectedBadge: 'Selected',
         queueClientLabel: 'Client',
         queueServiceLabel: 'Service',
         queueAddBtn: 'Add to queue',
@@ -1389,7 +1423,7 @@
         mainActionFinish: 'Start finishing',
         completionPopupTitle: 'Order completed',
         completionPopupDefault: 'Ready for a new client?',
-        completionPopupAction: 'New client',
+        completionPopupAction: 'Start order',
         completionPopupSummary: 'Order delivered: {stars}/5 stars, {fixed}/{total} strong repairs. Ready for a new client?',
         cashLabel: 'Cash',
         weekLabel: 'Week',
@@ -1407,9 +1441,12 @@
         weekHoursUsedLabel: 'Hours used',
         weekUpgradeTitle: 'Upgrade tools',
         weekNextBtn: 'Start next week',
+        waitNextDayBtn: 'Wait next day',
+        buyMarketingBtn: 'Run marketing',
         openSupplyBtn: 'Order materials',
         supplyPopupTitle: 'Order materials',
-        supplyPopupDefault: 'You can place one supply order every 8 production hours.',
+        supplyPopupDefault: 'You can order every 8 hours. Delivery arrives the next day.',
+        supplyIncomingLabel: 'Pending deliveries',
         closeSupplyBtn: 'Close',
         supplyBuyBtn: 'Order',
         supplyOwnedStockLabel: 'Stock',
@@ -1581,10 +1618,14 @@
         workshopReady: 'Workshop ready for a new order.',
         noOrder: 'No active order. Start a new client.',
         noQueueOrder: 'No accepted order yet: review incoming requests and accept one.',
+        weekendClosed: 'Workshop is closed on weekends. Use "Wait next day" to reach a workday.',
+        dayNoHoursLeft: 'Workday is full (8h). Wait until tomorrow to continue.',
         miniLocked: 'Mini-game running: finish the current action first.',
         newOrder: 'New client: {client}. Issue(s): {issues}.',
         incomingAccepted: 'Request accepted: {client} ({service}).',
         incomingDeclined: 'Request declined: {client} ({service}).',
+        queueSelected: 'Order selected: {client} ({service}).',
+        queueBackToWaiting: 'Order moved back to waiting: {client} ({service}).',
         queueAdded: 'Client queued: {client} ({service}, {hours}).',
         queueSelectionMissing: 'Incomplete selection: choose client and service.',
         queueCapacityReached: 'Queue is full: complete orders before adding more.',
@@ -1625,10 +1666,17 @@
         weekQueuePenalty: 'Queued orders missed: {count}. Penalty: {penalty}.',
         weekStarted: 'Week {week} started. Capacity: {hours}.',
         weekNeedsSummary: 'Week completed: open summary to pay rent and upgrade.',
+        dayAdvanced: 'Next day: {date}.',
+        waitBlockedActiveOrder: 'Finish the current order before waiting for tomorrow.',
+        monthRentPaid: 'Monthly rent paid: {amount}.',
         supplyBought: 'Supply order placed: {pack} for {cost}.',
+        supplyOrderedDelivery: 'Supply ordered: {pack} x{qty}, delivery on {date}.',
+        supplyDelivered: 'Delivery received: {pack} x{qty}.',
         supplyNeedCash: 'Supply blocked: not enough cash for {pack}.',
         supplyLocked: 'Supply blocked: missing prerequisite for {pack}.',
         supplyCooldown: 'Supply unavailable. Wait {hours}.',
+        marketingBought: 'Marketing campaign active for {days} days.',
+        marketingNeedCash: 'Not enough cash to run marketing.',
         upgradeBought: 'Tool purchased: {upgrade}. Services unlocked: {services}.',
         upgradeNeedCash: 'Purchase blocked: not enough cash for {upgrade}.',
         upgradeLocked: 'Purchase blocked: prerequisite missing for {upgrade}.',
@@ -1636,7 +1684,8 @@
         progressReset: 'Progress reset complete.'
       },
       prompts: {
-        reset: 'Reset saved score, reputation, and completed orders?'
+        reset: 'Reset saved score, reputation, and completed orders?',
+        supplyQuantity: 'Order quantity (1-20)?'
       },
       languageToggleLabel: 'Switch to French'
     }
@@ -1686,10 +1735,13 @@
     actionFinish: root.querySelector('[data-action-finish]'),
     sceneImage: root.querySelector('[data-shoe-scene-image]'),
     mainAction: root.querySelector('[data-main-action]'),
+    date: root.querySelector('[data-stat-date]'),
+    dayHours: root.querySelector('[data-stat-day-hours]'),
     score: root.querySelector('[data-stat-score]'),
     money: root.querySelector('[data-stat-money]'),
     week: root.querySelector('[data-stat-week]'),
     hoursLeft: root.querySelector('[data-stat-hours-left]'),
+    marketing: root.querySelector('[data-stat-marketing]'),
     servicesUnlocked: root.querySelector('[data-stat-services]'),
     best: root.querySelector('[data-stat-best]'),
     completed: root.querySelector('[data-stat-completed]'),
@@ -1714,6 +1766,8 @@
     weekHoursUsed: root.querySelector('[data-week-hours-used]'),
     weekUpgrades: root.querySelector('[data-week-upgrades]'),
     weekNext: root.querySelector('[data-week-next]'),
+    waitNextDay: root.querySelector('[data-wait-next-day]'),
+    buyMarketing: root.querySelector('[data-buy-marketing]'),
     openSupply: root.querySelector('[data-open-supply]'),
     supplyPopup: root.querySelector('[data-supply-popup]'),
     supplyPopupSummary: root.querySelector('[data-supply-popup-summary]'),
@@ -1763,10 +1817,13 @@
     !elements.actionFinish ||
     !elements.sceneImage ||
     !elements.mainAction ||
+    !elements.date ||
+    !elements.dayHours ||
     !elements.score ||
     !elements.money ||
     !elements.week ||
     !elements.hoursLeft ||
+    !elements.marketing ||
     !elements.servicesUnlocked ||
     !elements.best ||
     !elements.completed ||
@@ -1791,6 +1848,8 @@
     !elements.weekHoursUsed ||
     !elements.weekUpgrades ||
     !elements.weekNext ||
+    !elements.waitNextDay ||
+    !elements.buyMarketing ||
     !elements.openSupply ||
     !elements.supplyPopup ||
     !elements.supplyPopupSummary ||
@@ -1806,11 +1865,16 @@
     money: STARTING_CASH,
     week: 1,
     weekHoursLeft: WEEK_HOURS_LIMIT,
+    dayHoursLeft: DAY_HOURS_LIMIT,
+    currentDate: START_DATE_ISO,
     ownedUpgrades: [],
     incomingLeads: [],
+    selectedQueueId: '',
     clientQueue: [],
     stock: Object.assign({}, STARTING_STOCK),
+    pendingSupplies: [],
     hoursSinceSupplyOrder: SUPPLY_COOLDOWN_HOURS,
+    marketingDaysLeft: 0,
     weeklyRevenue: 0,
     weeklyExcellentBonus: 0,
     weeklyOrders: 0,
@@ -1916,6 +1980,200 @@
       text = text.replace('.', ',');
     }
     return text + 'h';
+  }
+
+  function parseIsoDate(iso) {
+    var parts = String(iso || '').split('-');
+    if (parts.length !== 3) {
+      return new Date(Date.UTC(2026, 0, 5));
+    }
+
+    var y = Number(parts[0]);
+    var m = Number(parts[1]) - 1;
+    var d = Number(parts[2]);
+
+    if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) {
+      return new Date(Date.UTC(2026, 0, 5));
+    }
+
+    return new Date(Date.UTC(y, m, d));
+  }
+
+  function dateToIso(dateObj) {
+    return (
+      String(dateObj.getUTCFullYear()) + '-' +
+      pad2(dateObj.getUTCMonth() + 1) + '-' +
+      pad2(dateObj.getUTCDate())
+    );
+  }
+
+  function currentDateObj() {
+    return parseIsoDate(state.currentDate);
+  }
+
+  function setCurrentDateFromObj(dateObj) {
+    state.currentDate = dateToIso(dateObj);
+  }
+
+  function isWeekendDate(dateObj) {
+    var day = dateObj.getUTCDay();
+    return day === 0 || day === 6;
+  }
+
+  function isWeekendCurrentDay() {
+    return isWeekendDate(currentDateObj());
+  }
+
+  function formatCalendarDate(dateIso) {
+    var locale = state.lang === 'fr' ? 'fr-CA' : 'en-US';
+    var dateObj = parseIsoDate(dateIso);
+
+    return new Intl.DateTimeFormat(locale, {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC'
+    }).format(dateObj);
+  }
+
+  function addCooldownHours(hours) {
+    state.hoursSinceSupplyOrder = clamp(
+      state.hoursSinceSupplyOrder + Math.max(0, Number(hours) || 0),
+      0,
+      SUPPLY_COOLDOWN_HOURS
+    );
+  }
+
+  function supplyDeliveryEntry(packId, qty, arrivalIso) {
+    return {
+      id: 'DLV-' + Date.now().toString(36).toUpperCase() + '-' + String(Math.floor(Math.random() * 1000)),
+      packId: packId,
+      qty: qty,
+      arrivalDate: arrivalIso
+    };
+  }
+
+  function queueEntryById(entryId) {
+    for (var i = 0; i < state.clientQueue.length; i += 1) {
+      if (state.clientQueue[i].id === entryId) {
+        return state.clientQueue[i];
+      }
+    }
+    return null;
+  }
+
+  function incomingTargetCount() {
+    var repBonus = Math.floor(Math.max(0, state.reputation) / 120);
+    var marketingBonus = state.marketingDaysLeft > 0 ? 2 : 0;
+    return clamp(1 + repBonus + marketingBonus, 1, 10);
+  }
+
+  function applySupplyDeliveriesForDate(dateIso) {
+    if (!state.pendingSupplies.length) {
+      return;
+    }
+
+    var remaining = [];
+    for (var i = 0; i < state.pendingSupplies.length; i += 1) {
+      var delivery = state.pendingSupplies[i];
+      if (delivery.arrivalDate <= dateIso) {
+        var pack = supplyPackById(delivery.packId);
+        if (!pack) {
+          continue;
+        }
+
+        var keys = Object.keys(pack.stock);
+        for (var stockIndex = 0; stockIndex < keys.length; stockIndex += 1) {
+          addMaterialStock(keys[stockIndex], pack.stock[keys[stockIndex]] * delivery.qty);
+        }
+
+        addLog(interpolate(langPack().logs.supplyDelivered, {
+          pack: supplyPackText(pack).label,
+          qty: String(delivery.qty)
+        }));
+      } else {
+        remaining.push(delivery);
+      }
+    }
+
+    state.pendingSupplies = remaining;
+  }
+
+  function handleDayTransition(previousDateObj, nextDateObj, addCooldown) {
+    var previousMonthKey = previousDateObj.getUTCFullYear() + '-' + pad2(previousDateObj.getUTCMonth() + 1);
+    var nextMonthKey = nextDateObj.getUTCFullYear() + '-' + pad2(nextDateObj.getUTCMonth() + 1);
+
+    if (addCooldown) {
+      addCooldownHours(8);
+    }
+
+    if (state.marketingDaysLeft > 0) {
+      state.marketingDaysLeft = Math.max(0, state.marketingDaysLeft - 1);
+    }
+
+    if (previousMonthKey !== nextMonthKey) {
+      state.money -= MONTHLY_RENT;
+      addLog(interpolate(langPack().logs.monthRentPaid, {
+        amount: formatMoney(MONTHLY_RENT)
+      }));
+    }
+
+    setCurrentDateFromObj(nextDateObj);
+    state.dayHoursLeft = isWeekendDate(nextDateObj) ? 0 : DAY_HOURS_LIMIT;
+    applySupplyDeliveriesForDate(state.currentDate);
+    refillIncomingLeads();
+  }
+
+  function advanceOneDay(options) {
+    var opts = options || {};
+    var previous = currentDateObj();
+    var next = new Date(previous.getTime());
+    next.setUTCDate(next.getUTCDate() + 1);
+
+    handleDayTransition(previous, next, opts.addCooldown !== false);
+
+    if (opts.log !== false) {
+      addLog(interpolate(langPack().logs.dayAdvanced, {
+        date: formatCalendarDate(state.currentDate)
+      }));
+    }
+  }
+
+  function ensureWorkdayForWorkProgress() {
+    var safety = 0;
+    while (isWeekendCurrentDay()) {
+      advanceOneDay({ log: false, addCooldown: false });
+      safety += 1;
+      if (safety > 7) {
+        break;
+      }
+    }
+  }
+
+  function consumeWorkHours(hours) {
+    var remaining = Math.max(0, Number(hours) || 0);
+    ensureWorkdayForWorkProgress();
+
+    while (remaining > 0.001) {
+      if (isWeekendCurrentDay()) {
+        advanceOneDay({ log: false, addCooldown: false });
+        continue;
+      }
+
+      if (state.dayHoursLeft <= 0) {
+        advanceOneDay({ log: false, addCooldown: false });
+        continue;
+      }
+
+      var spent = Math.min(remaining, state.dayHoursLeft);
+      state.dayHoursLeft = Math.max(0, state.dayHoursLeft - spent);
+      remaining -= spent;
+
+      if (remaining > 0.001 && state.dayHoursLeft <= 0) {
+        advanceOneDay({ log: false, addCooldown: false });
+      }
+    }
   }
 
   function serviceEconomy(issueKey) {
@@ -2100,12 +2358,18 @@
       return;
     }
 
-    while (state.incomingLeads.length < INCOMING_TARGET) {
+    var target = incomingTargetCount();
+
+    while (state.incomingLeads.length < target) {
       var lead = createIncomingLead();
       if (!lead) {
         break;
       }
       state.incomingLeads.push(lead);
+    }
+
+    if (state.incomingLeads.length > target) {
+      state.incomingLeads.length = target;
     }
   }
 
@@ -2157,11 +2421,8 @@
   }
 
   function weeklyRentAmount(weekNumber) {
-    if (weekNumber % 4 !== 0) {
-      return 0;
-    }
-
-    return BASE_WEEKLY_RENT + Math.max(0, Math.floor((weekNumber - 4) / 4)) * 60;
+    void weekNumber;
+    return 0;
   }
 
   function upgradeText(upgrade) {
@@ -2568,11 +2829,16 @@
       money: state.money,
       week: state.week,
       weekHoursLeft: state.weekHoursLeft,
+      dayHoursLeft: state.dayHoursLeft,
+      currentDate: state.currentDate,
       ownedUpgrades: state.ownedUpgrades,
       incomingLeads: state.incomingLeads,
+      selectedQueueId: state.selectedQueueId,
       clientQueue: state.clientQueue,
       stock: state.stock,
+      pendingSupplies: state.pendingSupplies,
       hoursSinceSupplyOrder: state.hoursSinceSupplyOrder,
+      marketingDaysLeft: state.marketingDaysLeft,
       weeklyRevenue: state.weeklyRevenue,
       weeklyExcellentBonus: state.weeklyExcellentBonus,
       weeklyOrders: state.weeklyOrders,
@@ -2611,9 +2877,19 @@
       if (!Number.isFinite(state.weekHoursLeft)) {
         state.weekHoursLeft = WEEK_HOURS_LIMIT;
       }
+      state.dayHoursLeft = clamp(Number(parsed.dayHoursLeft), 0, DAY_HOURS_LIMIT);
+      if (!Number.isFinite(state.dayHoursLeft)) {
+        state.dayHoursLeft = DAY_HOURS_LIMIT;
+      }
+      if (typeof parsed.currentDate === 'string' && parsed.currentDate) {
+        state.currentDate = parsed.currentDate;
+      } else {
+        state.currentDate = START_DATE_ISO;
+      }
       state.weeklyRevenue = Math.max(0, Number(parsed.weeklyRevenue) || 0);
       state.weeklyExcellentBonus = Math.max(0, Number(parsed.weeklyExcellentBonus) || 0);
       state.weeklyOrders = Math.max(0, Number(parsed.weeklyOrders) || 0);
+      state.marketingDaysLeft = Math.max(0, Number(parsed.marketingDaysLeft) || 0);
 
       state.ownedUpgrades = [];
       if (Array.isArray(parsed.ownedUpgrades)) {
@@ -2635,7 +2911,7 @@
             lead &&
             typeof lead.client === 'string' &&
             ISSUE_MAP[lead.issueKey] &&
-            state.incomingLeads.length < INCOMING_TARGET
+            state.incomingLeads.length < 12
           ) {
             state.incomingLeads.push({
               id: lead.id || ('L-' + Date.now().toString(36) + '-' + leadIndex),
@@ -2667,6 +2943,11 @@
         }
       }
 
+      state.selectedQueueId = '';
+      if (typeof parsed.selectedQueueId === 'string') {
+        state.selectedQueueId = parsed.selectedQueueId;
+      }
+
       state.stock = cloneStartingStock();
       if (parsed.stock && typeof parsed.stock === 'object') {
         var stockKeys = Object.keys(state.stock);
@@ -2688,6 +2969,27 @@
         state.hoursSinceSupplyOrder = SUPPLY_COOLDOWN_HOURS;
       }
 
+      state.pendingSupplies = [];
+      if (Array.isArray(parsed.pendingSupplies)) {
+        for (var pendingIndex = 0; pendingIndex < parsed.pendingSupplies.length; pendingIndex += 1) {
+          var pending = parsed.pendingSupplies[pendingIndex];
+          if (
+            pending &&
+            typeof pending.packId === 'string' &&
+            supplyPackById(pending.packId) &&
+            Number(pending.qty) > 0 &&
+            typeof pending.arrivalDate === 'string'
+          ) {
+            state.pendingSupplies.push({
+              id: pending.id || ('DLV-' + Date.now().toString(36) + '-' + pendingIndex),
+              packId: pending.packId,
+              qty: Math.max(1, Math.floor(Number(pending.qty) || 1)),
+              arrivalDate: pending.arrivalDate
+            });
+          }
+        }
+      }
+
       if (parsed.weekSummary && typeof parsed.weekSummary === 'object') {
         state.weekSummary = {
           week: clamp(Number(parsed.weekSummary.week) || state.week, 1, 999),
@@ -2704,6 +3006,14 @@
       }
 
       state.level = levelFromReputation(state.reputation);
+      if (!queueEntryById(state.selectedQueueId)) {
+        state.selectedQueueId = '';
+      }
+      if (isWeekendCurrentDay()) {
+        state.dayHoursLeft = 0;
+      }
+      applySupplyDeliveriesForDate(state.currentDate);
+      refillIncomingLeads();
     } catch (error) {
       // ignore malformed storage
     }
@@ -2908,6 +3218,9 @@
   function renderQueuePanel() {
     var ui = langPack().ui;
     refillIncomingLeads();
+    if (!queueEntryById(state.selectedQueueId)) {
+      state.selectedQueueId = '';
+    }
 
     elements.incomingList.innerHTML = '';
     if (state.incomingLeads.length === 0) {
@@ -2939,6 +3252,7 @@
         acceptBtn.className = 'btn';
         acceptBtn.setAttribute('data-incoming-accept', lead.id);
         acceptBtn.textContent = ui.acceptJobBtn;
+        acceptBtn.disabled = state.clientQueue.length >= QUEUE_MAX_ITEMS;
         incomingActions.appendChild(acceptBtn);
 
         var declineBtn = document.createElement('button');
@@ -2964,16 +3278,55 @@
       empty.textContent = ui.queueEmpty;
       elements.queueList.appendChild(empty);
       elements.queueSummary.textContent = ui.queueSummaryDefault;
+      state.selectedQueueId = '';
     } else {
       for (var queueIndex = 0; queueIndex < state.clientQueue.length; queueIndex += 1) {
         var entry = state.clientQueue[queueIndex];
         var item = document.createElement('li');
         item.className = 'cg-queue-item';
-        item.textContent = interpolate(ui.queueItemTemplate, {
+        if (state.selectedQueueId === entry.id) {
+          item.classList.add('is-selected');
+        }
+
+        var main = document.createElement('span');
+        main.className = 'cg-queue-item-main';
+        main.textContent = interpolate(ui.queueItemTemplate, {
           client: entry.client,
           service: issueLabel(entry.issueKey),
           hours: formatHours(serviceHours(entry.issueKey))
         });
+        item.appendChild(main);
+
+        var queueActions = document.createElement('div');
+        queueActions.className = 'cg-queue-actions';
+
+        var selectBtn = document.createElement('button');
+        selectBtn.type = 'button';
+        selectBtn.className = 'btn';
+        selectBtn.setAttribute('data-queue-select', entry.id);
+        selectBtn.textContent = ui.queueSelectBtn;
+        if (state.selectedQueueId === entry.id) {
+          selectBtn.disabled = true;
+        }
+        queueActions.appendChild(selectBtn);
+
+        var holdBtn = document.createElement('button');
+        holdBtn.type = 'button';
+        holdBtn.className = 'btn btn-outline';
+        holdBtn.setAttribute('data-queue-hold', entry.id);
+        holdBtn.textContent = ui.queueHoldBtn;
+        holdBtn.disabled = state.selectedQueueId !== entry.id;
+        queueActions.appendChild(holdBtn);
+
+        item.appendChild(queueActions);
+
+        if (state.selectedQueueId === entry.id) {
+          var badge = document.createElement('span');
+          badge.className = 'cg-queue-selected';
+          badge.textContent = ui.queueSelectedBadge;
+          item.appendChild(badge);
+        }
+
         elements.queueList.appendChild(item);
       }
 
@@ -3095,12 +3448,32 @@
 
   function updateSupplyPopupContent() {
     var ui = langPack().ui;
+    var pendingText = '';
+    if (state.pendingSupplies.length > 0) {
+      var deliveries = [];
+      for (var i = 0; i < state.pendingSupplies.length; i += 1) {
+        var delivery = state.pendingSupplies[i];
+        var deliveryPack = supplyPackById(delivery.packId);
+        if (!deliveryPack) {
+          continue;
+        }
+        deliveries.push(
+          supplyPackText(deliveryPack).label +
+          ' x' + String(delivery.qty) +
+          ' (' + formatCalendarDate(delivery.arrivalDate) + ')'
+        );
+      }
+      if (deliveries.length > 0) {
+        pendingText = ' ' + ui.supplyIncomingLabel + ': ' + deliveries.join(', ');
+      }
+    }
+
     if (canOrderSupplyNow()) {
-      elements.supplyPopupSummary.textContent = ui.supplyCooldownReady;
+      elements.supplyPopupSummary.textContent = ui.supplyCooldownReady + pendingText;
     } else {
       elements.supplyPopupSummary.textContent = interpolate(ui.supplyCooldownWait, {
         hours: formatHoursRemaining(supplyHoursRemaining())
-      });
+      }) + pendingText;
     }
     renderSupplyList();
   }
@@ -3178,6 +3551,7 @@
     var queuePenalty = totalQueuePenalty(missedQueue);
     var rent = weeklyRentAmount(state.week);
     state.incomingLeads = [];
+    state.selectedQueueId = '';
     state.clientQueue = [];
     state.money -= (rent + queuePenalty);
 
@@ -3196,8 +3570,6 @@
       addLog(interpolate(langPack().logs.weekRentPaid, {
         rent: formatMoney(rent)
       }));
-    } else {
-      addLog(langPack().logs.weekNoRentDue);
     }
 
     if (queuePenalty > 0) {
@@ -3234,6 +3606,17 @@
     state.weekSummary = null;
     state.completionSummary = null;
     state.incomingLeads = [];
+    state.selectedQueueId = '';
+    state.clientQueue = [];
+
+    var guard = 0;
+    while (currentDateObj().getUTCDay() !== 1 && guard < 10) {
+      advanceOneDay({ log: false, addCooldown: false });
+      guard += 1;
+    }
+    if (!isWeekendCurrentDay()) {
+      state.dayHoursLeft = DAY_HOURS_LIMIT;
+    }
     hideWeekPopup();
     hideCompletionPopup();
     hideSupplyPopup();
@@ -3328,6 +3711,9 @@
     var inRepairStage = activeOrder && state.stage === 'repair' && !state.actionLock;
     elements.repairMaterial.disabled = !inRepairStage;
     elements.repairTool.disabled = !inRepairStage;
+    elements.waitNextDay.disabled =
+      state.actionLock || (activeOrder && state.stage !== 'done') || state.weekSummary !== null;
+    elements.buyMarketing.disabled = state.actionLock || state.weekSummary !== null;
   }
 
   function applyPenalty(scorePenalty, starPenalty, message) {
@@ -3565,10 +3951,15 @@
   }
 
   function renderStats() {
+    elements.date.textContent = formatCalendarDate(state.currentDate);
+    elements.dayHours.textContent = formatHours(state.dayHoursLeft) + ' / ' + formatHours(DAY_HOURS_LIMIT);
     elements.score.textContent = String(Math.round(state.score));
     elements.money.textContent = formatMoney(state.money);
     elements.week.textContent = String(state.week);
     elements.hoursLeft.textContent = formatHours(state.weekHoursLeft) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
+    elements.marketing.textContent = state.marketingDaysLeft > 0
+      ? interpolate(langPack().ui.marketingActive, { days: String(state.marketingDaysLeft) })
+      : langPack().ui.marketingNone;
     elements.servicesUnlocked.textContent = String(unlockedServiceCount());
     elements.best.textContent = String(Math.round(state.bestScore));
     elements.completed.textContent = String(Math.round(state.completedOrders));
@@ -3958,6 +4349,18 @@
     clearMini();
     stopOrderTimer();
 
+    if (isWeekendCurrentDay()) {
+      addLog(langPack().logs.weekendClosed);
+      renderAll();
+      return;
+    }
+
+    if (state.dayHoursLeft <= 0) {
+      addLog(langPack().logs.dayNoHoursLeft);
+      renderAll();
+      return;
+    }
+
     if (state.clientQueue.length === 0) {
       if (shouldEndWeek()) {
         endCurrentWeek();
@@ -3968,7 +4371,22 @@
       return;
     }
 
-    var queueIndex = queuedOrderFitIndex();
+    var queueIndex = -1;
+    if (state.selectedQueueId) {
+      for (var selectedIndex = 0; selectedIndex < state.clientQueue.length; selectedIndex += 1) {
+        if (state.clientQueue[selectedIndex].id === state.selectedQueueId) {
+          if (serviceHours(state.clientQueue[selectedIndex].issueKey) <= state.weekHoursLeft) {
+            queueIndex = selectedIndex;
+          }
+          break;
+        }
+      }
+    }
+
+    if (queueIndex === -1) {
+      queueIndex = queuedOrderFitIndex();
+    }
+
     if (queueIndex === -1) {
       if (shouldEndWeek()) {
         endCurrentWeek();
@@ -3980,6 +4398,9 @@
     }
 
     var queuedEntry = state.clientQueue.splice(queueIndex, 1)[0];
+    if (state.selectedQueueId === queuedEntry.id) {
+      state.selectedQueueId = '';
+    }
     state.currentOrder = buildOrderFromQueueEntry(queuedEntry);
 
     if (!state.currentOrder || state.currentOrder.estimatedHours > state.weekHoursLeft) {
@@ -4375,11 +4796,8 @@
     state.weeklyExcellentBonus += Math.round(excellenceBonus);
     state.weeklyOrders += 1;
     state.weekHoursLeft = clamp(state.weekHoursLeft - orderHoursSpent, 0, WEEK_HOURS_LIMIT);
-    state.hoursSinceSupplyOrder = clamp(
-      state.hoursSinceSupplyOrder + orderHoursSpent,
-      0,
-      SUPPLY_COOLDOWN_HOURS
-    );
+    addCooldownHours(orderHoursSpent);
+    consumeWorkHours(orderHoursSpent);
 
     addLog(interpolate(langPack().logs.servicePayout, {
       amount: formatMoney(payout),
@@ -4636,11 +5054,16 @@
     state.money = STARTING_CASH;
     state.week = 1;
     state.weekHoursLeft = WEEK_HOURS_LIMIT;
+    state.dayHoursLeft = DAY_HOURS_LIMIT;
+    state.currentDate = START_DATE_ISO;
     state.ownedUpgrades = [];
     state.incomingLeads = [];
+    state.selectedQueueId = '';
     state.clientQueue = [];
     state.stock = cloneStartingStock();
+    state.pendingSupplies = [];
     state.hoursSinceSupplyOrder = SUPPLY_COOLDOWN_HOURS;
+    state.marketingDaysLeft = 0;
     state.weeklyRevenue = 0;
     state.weeklyExcellentBonus = 0;
     state.weeklyOrders = 0;
@@ -4753,12 +5176,16 @@
       return;
     }
 
+    var newQueueId = 'Q-' + Date.now().toString(36).toUpperCase() + '-' + String(state.clientQueue.length + 1);
     state.clientQueue.push({
-      id: 'Q-' + Date.now().toString(36).toUpperCase() + '-' + String(state.clientQueue.length + 1),
+      id: newQueueId,
       client: lead.client,
       issueKey: lead.issueKey,
       weekAdded: state.week
     });
+    if (!state.selectedQueueId) {
+      state.selectedQueueId = newQueueId;
+    }
 
     addLog(interpolate(langPack().logs.incomingAccepted, {
       client: lead.client,
@@ -4803,6 +5230,55 @@
     }
   }
 
+  function selectQueueOrder(orderId) {
+    var entry = queueEntryById(orderId);
+    if (!entry) {
+      return;
+    }
+
+    state.selectedQueueId = entry.id;
+    addLog(interpolate(langPack().logs.queueSelected, {
+      client: entry.client,
+      service: issueLabel(entry.issueKey)
+    }));
+    saveProgress();
+    renderAll();
+  }
+
+  function holdQueueOrder(orderId) {
+    var entry = queueEntryById(orderId);
+    if (!entry) {
+      return;
+    }
+
+    if (state.selectedQueueId === entry.id) {
+      state.selectedQueueId = '';
+      addLog(interpolate(langPack().logs.queueBackToWaiting, {
+        client: entry.client,
+        service: issueLabel(entry.issueKey)
+      }));
+      saveProgress();
+      renderAll();
+    }
+  }
+
+  function handleQueueAction(event) {
+    var target = event.target;
+
+    if (!target) {
+      return;
+    }
+
+    if (target.hasAttribute('data-queue-select')) {
+      selectQueueOrder(target.getAttribute('data-queue-select'));
+      return;
+    }
+
+    if (target.hasAttribute('data-queue-hold')) {
+      holdQueueOrder(target.getAttribute('data-queue-hold'));
+    }
+  }
+
   function placeSupplyOrder(packId) {
     var pack = supplyPackById(packId);
 
@@ -4820,14 +5296,6 @@
       return;
     }
 
-    if (status === 'needCash') {
-      addLog(interpolate(langPack().logs.supplyNeedCash, {
-        pack: supplyPackText(pack).label
-      }));
-      updateSupplyPopupContent();
-      return;
-    }
-
     if (status === 'cooldown') {
       addLog(interpolate(langPack().logs.supplyCooldown, {
         hours: formatHoursRemaining(supplyHoursRemaining())
@@ -4836,18 +5304,74 @@
       return;
     }
 
-    state.money -= pack.cost;
-    var keys = Object.keys(pack.stock);
-
-    for (var i = 0; i < keys.length; i += 1) {
-      addMaterialStock(keys[i], pack.stock[keys[i]]);
+    var rawQty = window.prompt(langPack().prompts.supplyQuantity, '1');
+    if (rawQty === null) {
+      return;
     }
+
+    var qty = Math.floor(Number(rawQty));
+    if (!Number.isFinite(qty) || qty < 1) {
+      qty = 1;
+    }
+    qty = clamp(qty, 1, 20);
+
+    var totalCost = pack.cost * qty;
+    if (state.money < totalCost) {
+      addLog(interpolate(langPack().logs.supplyNeedCash, {
+        pack: supplyPackText(pack).label
+      }));
+      updateSupplyPopupContent();
+      return;
+    }
+
+    var arrivalDateObj = currentDateObj();
+    arrivalDateObj.setUTCDate(arrivalDateObj.getUTCDate() + 1);
+    var arrivalIso = dateToIso(arrivalDateObj);
+
+    state.money -= totalCost;
+    state.pendingSupplies.push(supplyDeliveryEntry(pack.id, qty, arrivalIso));
 
     state.hoursSinceSupplyOrder = 0;
 
-    addLog(interpolate(langPack().logs.supplyBought, {
+    addLog(interpolate(langPack().logs.supplyOrderedDelivery, {
       pack: supplyPackText(pack).label,
-      cost: formatMoney(pack.cost)
+      qty: String(qty),
+      date: formatCalendarDate(arrivalIso)
+    }));
+
+    saveProgress();
+    renderAll();
+  }
+
+  function waitNextDay() {
+    if (state.weekSummary) {
+      showWeekPopup();
+      return;
+    }
+
+    if (state.currentOrder && state.stage !== 'done') {
+      addLog(langPack().logs.waitBlockedActiveOrder);
+      return;
+    }
+
+    hideSupplyPopup();
+    advanceOneDay({ log: true, addCooldown: true });
+    saveProgress();
+    renderAll();
+  }
+
+  function buyMarketingBoost() {
+    if (state.money < MARKETING_COST) {
+      addLog(langPack().logs.marketingNeedCash);
+      return;
+    }
+
+    state.money -= MARKETING_COST;
+    state.marketingDaysLeft = Math.max(0, state.marketingDaysLeft) + MARKETING_DURATION_DAYS;
+    refillIncomingLeads();
+
+    addLog(interpolate(langPack().logs.marketingBought, {
+      days: String(MARKETING_DURATION_DAYS)
     }));
 
     saveProgress();
@@ -4933,6 +5457,9 @@
 
   elements.newOrder.addEventListener('click', startNewOrder);
   elements.incomingList.addEventListener('click', handleIncomingLeadAction);
+  elements.queueList.addEventListener('click', handleQueueAction);
+  elements.waitNextDay.addEventListener('click', waitNextDay);
+  elements.buyMarketing.addEventListener('click', buyMarketingBoost);
   elements.openSupply.addEventListener('click', handleSupplyOpen);
   elements.supplyClose.addEventListener('click', handleSupplyClose);
   elements.resetSave.addEventListener('click', resetProgress);
