@@ -620,7 +620,7 @@
         satisfactionLabel: 'Satisfaction client',
         newOrderBtn: 'Nouveau client',
         resetProgressBtn: 'Reinitialiser progression',
-        shortcutsText: 'Raccourcis clavier: N (nouveau client), D (diagnostic), R (reparation), F (finition).',
+        shortcutsText: 'Raccourcis clavier: N (nouveau client), A (action principale), Espace/Entree (mini-jeu).',
         logTitle: 'Journal atelier',
         noOrderYet: 'Aucune commande en cours.',
         miniTimingTitle: 'Mini-jeu precision',
@@ -646,7 +646,12 @@
         noRepairType: 'Aucun type choisi',
         noRepairIssue: 'Aucun probleme actif',
         brokenPrefix: 'Bris',
-        selectedRepairPrefix: 'Type'
+        selectedRepairPrefix: 'Type',
+        mainActionIdle: 'Action indisponible',
+        mainActionLocked: 'Action en cours',
+        mainActionDiagnosis: 'Valider diagnostic',
+        mainActionRepair: 'Lancer reparation',
+        mainActionFinish: 'Lancer finition'
       },
       status: {
         pending: 'en attente',
@@ -849,7 +854,7 @@
         satisfactionLabel: 'Client satisfaction',
         newOrderBtn: 'New client',
         resetProgressBtn: 'Reset progress',
-        shortcutsText: 'Keyboard shortcuts: N (new client), D (diagnose), R (repair), F (finish).',
+        shortcutsText: 'Keyboard shortcuts: N (new client), A (main action), Space/Enter (mini-game).',
         logTitle: 'Workshop log',
         noOrderYet: 'No active order yet.',
         miniTimingTitle: 'Precision mini-game',
@@ -875,7 +880,12 @@
         noRepairType: 'No type selected',
         noRepairIssue: 'No active issue',
         brokenPrefix: 'Damage',
-        selectedRepairPrefix: 'Type'
+        selectedRepairPrefix: 'Type',
+        mainActionIdle: 'Action unavailable',
+        mainActionLocked: 'Action running',
+        mainActionDiagnosis: 'Confirm diagnosis',
+        mainActionRepair: 'Start repair',
+        mainActionFinish: 'Start finishing'
       },
       status: {
         pending: 'pending',
@@ -1094,10 +1104,7 @@
     actionTiming: root.querySelector('[data-action-timing]'),
     actionClicks: root.querySelector('[data-action-clicks]'),
     actionFinish: root.querySelector('[data-action-finish]'),
-    toolButtons: Array.prototype.slice.call(root.querySelectorAll('[data-tool]')),
-    toolDiagnostic: root.querySelector('[data-tool="diagnostic"]'),
-    toolRepair: root.querySelector('[data-tool="repair"]'),
-    toolFinish: root.querySelector('[data-tool="finish"]'),
+    mainAction: root.querySelector('[data-main-action]'),
     score: root.querySelector('[data-stat-score]'),
     best: root.querySelector('[data-stat-best]'),
     completed: root.querySelector('[data-stat-completed]'),
@@ -1144,9 +1151,7 @@
     !elements.actionTiming ||
     !elements.actionClicks ||
     !elements.actionFinish ||
-    !elements.toolDiagnostic ||
-    !elements.toolRepair ||
-    !elements.toolFinish ||
+    !elements.mainAction ||
     !elements.score ||
     !elements.best ||
     !elements.completed ||
@@ -1497,12 +1502,36 @@
     state.actionLock = false;
   }
 
+  function mainActionLabel() {
+    var ui = langPack().ui;
+
+    if (!state.currentOrder || state.stage === 'done') {
+      return ui.mainActionIdle;
+    }
+
+    if (state.actionLock) {
+      return ui.mainActionLocked;
+    }
+
+    if (state.stage === 'diagnosis') {
+      return ui.mainActionDiagnosis;
+    }
+
+    if (state.stage === 'repair') {
+      return ui.mainActionRepair;
+    }
+
+    if (state.stage === 'finishing') {
+      return ui.mainActionFinish;
+    }
+
+    return ui.mainActionIdle;
+  }
+
   function updateButtons() {
     var activeOrder = !!state.currentOrder && state.stage !== 'done';
-
-    for (var i = 0; i < elements.toolButtons.length; i += 1) {
-      elements.toolButtons[i].disabled = !activeOrder || state.actionLock;
-    }
+    elements.mainAction.disabled = !activeOrder || state.actionLock;
+    elements.mainAction.textContent = mainActionLabel();
 
     elements.actionTiming.disabled = !(state.mini.type === 'timing' && state.mini.context === 'repair');
     elements.actionClicks.disabled = !(state.mini.type === 'clicks');
@@ -2502,7 +2531,7 @@
     beginTimingMiniGame('finish', null, null);
   }
 
-  function handleTool(toolName) {
+  function handleMainAction() {
     if (!state.currentOrder || state.stage === 'done') {
       addLog(langPack().logs.noOrder);
       return;
@@ -2513,49 +2542,30 @@
       return;
     }
 
-    if (toolName === 'diagnostic') {
-      if (state.stage !== 'diagnosis') {
-        applyPenalty(5, 0, langPack().logs.diagnosisAlreadyDone);
-        return;
-      }
-
+    if (state.stage === 'diagnosis') {
       completeDiagnosis();
       return;
     }
 
-    if (toolName === 'repair') {
+    if (state.stage === 'repair') {
       if (!state.diagnosed) {
         applyPenalty(10, 1, langPack().logs.needDiagnosis);
         return;
       }
-
-      if (state.stage !== 'repair') {
-        applyPenalty(8, 1, langPack().logs.wrongDuringFinish);
-        return;
-      }
-
       startRepairFromTool();
       return;
     }
 
-    if (toolName === 'finish') {
+    if (state.stage === 'finishing') {
       if (!state.diagnosed) {
         applyPenalty(10, 1, langPack().logs.needDiagnosis);
         return;
       }
-
-      if (state.stage === 'repair') {
-        applyPenalty(10, 1, langPack().logs.wrongDuringRepair);
-        return;
-      }
-
-      if (state.stage !== 'finishing') {
-        applyPenalty(8, 1, langPack().logs.wrongDuringFinish);
-        return;
-      }
-
       startFinishFromTool();
+      return;
     }
+
+    applyPenalty(8, 1, langPack().logs.wrongDuringFinish);
   }
 
   function switchLanguage() {
@@ -2669,21 +2679,27 @@
       return;
     }
 
+    if (event.key === 'a' || event.key === 'A') {
+      event.preventDefault();
+      handleMainAction();
+      return;
+    }
+
     if (event.key === 'd' || event.key === 'D') {
       event.preventDefault();
-      handleTool('diagnostic');
+      handleMainAction();
       return;
     }
 
     if (event.key === 'r' || event.key === 'R') {
       event.preventDefault();
-      handleTool('repair');
+      handleMainAction();
       return;
     }
 
     if (event.key === 'f' || event.key === 'F') {
       event.preventDefault();
-      handleTool('finish');
+      handleMainAction();
       return;
     }
 
@@ -2705,18 +2721,7 @@
 
   elements.newOrder.addEventListener('click', startNewOrder);
   elements.resetSave.addEventListener('click', resetProgress);
-
-  elements.toolDiagnostic.addEventListener('click', function () {
-    handleTool('diagnostic');
-  });
-
-  elements.toolRepair.addEventListener('click', function () {
-    handleTool('repair');
-  });
-
-  elements.toolFinish.addEventListener('click', function () {
-    handleTool('finish');
-  });
+  elements.mainAction.addEventListener('click', handleMainAction);
 
   elements.actionTiming.addEventListener('click', handleTimingHit);
   elements.actionClicks.addEventListener('click', handleClicksHit);

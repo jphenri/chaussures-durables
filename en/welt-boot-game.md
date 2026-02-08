@@ -115,9 +115,7 @@ keywords:
     <aside class="cg-panel cg-tools">
       <h2 data-i18n="toolsTitle">Tools</h2>
       <div class="cg-tools-grid">
-        <button class="btn cg-tool-btn" type="button" data-tool="diagnostic" data-i18n="toolDiagnostic">Diagnose</button>
-        <button class="btn cg-tool-btn" type="button" data-tool="repair" data-i18n="toolRepair">Repair</button>
-        <button class="btn cg-tool-btn" type="button" data-tool="finish" data-i18n="toolFinish">Finish</button>
+        <button class="btn cg-tool-btn" type="button" data-main-action>Confirm diagnosis</button>
       </div>
 
       <div class="cg-stats">
@@ -135,7 +133,7 @@ keywords:
         <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Reset progress</button>
       </div>
 
-      <p class="cg-shortcuts" data-i18n="shortcutsText">Keyboard shortcuts: N (new client), D (diagnose), R (repair), F (finish).</p>
+      <p class="cg-shortcuts" data-i18n="shortcutsText">Keyboard shortcuts: N (new client), A (main action), Space/Enter (mini-game).</p>
     </aside>
   </div>
 
