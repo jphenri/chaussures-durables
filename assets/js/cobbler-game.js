@@ -51,11 +51,11 @@
       cost: 82,
       requires: '',
       stock: {
-        polishCream: 2,
-        leatherCleaner: 2,
-        saddleSoap: 1,
-        nourishingOil: 2,
-        conditioningCream: 2
+        polishCream: 6,
+        leatherCleaner: 6,
+        saddleSoap: 3,
+        nourishingOil: 6,
+        conditioningCream: 6
       },
       text: {
         fr: {
@@ -73,10 +73,10 @@
       cost: 146,
       requires: 'heelBench',
       stock: {
-        rubberTopLift: 2,
-        heelNails: 6,
-        contactGlue: 2,
-        heelLiningLeather: 1
+        rubberTopLift: 6,
+        heelNails: 18,
+        contactGlue: 6,
+        heelLiningLeather: 3
       },
       text: {
         fr: {
@@ -94,11 +94,11 @@
       cost: 228,
       requires: 'stitchBench',
       stock: {
-        halfSolePiece: 2,
-        waxedThread: 4,
-        seamTape: 3,
-        solePrimer: 2,
-        contactGlue: 2
+        halfSolePiece: 6,
+        waxedThread: 12,
+        seamTape: 9,
+        solePrimer: 6,
+        contactGlue: 6
       },
       text: {
         fr: {
@@ -116,10 +116,10 @@
       cost: 264,
       requires: 'dyeStation',
       stock: {
-        leatherDye: 3,
-        colorFixative: 3,
-        conditioningCream: 2,
-        nourishingOil: 1
+        leatherDye: 9,
+        colorFixative: 9,
+        conditioningCream: 6,
+        nourishingOil: 3
       },
       text: {
         fr: {
@@ -137,11 +137,11 @@
       cost: 412,
       requires: 'resoleBench',
       stock: {
-        newOutsole: 1,
-        corkFiller: 2,
-        newWeltStrip: 1,
-        waxedThread: 4,
-        contactGlue: 2
+        newOutsole: 3,
+        corkFiller: 6,
+        newWeltStrip: 3,
+        waxedThread: 12,
+        contactGlue: 6
       },
       text: {
         fr: {
@@ -159,11 +159,11 @@
       cost: 560,
       requires: 'moulin',
       stock: {
-        steelShank: 2,
-        leatherShank: 2,
-        leatherPatch: 2,
-        leatherFiller: 2,
-        resinCement: 2
+        steelShank: 6,
+        leatherShank: 6,
+        leatherPatch: 6,
+        leatherFiller: 6,
+        resinCement: 6
       },
       text: {
         fr: {
