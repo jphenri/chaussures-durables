@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 860" role="img" aria-labelledby="title desc">
+  <title id="title">Chaussure durable et reparable</title>
+  <desc id="desc">Illustration of a repairable stitched shoe with cobbler tools.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7a1d18"/>
+      <stop offset="45%" stop-color="#ab2a22"/>
+      <stop offset="100%" stop-color="#e25745"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff7f1"/>
+      <stop offset="100%" stop-color="#ffe7da"/>
+    </linearGradient>
+    <linearGradient id="shoe" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fff3eb"/>
+      <stop offset="100%" stop-color="#ffe0cf"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1400" height="860" rx="40" fill="url(#bg)"/>
+
+  <circle cx="230" cy="180" r="170" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="1210" cy="690" r="200" fill="rgba(255,255,255,0.09)"/>
+
+  <rect x="78" y="98" width="1244" height="664" rx="30" fill="url(#panel)"/>
+
+  <g transform="translate(118 190)">
+    <path d="M26 283c0-36 37-58 80-58h272c50 0 98-14 140-41l95-62c42-28 92 17 74 64l-21 54c93 18 167 95 167 193H26c0-28 16-51 39-59h561c-13-22-38-34-77-34H106c-43 0-80 8-80 15z" fill="url(#shoe)" stroke="#d29174" stroke-width="5"/>
+    <path d="M95 319h455" stroke="#ab2a22" stroke-width="8" stroke-linecap="round" stroke-dasharray="4 18"/>
+    <path d="M54 433h790" stroke="#b77055" stroke-width="16" stroke-linecap="round"/>
+    <path d="M54 459h790" stroke="#5a4a43" stroke-width="14" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(952 180)">
+    <rect x="0" y="0" width="300" height="180" rx="18" fill="#fff8f3" stroke="#e8c9bc" stroke-width="4"/>
+    <text x="24" y="56" font-size="34" fill="#7a1d18" font-family="'Oswald', 'Arial Narrow', sans-serif" letter-spacing="1.2">DURABLE</text>
+    <text x="24" y="103" font-size="34" fill="#7a1d18" font-family="'Oswald', 'Arial Narrow', sans-serif" letter-spacing="1.2">REPAIRABLE</text>
+    <text x="24" y="150" font-size="34" fill="#7a1d18" font-family="'Oswald', 'Arial Narrow', sans-serif" letter-spacing="1.2">LOCAL CRAFT</text>
+  </g>
+
+  <g transform="translate(972 432)">
+    <ellipse cx="90" cy="175" rx="94" ry="24" fill="rgba(122,29,24,0.22)"/>
+    <path d="M22 158l42-121c7-20 29-31 50-24l16 5c20 7 31 29 24 50l-43 120z" fill="#ffdbc9"/>
+    <rect x="102" y="2" width="40" height="172" rx="20" fill="#7a1d18"/>
+    <circle cx="123" cy="35" r="8" fill="#ffdbc9"/>
+  </g>
+
+  <g transform="translate(1120 504)">
+    <ellipse cx="98" cy="112" rx="92" ry="23" fill="rgba(122,29,24,0.22)"/>
+    <path d="M12 98c0-18 15-32 33-32h95c21 0 38 13 44 32H12z" fill="#5a4a43"/>
+    <path d="M27 95h142" stroke="#fff1e8" stroke-width="5" stroke-dasharray="3 11" stroke-linecap="round"/>
+  </g>
+</svg>

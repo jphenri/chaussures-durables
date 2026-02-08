@@ -1,7 +1,7 @@
 ---
 layout: home
 title: Home
-description: "Bilingual Jekyll template for GitHub Pages."
+description: "Durable and repairable footwear: history, care guidance, and local cobbler craft."
 lang: en
 lang_ref: home
 permalink: /en/

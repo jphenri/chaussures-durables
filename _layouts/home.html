@@ -3,48 +3,50 @@ layout: default
 ---
 
 {% assign current_lang = page.lang | default: site.default_lang %}
-{% assign repo_url = site.repository_url | default: 'https://github.com/jphenri/basic-gh-page-template' %}
 {% if current_lang == 'en' %}
+  {% assign durable_url = '/en/durable-shoes/' %}
   {% assign blog_url = '/en/blog/' %}
   {% assign projects_url = '/en/projects/' %}
 {% else %}
+  {% assign durable_url = '/chaussures-durables/' %}
   {% assign blog_url = '/blog/' %}
   {% assign projects_url = '/projects/' %}
 {% endif %}
 
 <section class="hero">
   <div class="container hero-inner">
+    <img class="hero-logo" src="{{ '/assets/img/logo-chaussures-durables.svg' | relative_url }}" alt="{% if current_lang == 'en' %}Durable Shoes logo{% else %}Logo Chaussures Durables{% endif %}" loading="lazy" decoding="async">
     {% if current_lang == "fr" %}
-      <p class="hero-kicker">Jekyll · GitHub Pages · Bilingue FR/EN</p>
-      <h1 class="hero-title">Un template <span>GitHub Pages</span> prêt à cloner</h1>
+      <p class="hero-kicker">Cuir responsable · Reparation locale · Savoir-faire</p>
+      <h1 class="hero-title">Des chaussures qui <span>durent</span>, se reparent et se transmettent</h1>
       <p class="hero-subtitle">
-        Lance un site vitrine rapide, léger et SEO-friendly avec blog intégré,
-        navigation bilingue et base de styles propre.
+        Explore les modeles reparables comme la chaussure trepointe,
+        comprends le role du cordonnier local, et adopte un entretien qui prolonge vraiment la vie de tes souliers.
       </p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="{{ blog_url | relative_url }}">Voir le blog</a>
-        <a class="btn btn-outline" href="{{ repo_url }}">Voir le dépôt GitHub</a>
+        <a class="btn btn-primary" href="{{ durable_url | relative_url }}">Explorer le guide durable</a>
+        <a class="btn btn-outline" href="{{ blog_url | relative_url }}">Lire les conseils</a>
       </div>
       <div class="hero-badges">
-        <span class="tag">Jekyll</span>
-        <span class="tag">GitHub Actions</span>
-        <span class="tag">SEO de base</span>
+        <span class="tag">Chaussure trepointe</span>
+        <span class="tag">Cordonnier local</span>
+        <span class="tag">Entretien raisonne</span>
       </div>
     {% else %}
-      <p class="hero-kicker">Jekyll · GitHub Pages · FR/EN ready</p>
-      <h1 class="hero-title">A <span>GitHub Pages</span> template ready to clone</h1>
+      <p class="hero-kicker">Responsible leather · Local repair · Craft heritage</p>
+      <h1 class="hero-title">Shoes built to <span>last</span>, repair, and pass on</h1>
       <p class="hero-subtitle">
-        Launch a fast and lightweight website with built-in blog, bilingual navigation,
-        and clean starter styles.
+        Discover repairable models such as welted shoes,
+        understand the value of local cobblers, and follow practical care habits that extend product life.
       </p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="{{ blog_url | relative_url }}">Open blog</a>
-        <a class="btn btn-outline" href="{{ repo_url }}">Open GitHub repo</a>
+        <a class="btn btn-primary" href="{{ durable_url | relative_url }}">Open the durable guide</a>
+        <a class="btn btn-outline" href="{{ blog_url | relative_url }}">Read care tips</a>
       </div>
       <div class="hero-badges">
-        <span class="tag">Jekyll</span>
-        <span class="tag">GitHub Actions</span>
-        <span class="tag">Starter SEO</span>
+        <span class="tag">Welted shoes</span>
+        <span class="tag">Local cobbler</span>
+        <span class="tag">Long-term care</span>
       </div>
     {% endif %}
   </div>
@@ -53,39 +55,39 @@ layout: default
 <section class="section section-soft">
   <div class="container">
     {% if current_lang == "fr" %}
-      <h2>Ce que ce template inclut</h2>
+      <h2>Pourquoi choisir une chaussure durable</h2>
       <div class="feature-grid">
         <article class="feature-card">
-          <h3>Structure claire</h3>
-          <p>Layouts, includes et pages organisés pour démarrer vite sans sacrifier la qualité.</p>
+          <h3>Moins de dechets</h3>
+          <p>Un soulier reparable remplace plusieurs paires jetables et reduit le gaspillage textile.</p>
         </article>
         <article class="feature-card">
-          <h3>Blog bilingue</h3>
-          <p>Articles filtrés par langue et switch FR/EN intégré dans la navigation.</p>
+          <h3>Confort evolutif</h3>
+          <p>Les bons cuirs et les montages cousus s'adaptent au pied avec le temps, pas l'inverse.</p>
         </article>
         <article class="feature-card">
-          <h3>Déploiement automatique</h3>
-          <p>Workflow GitHub Actions déjà prêt pour publier sur GitHub Pages.</p>
+          <h3>Economie locale</h3>
+          <p>Chaque ressemelage fait vivre les ateliers de cordonnerie et preserve un metier artisanal.</p>
         </article>
       </div>
-      <p class="section-more"><a href="{{ projects_url | relative_url }}">Voir les projets exemple →</a></p>
+      <p class="section-more"><a href="{{ durable_url | relative_url }}">Voir la page complete sur les chaussures durables →</a></p>
     {% else %}
-      <h2>What this template ships with</h2>
+      <h2>Why durable shoes matter</h2>
       <div class="feature-grid">
         <article class="feature-card">
-          <h3>Clear structure</h3>
-          <p>Organized layouts, includes, and pages to move fast without a messy setup.</p>
+          <h3>Lower waste</h3>
+          <p>A repairable pair replaces multiple throwaway pairs and reduces material waste.</p>
         </article>
         <article class="feature-card">
-          <h3>Bilingual blog</h3>
-          <p>Posts filtered by language with a built-in FR/EN switch in the header.</p>
+          <h3>Comfort over time</h3>
+          <p>Quality leather and stitched construction adapt to the foot instead of breaking down early.</p>
         </article>
         <article class="feature-card">
-          <h3>Auto deployment</h3>
-          <p>GitHub Actions workflow already configured to publish to GitHub Pages.</p>
+          <h3>Local economy</h3>
+          <p>Every resole supports local cobblers and protects a valuable craft profession.</p>
         </article>
       </div>
-      <p class="section-more"><a href="{{ projects_url | relative_url }}">View sample projects →</a></p>
+      <p class="section-more"><a href="{{ durable_url | relative_url }}">Read the complete durable shoes page →</a></p>
     {% endif %}
   </div>
 </section>
@@ -93,9 +95,9 @@ layout: default
 <section class="section">
   <div class="container">
     {% if current_lang == "fr" %}
-      <h2>Articles récents</h2>
+      <h2>Conseils recents</h2>
     {% else %}
-      <h2>Recent posts</h2>
+      <h2>Latest advice</h2>
     {% endif %}
 
     {% assign lang_posts = site.posts | where: "lang", current_lang %}
@@ -120,11 +122,19 @@ layout: default
     {% else %}
       <p class="empty-state">
         {% if current_lang == "fr" %}
-          Aucun article publié pour le moment. Ajoute un fichier dans <code>_posts/</code>.
+          Aucun article publie pour le moment. Ajoute un fichier dans <code>_posts/</code>.
         {% else %}
           No posts published yet. Add a markdown file in <code>_posts/</code>.
         {% endif %}
       </p>
     {% endif %}
+
+    <p class="section-more">
+      {% if current_lang == "fr" %}
+        <a href="{{ projects_url | relative_url }}">Voir les modeles et services →</a>
+      {% else %}
+        <a href="{{ projects_url | relative_url }}">View models and services →</a>
+      {% endif %}
+    </p>
   </div>
 </section>

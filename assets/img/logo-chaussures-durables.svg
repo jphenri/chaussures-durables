@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 250" role="img" aria-labelledby="title desc">
+  <title id="title">Logo Chaussures Durables</title>
+  <desc id="desc">Horizontal logo for Chaussures Durables with icon and wordmark.</desc>
+  <defs>
+    <linearGradient id="disk" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7a1d18"/>
+      <stop offset="100%" stop-color="#e25745"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="920" height="250" rx="32" fill="#fff8f3"/>
+  <rect x="2" y="2" width="916" height="246" rx="30" fill="none" stroke="#e8c9bc" stroke-width="4"/>
+
+  <circle cx="125" cy="125" r="82" fill="url(#disk)"/>
+  <path d="M62 144c0-9 9-14 19-14h26c7 0 14-2 20-6l14-9c6-4 12 2 10 8l-3 8c13 3 23 14 23 29H62c0-6 4-11 10-12h82c-2-4-6-6-11-6H81c-10 0-19 1-19 2z" fill="#fff5ed"/>
+  <path d="M81 141h59" stroke="#ab2a22" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/>
+  <path d="M71 161h103" stroke="#fff5ed" stroke-width="5" stroke-linecap="round"/>
+
+  <text x="240" y="112" fill="#7a1d18" font-size="62" font-family="'Oswald', 'Arial Narrow', sans-serif" font-weight="700" letter-spacing="2">
+    CHAUSSURES DURABLES
+  </text>
+  <text x="242" y="158" fill="#5a4a43" font-size="23" font-family="'Nunito Sans', 'Segoe UI', sans-serif" letter-spacing="1.5">
+    REPARER • ENTRETENIR • TRANSMETTRE
+  </text>
+
+  <line x1="240" y1="176" x2="825" y2="176" stroke="#e8c9bc" stroke-width="3"/>
+</svg>

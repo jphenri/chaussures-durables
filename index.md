@@ -1,7 +1,7 @@
 ---
 layout: home
 title: Accueil
-description: "Template Jekyll bilingue pour GitHub Pages."
+description: "Chaussures durables et reparables: conseils, histoire, et artisans cordonniers locaux."
 lang: fr
 lang_ref: home
 permalink: /

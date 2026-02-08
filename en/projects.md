@@ -1,16 +1,30 @@
 ---
 layout: page
-title: "Projects"
-description: "Sample project list you can adapt to your own portfolio."
+title: "Models and services"
+description: "Repairable shoe models and local cobbler services designed to extend product life."
 lang: en
 lang_ref: projects
 permalink: /en/projects/
+keywords:
+  - welted shoes
+  - repairable footwear
+  - local cobbler services
+  - shoe resoling
 ---
 
-Projects you can showcase:
+Examples of durable and repairable models to feature:
 
-- Chez Gerry 1958 - premium shoe repair in Gatineau
-- Chuck's casse-croûte - snack bar / poutine
-- jphenri.ca - Business 2.0, AI, DevOps
+- **Goodyear welted shoe:** best-in-class option for repeated resoling.
+- **Blake stitched derby:** lighter and more flexible for daily city wear.
+- **Norwegian welt boot:** tough build for wet weather and colder seasons.
+- **Leather-sole loafer with topy:** elegant and easy to maintain over time.
 
-Update this page whenever you ship a new project.
+Local cobbler services worth highlighting:
+
+- Wear diagnosis and care planning
+- Protective sole installation
+- Heel and top-lift replacement
+- Full resoling
+- Leather cleaning, recoloring, and conditioning
+
+[Open the complete durable shoes guide]({{ '/en/durable-shoes/' | relative_url }})

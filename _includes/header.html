@@ -19,7 +19,8 @@
 <header class="site-header">
   <div class="container header-inner">
     <a class="site-title" href="{% if current_lang == 'en' %}{{ '/en/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}">
-      {{ site.title }}
+      <img src="{{ '/assets/img/logo-chaussures-durables-mark.svg' | relative_url }}" alt="" width="28" height="28" loading="eager" decoding="async">
+      <span>{{ site.title }}</span>
     </a>
 
     <button
@@ -39,21 +40,25 @@
     <nav class="site-nav" id="primary-nav" aria-label="{% if current_lang == 'en' %}Main navigation{% else %}Navigation principale{% endif %}">
       {% if current_lang == 'fr' %}
         {% assign fr_home = '/' %}
+        {% assign fr_durable = '/chaussures-durables/' %}
         {% assign fr_blog = '/blog/' %}
         {% assign fr_projects = '/projects/' %}
         {% assign fr_contact = '/contact/' %}
 
         <a href="{{ fr_home | relative_url }}" {% if current_path == fr_home %}aria-current="page"{% endif %}>Accueil</a>
+        <a href="{{ fr_durable | relative_url }}" {% if current_path == fr_durable %}aria-current="page"{% endif %}>Durables</a>
         <a href="{{ fr_blog | relative_url }}" {% if current_path == fr_blog or is_post %}aria-current="page"{% endif %}>Blog</a>
         <a href="{{ fr_projects | relative_url }}" {% if current_path == fr_projects %}aria-current="page"{% endif %}>Projets</a>
         <a href="{{ fr_contact | relative_url }}" {% if current_path == fr_contact %}aria-current="page"{% endif %}>Contact</a>
       {% else %}
         {% assign en_home = '/en/' %}
+        {% assign en_durable = '/en/durable-shoes/' %}
         {% assign en_blog = '/en/blog/' %}
         {% assign en_projects = '/en/projects/' %}
         {% assign en_contact = '/en/contact/' %}
 
         <a href="{{ en_home | relative_url }}" {% if current_path == en_home %}aria-current="page"{% endif %}>Home</a>
+        <a href="{{ en_durable | relative_url }}" {% if current_path == en_durable %}aria-current="page"{% endif %}>Durable Shoes</a>
         <a href="{{ en_blog | relative_url }}" {% if current_path == en_blog or is_post %}aria-current="page"{% endif %}>Blog</a>
         <a href="{{ en_projects | relative_url }}" {% if current_path == en_projects %}aria-current="page"{% endif %}>Projects</a>
         <a href="{{ en_contact | relative_url }}" {% if current_path == en_contact %}aria-current="page"{% endif %}>Contact</a>
