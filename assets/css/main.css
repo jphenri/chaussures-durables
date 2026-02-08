@@ -155,22 +155,17 @@ code {
 }
 
 .site-title {
-  font-family: "Oswald", "Arial Narrow", sans-serif;
   display: inline-flex;
   align-items: center;
-  gap: 0.52rem;
+  min-width: 0;
   color: #fffaf5;
   text-decoration: none;
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  font-size: 1.1rem;
 }
 
-.site-title img {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
+.site-title-logo {
+  width: clamp(170px, 23vw, 250px);
+  height: auto;
+  display: block;
 }
 
 .site-nav {
@@ -660,6 +655,10 @@ code {
     grid-template-columns: 1fr;
   }
 
+  .site-title-logo {
+    width: min(52vw, 220px);
+  }
+
   .site-nav {
     position: absolute;
     top: calc(100% + 0.4rem);
@@ -703,6 +702,10 @@ code {
 @media (max-width: 680px) {
   .container {
     width: min(1080px, 100% - 1.5rem);
+  }
+
+  .site-title-logo {
+    width: min(56vw, 200px);
   }
 
   .section {
