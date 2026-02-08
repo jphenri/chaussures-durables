@@ -66,11 +66,13 @@ keywords:
         <select id="repair-material-en" data-repair-material>
           <option value="">Choose a material</option>
         </select>
+        <p class="cg-repair-feedback is-empty" data-material-feedback>Select a material to see why this is a good or bad choice.</p>
 
         <label class="cg-field-label" for="repair-tool-en" data-i18n="repairToolLabel">Tool</label>
         <select id="repair-tool-en" data-repair-tool>
           <option value="">Choose a tool</option>
         </select>
+        <p class="cg-repair-feedback is-empty" data-tool-feedback>Select a tool to see why this is a good or bad choice.</p>
 
         <p class="cg-repair-hint" data-repair-hint>The right material + tool combo makes the repair mini-game easier.</p>
       </section>
@@ -116,7 +118,7 @@ keywords:
     </section>
 
     <aside class="cg-panel cg-tools">
-      <h2 data-i18n="toolsTitle">Tools</h2>
+      <h2 data-i18n="toolsTitle">Action</h2>
       <div class="cg-tools-grid">
         <button class="btn cg-tool-btn" type="button" data-main-action>Confirm diagnosis</button>
       </div>
@@ -147,21 +149,21 @@ keywords:
   </section>
 
   <section class="cg-panel cg-gallery">
-    <h2>Boot states (visuals)</h2>
+    <h2>Mission visuals (Sora)</h2>
     <div class="cg-gallery-grid">
       <figure>
-        <img src="{{ '/assets/img/sora/boot-broken.svg' | relative_url }}" alt="Broken boot with detached outsole" loading="lazy" decoding="async">
-        <figcaption>Broken boot</figcaption>
+        <img src="{{ '/assets/img/sora/mission-premium-shine.png' | relative_url }}" alt="Premium shine mission" loading="lazy" decoding="async">
+        <figcaption>Premium shine</figcaption>
       </figure>
       <figure>
-        <img src="{{ '/assets/img/sora/boot-deconstructed.svg' | relative_url }}" alt="Deconstructed boot laid out in repair parts" loading="lazy" decoding="async">
-        <figcaption>Deconstructed boot</figcaption>
+        <img src="{{ '/assets/img/sora/mission-deep-cleaning.png' | relative_url }}" alt="Deep cleaning mission" loading="lazy" decoding="async">
+        <figcaption>Deep cleaning</figcaption>
       </figure>
       <figure>
-        <img src="{{ '/assets/img/sora/boot-repaired.svg' | relative_url }}" alt="Repaired boot ready for delivery" loading="lazy" decoding="async">
-        <figcaption>Repaired boot</figcaption>
+        <img src="{{ '/assets/img/sora/mission-leather-hydration.png' | relative_url }}" alt="Leather rehydration mission" loading="lazy" decoding="async">
+        <figcaption>Leather rehydration</figcaption>
       </figure>
     </div>
-    <p class="cg-gallery-note">These visuals are local placeholders. I can replace them with Sora renders as soon as the API key is available.</p>
+    <p class="cg-gallery-note">These visuals are mapped to the first 3 missions. We can add the remaining missions incrementally.</p>
   </section>
 </div>

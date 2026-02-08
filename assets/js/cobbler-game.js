@@ -608,7 +608,7 @@
         issuesTitle: 'Problemes',
         stepsTitle: 'Etapes',
         workshopTitle: 'Atelier',
-        toolsTitle: 'Outils',
+        toolsTitle: 'Action',
         toolDiagnostic: 'Diagnostic',
         toolRepair: 'Reparation',
         toolFinish: 'Finition',
@@ -643,6 +643,14 @@
         chooseMaterialPlaceholder: 'Choisir un materiel',
         chooseToolPlaceholder: 'Choisir un outil',
         repairHintDefault: 'Le bon combo materiel + outil facilite le mini-jeu.',
+        materialFeedbackDefault: 'Choisis un materiel pour voir pourquoi ce choix est adapte (ou non).',
+        toolFeedbackDefault: 'Choisis un outil pour voir pourquoi ce choix est adapte (ou non).',
+        materialFeedbackBest: 'Excellent choix materiel: {selected} est ideal pour {repair}.',
+        materialFeedbackOk: 'Choix materiel correct: {selected} fonctionne, mais {best} est plus adapte pour {repair}.',
+        materialFeedbackBad: 'Mauvais choix materiel: {selected} est mal adapte a {repair}. Utilise {best}.',
+        toolFeedbackBest: 'Excellent choix outil: {selected} donne le meilleur controle pour {repair}.',
+        toolFeedbackOk: 'Choix outil correct: {selected} peut marcher, mais {best} est plus precis pour {repair}.',
+        toolFeedbackBad: 'Mauvais choix outil: {selected} ne convient pas a {repair}. Choisis {best}.',
         noRepairType: 'Aucun type choisi',
         noRepairIssue: 'Aucun probleme actif',
         brokenPrefix: 'Bris',
@@ -814,6 +822,8 @@
         repairSetupMissing: 'Choisis le materiel et l\'outil avant la reparation.',
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
         repairSetupPenalty: 'Setup fragile: la reparation sera plus difficile.',
+        repairMaterialWhy: 'Materiel: {explanation}',
+        repairToolWhy: 'Outil: {explanation}',
         repairStarted: 'Reparation lancee sur: {issue}.',
         repairSuccess: 'Reparation reussie: {issue}.',
         repairFail: 'Reparation fragile: {issue}.',
@@ -842,7 +852,7 @@
         issuesTitle: 'Issues',
         stepsTitle: 'Steps',
         workshopTitle: 'Workshop',
-        toolsTitle: 'Tools',
+        toolsTitle: 'Action',
         toolDiagnostic: 'Diagnose',
         toolRepair: 'Repair',
         toolFinish: 'Finish',
@@ -877,6 +887,14 @@
         chooseMaterialPlaceholder: 'Choose a material',
         chooseToolPlaceholder: 'Choose a tool',
         repairHintDefault: 'The right material + tool combo makes the mini-game easier.',
+        materialFeedbackDefault: 'Select a material to see why this choice fits (or not).',
+        toolFeedbackDefault: 'Select a tool to see why this choice fits (or not).',
+        materialFeedbackBest: 'Great material choice: {selected} is ideal for {repair}.',
+        materialFeedbackOk: 'Acceptable material: {selected} can work, but {best} is better for {repair}.',
+        materialFeedbackBad: 'Wrong material: {selected} does not fit {repair}. Use {best}.',
+        toolFeedbackBest: 'Great tool choice: {selected} gives best control for {repair}.',
+        toolFeedbackOk: 'Acceptable tool: {selected} can work, but {best} is more precise for {repair}.',
+        toolFeedbackBad: 'Wrong tool: {selected} does not fit {repair}. Pick {best}.',
         noRepairType: 'No type selected',
         noRepairIssue: 'No active issue',
         brokenPrefix: 'Damage',
@@ -1048,6 +1066,8 @@
         repairSetupMissing: 'Choose material and tool before launching repair.',
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
         repairSetupPenalty: 'Weak setup: repair mini-game is harder.',
+        repairMaterialWhy: 'Material: {explanation}',
+        repairToolWhy: 'Tool: {explanation}',
         repairStarted: 'Repair started on: {issue}.',
         repairSuccess: 'Repair successful: {issue}.',
         repairFail: 'Repair is rough: {issue}.',
@@ -1086,6 +1106,8 @@
     repairType: root.querySelector('[data-repair-type]'),
     repairMaterial: root.querySelector('[data-repair-material]'),
     repairTool: root.querySelector('[data-repair-tool]'),
+    materialFeedback: root.querySelector('[data-material-feedback]'),
+    toolFeedback: root.querySelector('[data-tool-feedback]'),
     repairHint: root.querySelector('[data-repair-hint]'),
     miniPanels: {
       timing: root.querySelector('[data-mini="timing"]'),
@@ -1135,6 +1157,8 @@
     !elements.repairType ||
     !elements.repairMaterial ||
     !elements.repairTool ||
+    !elements.materialFeedback ||
+    !elements.toolFeedback ||
     !elements.repairHint ||
     !elements.miniPanels.timing ||
     !elements.miniPanels.clicks ||
@@ -1392,6 +1416,137 @@
     }
 
     return null;
+  }
+
+  function choiceRating(selectedKey, bestKey, okKeys) {
+    if (!selectedKey) {
+      return 'missing';
+    }
+    if (selectedKey === bestKey) {
+      return 'best';
+    }
+    if (okKeys && okKeys.indexOf(selectedKey) !== -1) {
+      return 'ok';
+    }
+    return 'bad';
+  }
+
+  function choiceScore(choice) {
+    if (choice === 'best') {
+      return 2;
+    }
+    if (choice === 'ok') {
+      return 1;
+    }
+    return -2;
+  }
+
+  function feedbackClassFromRating(rating) {
+    if (rating === 'best') {
+      return 'is-good';
+    }
+    if (rating === 'ok') {
+      return 'is-ok';
+    }
+    if (rating === 'bad') {
+      return 'is-bad';
+    }
+    return 'is-empty';
+  }
+
+  function setFeedbackText(element, text, rating) {
+    element.className = 'cg-repair-feedback ' + feedbackClassFromRating(rating);
+    element.textContent = text;
+  }
+
+  function explainMaterialChoice(issue, typeDef) {
+    var ui = langPack().ui;
+    var selected = issue.selectedMaterial || '';
+    var best = typeDef.best.material;
+    var rating = choiceRating(selected, best, typeDef.okMaterials || []);
+
+    if (rating === 'missing') {
+      return {
+        rating: rating,
+        text: ui.materialFeedbackDefault
+      };
+    }
+
+    if (rating === 'best') {
+      return {
+        rating: rating,
+        text: interpolate(ui.materialFeedbackBest, {
+          selected: materialLabel(selected),
+          repair: repairTypeLabel(issue.selectedRepairType),
+          best: materialLabel(best)
+        })
+      };
+    }
+
+    if (rating === 'ok') {
+      return {
+        rating: rating,
+        text: interpolate(ui.materialFeedbackOk, {
+          selected: materialLabel(selected),
+          repair: repairTypeLabel(issue.selectedRepairType),
+          best: materialLabel(best)
+        })
+      };
+    }
+
+    return {
+      rating: rating,
+      text: interpolate(ui.materialFeedbackBad, {
+        selected: materialLabel(selected),
+        repair: repairTypeLabel(issue.selectedRepairType),
+        best: materialLabel(best)
+      })
+    };
+  }
+
+  function explainToolChoice(issue, typeDef) {
+    var ui = langPack().ui;
+    var selected = issue.selectedTool || '';
+    var best = typeDef.best.tool;
+    var rating = choiceRating(selected, best, typeDef.okTools || []);
+
+    if (rating === 'missing') {
+      return {
+        rating: rating,
+        text: ui.toolFeedbackDefault
+      };
+    }
+
+    if (rating === 'best') {
+      return {
+        rating: rating,
+        text: interpolate(ui.toolFeedbackBest, {
+          selected: toolLabel(selected),
+          repair: repairTypeLabel(issue.selectedRepairType),
+          best: toolLabel(best)
+        })
+      };
+    }
+
+    if (rating === 'ok') {
+      return {
+        rating: rating,
+        text: interpolate(ui.toolFeedbackOk, {
+          selected: toolLabel(selected),
+          repair: repairTypeLabel(issue.selectedRepairType),
+          best: toolLabel(best)
+        })
+      };
+    }
+
+    return {
+      rating: rating,
+      text: interpolate(ui.toolFeedbackBad, {
+        selected: toolLabel(selected),
+        repair: repairTypeLabel(issue.selectedRepairType),
+        best: toolLabel(best)
+      })
+    };
   }
 
   function nowLabel() {
@@ -1859,6 +2014,8 @@
       clearSelect(elements.repairTool, langPack().ui.chooseToolPlaceholder);
       elements.repairIssue.textContent = '-';
       elements.repairType.textContent = '-';
+      setFeedbackText(elements.materialFeedback, langPack().ui.materialFeedbackDefault, 'missing');
+      setFeedbackText(elements.toolFeedback, langPack().ui.toolFeedbackDefault, 'missing');
       elements.repairHint.textContent = langPack().ui.repairHintDefault;
       return;
     }
@@ -1877,6 +2034,8 @@
       elements.repairType.textContent = langPack().ui.noRepairType;
       clearSelect(elements.repairMaterial, langPack().ui.chooseMaterialPlaceholder);
       clearSelect(elements.repairTool, langPack().ui.chooseToolPlaceholder);
+      setFeedbackText(elements.materialFeedback, langPack().ui.materialFeedbackDefault, 'missing');
+      setFeedbackText(elements.toolFeedback, langPack().ui.toolFeedbackDefault, 'missing');
       elements.repairHint.textContent = langPack().ui.repairHintDefault;
       return;
     }
@@ -1887,6 +2046,8 @@
     if (!typeDef) {
       clearSelect(elements.repairMaterial, langPack().ui.chooseMaterialPlaceholder);
       clearSelect(elements.repairTool, langPack().ui.chooseToolPlaceholder);
+      setFeedbackText(elements.materialFeedback, langPack().ui.materialFeedbackDefault, 'missing');
+      setFeedbackText(elements.toolFeedback, langPack().ui.toolFeedbackDefault, 'missing');
       elements.repairHint.textContent = langPack().ui.repairHintDefault;
       return;
     }
@@ -1906,6 +2067,12 @@
       issue.selectedTool,
       toolLabel
     );
+
+    var materialFeedback = explainMaterialChoice(issue, typeDef);
+    var toolFeedback = explainToolChoice(issue, typeDef);
+
+    setFeedbackText(elements.materialFeedback, materialFeedback.text, materialFeedback.rating);
+    setFeedbackText(elements.toolFeedback, toolFeedback.text, toolFeedback.rating);
 
     elements.repairHint.textContent =
       repairTypeDesc(issue.selectedRepairType) + ' ' + langPack().ui.repairHintDefault;
@@ -2110,27 +2277,15 @@
       return null;
     }
 
-    var score = 0;
-
-    if (issue.selectedMaterial === typeDef.best.material) {
-      score += 2;
-    } else if (typeDef.okMaterials.indexOf(issue.selectedMaterial) !== -1) {
-      score += 1;
-    } else {
-      score -= 2;
-    }
-
-    if (issue.selectedTool === typeDef.best.tool) {
-      score += 2;
-    } else if (typeDef.okTools.indexOf(issue.selectedTool) !== -1) {
-      score += 1;
-    } else {
-      score -= 2;
-    }
+    var materialFeedback = explainMaterialChoice(issue, typeDef);
+    var toolFeedback = explainToolChoice(issue, typeDef);
+    var score = choiceScore(materialFeedback.rating) + choiceScore(toolFeedback.rating);
 
     if (score >= 3) {
       return {
         score: score,
+        materialFeedback: materialFeedback,
+        toolFeedback: toolFeedback,
         ratingKey: 'excellent',
         qualityBonus: 8,
         zoneDelta: 5,
@@ -2145,6 +2300,8 @@
     if (score >= 1) {
       return {
         score: score,
+        materialFeedback: materialFeedback,
+        toolFeedback: toolFeedback,
         ratingKey: 'good',
         qualityBonus: 4,
         zoneDelta: 2,
@@ -2159,6 +2316,8 @@
     if (score >= 0) {
       return {
         score: score,
+        materialFeedback: materialFeedback,
+        toolFeedback: toolFeedback,
         ratingKey: 'risky',
         qualityBonus: 1,
         zoneDelta: -1,
@@ -2172,6 +2331,8 @@
 
     return {
       score: score,
+      materialFeedback: materialFeedback,
+      toolFeedback: toolFeedback,
       ratingKey: 'poor',
       qualityBonus: -3,
       zoneDelta: -4,
@@ -2510,6 +2671,13 @@
       material: materialLabel(issue.selectedMaterial),
       tool: toolLabel(issue.selectedTool),
       rating: setupRatingLabel(setupProfile.ratingKey)
+    }));
+
+    addLog(interpolate(langPack().logs.repairMaterialWhy, {
+      explanation: setupProfile.materialFeedback.text
+    }));
+    addLog(interpolate(langPack().logs.repairToolWhy, {
+      explanation: setupProfile.toolFeedback.text
     }));
 
     if (setupProfile.startPenalty > 0) {
