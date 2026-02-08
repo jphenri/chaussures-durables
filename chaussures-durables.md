@@ -58,6 +58,7 @@ La trépointe est une bande de cuir intermédiaire entre tige et semelle. Selon 
       <li><a href="https://int.meermin.com/products/101504-black-grain-e">Meermin 101504</a> (construction Goodyear welted)</li>
       <li><a href="https://us.crockettandjones.com/products/grizedale-3-darkbrown-waterproof-sides">Crockett & Jones Grizedale 3</a> (Goodyear-welted)</li>
       <li><a href="https://www.carminashoemaker.com/en/norwegian-shoes-brown-lama-80414">Carmina 80414 Forest</a> (Goodyear + indication 270°)</li>
+      <li><a href="https://www.thursdayboots.com/">Thursday Boots</a> (nombreux modèles en Goodyear welt)</li>
     </ul>
   </article>
 
@@ -92,6 +93,7 @@ La trépointe est une bande de cuir intermédiaire entre tige et semelle. Selon 
       <li><a href="https://trickers.com/products/stow-country-boot-marron-antique">Tricker’s Stow Country Boot</a> (storm welt mentionné)</li>
       <li><a href="https://www.carminashoemaker.com/en/derby-shoes-women-black-antique-1525">Carmina Plain Toe Derby 1525 Oscaria</a> (storm welted + Goodyear)</li>
       <li><a href="https://stefanobemer.com/products/chocolate-brown-chukka-boots-c7391">Stefano Bemer Chukka C7391</a> (storm welt construction)</li>
+      <li><a href="https://www.redwingshoes.com/">Red Wing Shoes</a> (boots durables, certains modèles en storm welt / welt renforcé)</li>
     </ul>
   </article>
 
