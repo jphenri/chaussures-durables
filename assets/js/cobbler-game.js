@@ -3715,8 +3715,7 @@
     var inRepairStage = activeOrder && state.stage === 'repair' && !state.actionLock;
     elements.repairMaterial.disabled = !inRepairStage;
     elements.repairTool.disabled = !inRepairStage;
-    elements.waitNextDay.disabled =
-      state.actionLock || (activeOrder && state.stage !== 'done') || state.weekSummary !== null;
+    elements.waitNextDay.disabled = false;
     elements.buyMarketing.disabled = state.actionLock || state.weekSummary !== null;
   }
 
@@ -5381,16 +5380,6 @@
   }
 
   function waitNextDay() {
-    if (state.weekSummary) {
-      showWeekPopup();
-      return;
-    }
-
-    if (state.currentOrder && state.stage !== 'done') {
-      addLog(langPack().logs.waitBlockedActiveOrder);
-      return;
-    }
-
     hideSupplyPopup();
     advanceOneDay({ log: true, addCooldown: true });
     saveProgress();
