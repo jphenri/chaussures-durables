@@ -7,6 +7,9 @@
 
   var STORAGE_KEY = 'cobblerWorkshopSaveV2';
   var MAX_LOG_ITEMS = 16;
+  var WEEK_HOURS_LIMIT = 40;
+  var BASE_WEEKLY_RENT = 240;
+  var STARTING_CASH = 180;
 
   var ISSUE_LIBRARY = [
     {
@@ -529,8 +532,125 @@
     }
   ];
 
+  var SERVICE_ECONOMY = {
+    premiumShine: { fee: 54, hours: 2, excellenceBonus: 14, unlock: '' },
+    deepCleaning: { fee: 48, hours: 2, excellenceBonus: 12, unlock: '' },
+    leatherHydration: { fee: 70, hours: 3, excellenceBonus: 18, unlock: 'careKit' },
+    replaceTopLiftMission: { fee: 120, hours: 4, excellenceBonus: 24, unlock: 'heelBench' },
+    halfSoleMission: { fee: 160, hours: 5, excellenceBonus: 30, unlock: 'stitchBench' },
+    upperStitchMission: { fee: 148, hours: 5, excellenceBonus: 28, unlock: 'stitchBench' },
+    heelLiningMission: { fee: 98, hours: 4, excellenceBonus: 20, unlock: 'careKit' },
+    recolorMission: { fee: 178, hours: 5, excellenceBonus: 32, unlock: 'dyeStation' },
+    fullResoleMission: { fee: 270, hours: 8, excellenceBonus: 58, unlock: 'resoleBench' },
+    corkReplaceMission: { fee: 228, hours: 7, excellenceBonus: 44, unlock: 'resoleBench' },
+    weltRestitchMission: { fee: 248, hours: 7, excellenceBonus: 52, unlock: 'resoleBench' },
+    weltReplaceMission: { fee: 340, hours: 9, excellenceBonus: 70, unlock: 'moulin' },
+    shankReplaceMission: { fee: 312, hours: 9, excellenceBonus: 66, unlock: 'moulin' },
+    tornLeatherMission: { fee: 294, hours: 8, excellenceBonus: 58, unlock: 'moulin' }
+  };
+
+  var TOOL_UPGRADES = [
+    {
+      id: 'careKit',
+      cost: 190,
+      unlocks: ['leatherHydration', 'heelLiningMission'],
+      requires: '',
+      text: {
+        fr: {
+          label: 'Kit entretien cuir',
+          desc: 'Debloque rehydratation et doublure talon.'
+        },
+        en: {
+          label: 'Leather care kit',
+          desc: 'Unlocks hydration and heel lining services.'
+        }
+      }
+    },
+    {
+      id: 'heelBench',
+      cost: 360,
+      unlocks: ['replaceTopLiftMission'],
+      requires: '',
+      text: {
+        fr: {
+          label: 'Poste talon',
+          desc: 'Debloque remplacement top-lift.'
+        },
+        en: {
+          label: 'Heel bench',
+          desc: 'Unlocks top-lift replacement.'
+        }
+      }
+    },
+    {
+      id: 'stitchBench',
+      cost: 620,
+      unlocks: ['halfSoleMission', 'upperStitchMission'],
+      requires: 'heelBench',
+      text: {
+        fr: {
+          label: 'Atelier couture',
+          desc: 'Debloque demi-semelle et couture tige.'
+        },
+        en: {
+          label: 'Stitch bench',
+          desc: 'Unlocks half sole and upper stitching.'
+        }
+      }
+    },
+    {
+      id: 'dyeStation',
+      cost: 780,
+      unlocks: ['recolorMission'],
+      requires: 'careKit',
+      text: {
+        fr: {
+          label: 'Station teinture',
+          desc: 'Debloque recoloration cuir.'
+        },
+        en: {
+          label: 'Dye station',
+          desc: 'Unlocks leather recolor service.'
+        }
+      }
+    },
+    {
+      id: 'resoleBench',
+      cost: 1180,
+      unlocks: ['fullResoleMission', 'corkReplaceMission', 'weltRestitchMission'],
+      requires: 'stitchBench',
+      text: {
+        fr: {
+          label: 'Poste ressemelage',
+          desc: 'Debloque ressemelage, liege et reprise trepointe.'
+        },
+        en: {
+          label: 'Resole bench',
+          desc: 'Unlocks resole, cork refill and welt restitch.'
+        }
+      }
+    },
+    {
+      id: 'moulin',
+      cost: 1960,
+      unlocks: ['weltReplaceMission', 'shankReplaceMission', 'tornLeatherMission'],
+      requires: 'resoleBench',
+      text: {
+        fr: {
+          label: 'Moulin de couture',
+          desc: 'Machine avancee pour services maitre cordonnier.'
+        },
+        en: {
+          label: 'Stitching mill',
+          desc: 'Advanced machine for master services.'
+        }
+      }
+    }
+  ];
+
   var ISSUE_MAP = {};
   var REPAIR_TYPE_TEXT = {};
+  var UPGRADE_MAP = {};
   for (var libraryIndex = 0; libraryIndex < ISSUE_LIBRARY.length; libraryIndex += 1) {
     var issueDef = ISSUE_LIBRARY[libraryIndex];
     ISSUE_MAP[issueDef.key] = issueDef;
@@ -539,6 +659,10 @@
       REPAIR_TYPE_TEXT[issueDef.repairTypes[repairTextIndex].key] =
         issueDef.repairTypes[repairTextIndex].text || null;
     }
+  }
+
+  for (var upgradeIndex = 0; upgradeIndex < TOOL_UPGRADES.length; upgradeIndex += 1) {
+    UPGRADE_MAP[TOOL_UPGRADES[upgradeIndex].id] = TOOL_UPGRADES[upgradeIndex];
   }
 
   var CLIENT_NAMES = {
@@ -739,6 +863,27 @@
         completionPopupDefault: 'Pret pour un nouveau client ?',
         completionPopupAction: 'Nouveau client',
         completionPopupSummary: 'Commande livree: {stars}/5 etoiles, {fixed}/{total} reparations solides. Pret pour un nouveau client ?',
+        cashLabel: 'Caisse',
+        weekLabel: 'Semaine',
+        hoursLeftLabel: 'Heures restantes',
+        servicesUnlockedLabel: 'Services debloques',
+        weekPopupTitle: 'Resume hebdomadaire',
+        weekPopupDefault: 'Semaine terminee. Verifie le bilan puis investis dans tes outils.',
+        weekPopupSummary: 'Semaine {week}: {orders} commandes traitees. Tu as utilise {hoursUsed}.',
+        weekRevenueLabel: 'Revenus services',
+        weekBonusLabel: 'Bonus excellence',
+        weekRentLabel: 'Loyer atelier',
+        weekNetLabel: 'Net de semaine',
+        weekCashAfterLabel: 'Caisse finale',
+        weekHoursUsedLabel: 'Heures utilisees',
+        weekUpgradeTitle: 'Ameliorer les outils',
+        weekNextBtn: 'Lancer la semaine suivante',
+        upgradeBuyBtn: 'Acheter',
+        upgradeOwnedStatus: 'Deja possede',
+        upgradeNeedCashStatus: 'Fonds insuffisants',
+        upgradeLockedStatus: 'Prerequis manquant',
+        noUpgradeLeft: 'Tous les outils disponibles sont deja installes.',
+        serviceMetaTemplate: '{stars} | {hours} | {price} | {risk}',
         sceneAltIdle: 'Illustration atelier de cordonnerie.',
         sceneAltIssue: 'Illustration mission: {issue}.',
         sceneAltFinishing: 'Illustration botte en finition.',
@@ -918,6 +1063,15 @@
         speedBonus: 'Bonus rapidite: +{points}.',
         timerPenalty: 'Temps ecoule: malus score + satisfaction.',
         orderSummary: 'Commande livree avec {stars} etoiles ({fixed}/{total} reparations solides).',
+        servicePayout: 'Facturation: {amount} pour {hours}.',
+        serviceExcellentBonus: 'Service excellent: bonus client {amount}.',
+        weekClosed: 'Semaine {week} terminee. Bilan: {net} (revenus {revenue}, bonus {bonus}, loyer {rent}).',
+        weekRentPaid: 'Loyer hebdomadaire paye: {rent}.',
+        weekStarted: 'Semaine {week} demarree. Capacite: {hours}.',
+        weekNeedsSummary: 'Semaine terminee: consulte le resume pour payer le loyer et upgrader.',
+        upgradeBought: 'Outil achete: {upgrade}. Services debloques: {services}.',
+        upgradeNeedCash: 'Achat refuse: fonds insuffisants pour {upgrade}.',
+        upgradeLocked: 'Achat refuse: prerequis manquant pour {upgrade}.',
         levelUp: 'Niveau {level} atteint. Commandes plus difficiles debloquees.',
         progressReset: 'Progression reinitialisee.'
       },
@@ -994,6 +1148,27 @@
         completionPopupDefault: 'Ready for a new client?',
         completionPopupAction: 'New client',
         completionPopupSummary: 'Order delivered: {stars}/5 stars, {fixed}/{total} strong repairs. Ready for a new client?',
+        cashLabel: 'Cash',
+        weekLabel: 'Week',
+        hoursLeftLabel: 'Hours left',
+        servicesUnlockedLabel: 'Unlocked services',
+        weekPopupTitle: 'Weekly summary',
+        weekPopupDefault: 'Week completed. Review your results and upgrade tools.',
+        weekPopupSummary: 'Week {week}: {orders} orders completed. You used {hoursUsed}.',
+        weekRevenueLabel: 'Service revenue',
+        weekBonusLabel: 'Excellence bonus',
+        weekRentLabel: 'Workshop rent',
+        weekNetLabel: 'Weekly net',
+        weekCashAfterLabel: 'Closing cash',
+        weekHoursUsedLabel: 'Hours used',
+        weekUpgradeTitle: 'Upgrade tools',
+        weekNextBtn: 'Start next week',
+        upgradeBuyBtn: 'Buy',
+        upgradeOwnedStatus: 'Already owned',
+        upgradeNeedCashStatus: 'Not enough cash',
+        upgradeLockedStatus: 'Missing prerequisite',
+        noUpgradeLeft: 'All available tools are already installed.',
+        serviceMetaTemplate: '{stars} | {hours} | {price} | {risk}',
         sceneAltIdle: 'Cobbler workshop illustration.',
         sceneAltIssue: 'Mission illustration: {issue}.',
         sceneAltFinishing: 'Boot finishing illustration.',
@@ -1173,6 +1348,15 @@
         speedBonus: 'Speed bonus: +{points}.',
         timerPenalty: 'Time expired: score and satisfaction penalty.',
         orderSummary: 'Order delivered with {stars} stars ({fixed}/{total} strong repairs).',
+        servicePayout: 'Invoice paid: {amount} for {hours}.',
+        serviceExcellentBonus: 'Excellent service: client bonus {amount}.',
+        weekClosed: 'Week {week} closed. Net result: {net} (revenue {revenue}, bonus {bonus}, rent {rent}).',
+        weekRentPaid: 'Weekly rent paid: {rent}.',
+        weekStarted: 'Week {week} started. Capacity: {hours}.',
+        weekNeedsSummary: 'Week completed: open summary to pay rent and upgrade.',
+        upgradeBought: 'Tool purchased: {upgrade}. Services unlocked: {services}.',
+        upgradeNeedCash: 'Purchase blocked: not enough cash for {upgrade}.',
+        upgradeLocked: 'Purchase blocked: prerequisite missing for {upgrade}.',
         levelUp: 'Level {level} reached. Harder orders unlocked.',
         progressReset: 'Progress reset complete.'
       },
@@ -1224,6 +1408,10 @@
     sceneImage: root.querySelector('[data-shoe-scene-image]'),
     mainAction: root.querySelector('[data-main-action]'),
     score: root.querySelector('[data-stat-score]'),
+    money: root.querySelector('[data-stat-money]'),
+    week: root.querySelector('[data-stat-week]'),
+    hoursLeft: root.querySelector('[data-stat-hours-left]'),
+    servicesUnlocked: root.querySelector('[data-stat-services]'),
     best: root.querySelector('[data-stat-best]'),
     completed: root.querySelector('[data-stat-completed]'),
     reputation: root.querySelector('[data-stat-reputation]'),
@@ -1235,7 +1423,17 @@
     logList: root.querySelector('[data-log-list]'),
     completionPopup: root.querySelector('[data-completion-popup]'),
     completionPopupMessage: root.querySelector('[data-completion-popup-message]'),
-    completionNewOrder: root.querySelector('[data-completion-new-order]')
+    completionNewOrder: root.querySelector('[data-completion-new-order]'),
+    weekPopup: root.querySelector('[data-week-popup]'),
+    weekPopupSummary: root.querySelector('[data-week-popup-summary]'),
+    weekRevenue: root.querySelector('[data-week-revenue]'),
+    weekBonus: root.querySelector('[data-week-bonus]'),
+    weekRent: root.querySelector('[data-week-rent]'),
+    weekNet: root.querySelector('[data-week-net]'),
+    weekCash: root.querySelector('[data-week-cash]'),
+    weekHoursUsed: root.querySelector('[data-week-hours-used]'),
+    weekUpgrades: root.querySelector('[data-week-upgrades]'),
+    weekNext: root.querySelector('[data-week-next]')
   };
 
   if (
@@ -1277,6 +1475,10 @@
     !elements.sceneImage ||
     !elements.mainAction ||
     !elements.score ||
+    !elements.money ||
+    !elements.week ||
+    !elements.hoursLeft ||
+    !elements.servicesUnlocked ||
     !elements.best ||
     !elements.completed ||
     !elements.reputation ||
@@ -1288,7 +1490,17 @@
     !elements.logList ||
     !elements.completionPopup ||
     !elements.completionPopupMessage ||
-    !elements.completionNewOrder
+    !elements.completionNewOrder ||
+    !elements.weekPopup ||
+    !elements.weekPopupSummary ||
+    !elements.weekRevenue ||
+    !elements.weekBonus ||
+    !elements.weekRent ||
+    !elements.weekNet ||
+    !elements.weekCash ||
+    !elements.weekHoursUsed ||
+    !elements.weekUpgrades ||
+    !elements.weekNext
   ) {
     return;
   }
@@ -1296,6 +1508,14 @@
   var state = {
     lang: root.getAttribute('data-lang') === 'en' ? 'en' : 'fr',
     score: 0,
+    money: STARTING_CASH,
+    week: 1,
+    weekHoursLeft: WEEK_HOURS_LIMIT,
+    ownedUpgrades: [],
+    weeklyRevenue: 0,
+    weeklyExcellentBonus: 0,
+    weeklyOrders: 0,
+    weekSummary: null,
     bestScore: 0,
     completedOrders: 0,
     reputation: 0,
@@ -1380,6 +1600,69 @@
   function rewardLabel(tier) {
     var safe = clamp(Math.round(tier || 1), 1, 5);
     return '$$$$$'.slice(0, safe);
+  }
+
+  function formatMoney(value) {
+    var rounded = Math.round(value || 0);
+    var abs = Math.abs(rounded);
+    var locale = state.lang === 'fr' ? 'fr-CA' : 'en-US';
+    var formatted = new Intl.NumberFormat(locale).format(abs);
+    return (rounded < 0 ? '-' : '') + '$' + formatted;
+  }
+
+  function formatHours(value) {
+    var rounded = Math.round((value || 0) * 10) / 10;
+    var text = String(rounded);
+    if (state.lang === 'fr') {
+      text = text.replace('.', ',');
+    }
+    return text + 'h';
+  }
+
+  function serviceEconomy(issueKey) {
+    return SERVICE_ECONOMY[issueKey] || { fee: 70, hours: 3, excellenceBonus: 15, unlock: '' };
+  }
+
+  function serviceFee(issueKey) {
+    return serviceEconomy(issueKey).fee;
+  }
+
+  function serviceHours(issueKey) {
+    return serviceEconomy(issueKey).hours;
+  }
+
+  function serviceExcellenceBonus(issueKey) {
+    return serviceEconomy(issueKey).excellenceBonus;
+  }
+
+  function hasUpgrade(upgradeId) {
+    if (!upgradeId) {
+      return true;
+    }
+    return state.ownedUpgrades.indexOf(upgradeId) !== -1;
+  }
+
+  function isServiceUnlocked(issueKey) {
+    var upgradeId = serviceEconomy(issueKey).unlock;
+    return hasUpgrade(upgradeId);
+  }
+
+  function unlockedServiceCount() {
+    var count = 0;
+    for (var i = 0; i < ISSUE_LIBRARY.length; i += 1) {
+      if (isServiceUnlocked(ISSUE_LIBRARY[i].key)) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
+  function weeklyRentAmount(weekNumber) {
+    return BASE_WEEKLY_RENT + Math.max(0, weekNumber - 1) * 35;
+  }
+
+  function upgradeText(upgrade) {
+    return upgrade.text[state.lang] || upgrade.text.fr;
   }
 
   function riskWeight(riskKey) {
@@ -1774,7 +2057,15 @@
       score: state.score,
       bestScore: state.bestScore,
       completedOrders: state.completedOrders,
-      reputation: state.reputation
+      reputation: state.reputation,
+      money: state.money,
+      week: state.week,
+      weekHoursLeft: state.weekHoursLeft,
+      ownedUpgrades: state.ownedUpgrades,
+      weeklyRevenue: state.weeklyRevenue,
+      weeklyExcellentBonus: state.weeklyExcellentBonus,
+      weeklyOrders: state.weeklyOrders,
+      weekSummary: state.weekSummary
     };
 
     try {
@@ -1800,6 +2091,45 @@
       state.bestScore = Number(parsed.bestScore) || 0;
       state.completedOrders = Number(parsed.completedOrders) || 0;
       state.reputation = Number(parsed.reputation) || 0;
+      state.money = Number(parsed.money);
+      if (!Number.isFinite(state.money)) {
+        state.money = STARTING_CASH;
+      }
+      state.week = clamp(Number(parsed.week) || 1, 1, 999);
+      state.weekHoursLeft = clamp(Number(parsed.weekHoursLeft), 0, WEEK_HOURS_LIMIT);
+      if (!Number.isFinite(state.weekHoursLeft)) {
+        state.weekHoursLeft = WEEK_HOURS_LIMIT;
+      }
+      state.weeklyRevenue = Math.max(0, Number(parsed.weeklyRevenue) || 0);
+      state.weeklyExcellentBonus = Math.max(0, Number(parsed.weeklyExcellentBonus) || 0);
+      state.weeklyOrders = Math.max(0, Number(parsed.weeklyOrders) || 0);
+
+      state.ownedUpgrades = [];
+      if (Array.isArray(parsed.ownedUpgrades)) {
+        for (var upgradeIndex = 0; upgradeIndex < parsed.ownedUpgrades.length; upgradeIndex += 1) {
+          if (
+            UPGRADE_MAP[parsed.ownedUpgrades[upgradeIndex]] &&
+            state.ownedUpgrades.indexOf(parsed.ownedUpgrades[upgradeIndex]) === -1
+          ) {
+            state.ownedUpgrades.push(parsed.ownedUpgrades[upgradeIndex]);
+          }
+        }
+      }
+
+      if (parsed.weekSummary && typeof parsed.weekSummary === 'object') {
+        state.weekSummary = {
+          week: clamp(Number(parsed.weekSummary.week) || state.week, 1, 999),
+          orders: Math.max(0, Number(parsed.weekSummary.orders) || 0),
+          revenue: Number(parsed.weekSummary.revenue) || 0,
+          bonus: Number(parsed.weekSummary.bonus) || 0,
+          rent: Number(parsed.weekSummary.rent) || 0,
+          net: Number(parsed.weekSummary.net) || 0,
+          hoursUsed: clamp(Number(parsed.weekSummary.hoursUsed) || 0, 0, WEEK_HOURS_LIMIT)
+        };
+      } else {
+        state.weekSummary = null;
+      }
+
       state.level = levelFromReputation(state.reputation);
     } catch (error) {
       // ignore malformed storage
@@ -1876,6 +2206,272 @@
     updateCompletionPopupContent();
     elements.completionPopup.hidden = false;
     elements.completionNewOrder.focus();
+  }
+
+  function hideWeekPopup() {
+    elements.weekPopup.hidden = true;
+  }
+
+  function hasAnyServiceForRemainingHours() {
+    for (var i = 0; i < ISSUE_LIBRARY.length; i += 1) {
+      var definition = ISSUE_LIBRARY[i];
+      if (!isServiceUnlocked(definition.key)) {
+        continue;
+      }
+      if (serviceHours(definition.key) <= state.weekHoursLeft) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function shouldEndWeek() {
+    return state.weekHoursLeft <= 0 || !hasAnyServiceForRemainingHours();
+  }
+
+  function upgradeStatus(upgrade) {
+    if (hasUpgrade(upgrade.id)) {
+      return 'owned';
+    }
+    if (upgrade.requires && !hasUpgrade(upgrade.requires)) {
+      return 'locked';
+    }
+    if (state.money < upgrade.cost) {
+      return 'needCash';
+    }
+    return 'buy';
+  }
+
+  function upgradeUnlockedServicesLabel(upgrade) {
+    var labels = [];
+    for (var i = 0; i < upgrade.unlocks.length; i += 1) {
+      labels.push(issueLabel(upgrade.unlocks[i]));
+    }
+    return labels.join(', ');
+  }
+
+  function renderWeekUpgrades() {
+    var ui = langPack().ui;
+    elements.weekUpgrades.innerHTML = '';
+
+    var allOwned = true;
+
+    for (var i = 0; i < TOOL_UPGRADES.length; i += 1) {
+      var upgrade = TOOL_UPGRADES[i];
+      var status = upgradeStatus(upgrade);
+      if (status !== 'owned') {
+        allOwned = false;
+      }
+
+      var item = document.createElement('li');
+      item.className = 'cg-week-upgrade';
+
+      var title = document.createElement('h4');
+      title.textContent = upgradeText(upgrade).label;
+      item.appendChild(title);
+
+      var desc = document.createElement('p');
+      desc.textContent = upgradeText(upgrade).desc;
+      item.appendChild(desc);
+
+      var meta = document.createElement('p');
+      meta.className = 'cg-upgrade-meta';
+      meta.textContent =
+        formatMoney(upgrade.cost) + ' | ' + upgradeUnlockedServicesLabel(upgrade);
+      item.appendChild(meta);
+
+      var row = document.createElement('div');
+      row.className = 'cg-upgrade-row';
+
+      var statusEl = document.createElement('span');
+      statusEl.className = 'cg-upgrade-status';
+      if (status === 'owned') {
+        statusEl.classList.add('is-owned');
+        statusEl.textContent = ui.upgradeOwnedStatus;
+      } else if (status === 'needCash') {
+        statusEl.classList.add('is-blocked');
+        statusEl.textContent = ui.upgradeNeedCashStatus;
+      } else if (status === 'locked') {
+        statusEl.classList.add('is-blocked');
+        statusEl.textContent = ui.upgradeLockedStatus;
+      } else {
+        statusEl.textContent = '';
+      }
+      row.appendChild(statusEl);
+
+      var buyBtn = document.createElement('button');
+      buyBtn.type = 'button';
+      buyBtn.className = 'btn cg-upgrade-buy';
+      buyBtn.textContent = ui.upgradeBuyBtn;
+      buyBtn.setAttribute('data-upgrade-buy', upgrade.id);
+      buyBtn.disabled = status !== 'buy';
+      row.appendChild(buyBtn);
+
+      item.appendChild(row);
+      elements.weekUpgrades.appendChild(item);
+    }
+
+    if (allOwned) {
+      var empty = document.createElement('li');
+      empty.className = 'cg-week-empty';
+      empty.textContent = ui.noUpgradeLeft;
+      elements.weekUpgrades.appendChild(empty);
+    }
+  }
+
+  function updateWeekPopupContent() {
+    var ui = langPack().ui;
+
+    if (!state.weekSummary) {
+      elements.weekPopupSummary.textContent = ui.weekPopupDefault;
+      elements.weekRevenue.textContent = formatMoney(0);
+      elements.weekBonus.textContent = formatMoney(0);
+      elements.weekRent.textContent = formatMoney(0);
+      elements.weekNet.textContent = formatMoney(0);
+      elements.weekCash.textContent = formatMoney(state.money);
+      elements.weekHoursUsed.textContent = formatHours(0) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
+      renderWeekUpgrades();
+      return;
+    }
+
+    elements.weekPopupSummary.textContent = interpolate(ui.weekPopupSummary, {
+      week: String(state.weekSummary.week),
+      orders: String(state.weekSummary.orders),
+      hoursUsed: formatHours(state.weekSummary.hoursUsed)
+    });
+    elements.weekRevenue.textContent = formatMoney(state.weekSummary.revenue);
+    elements.weekBonus.textContent = formatMoney(state.weekSummary.bonus);
+    elements.weekRent.textContent = formatMoney(state.weekSummary.rent);
+    elements.weekNet.textContent = formatMoney(state.weekSummary.net);
+    elements.weekCash.textContent = formatMoney(state.money);
+    elements.weekHoursUsed.textContent =
+      formatHours(state.weekSummary.hoursUsed) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
+    renderWeekUpgrades();
+  }
+
+  function showWeekPopup() {
+    hideCompletionPopup();
+    updateWeekPopupContent();
+    elements.weekPopup.hidden = false;
+    elements.weekNext.focus();
+  }
+
+  function closeActiveOrder() {
+    state.currentOrder = null;
+    state.stage = 'idle';
+    state.diagnosed = false;
+    state.repairIndex = 0;
+    state.satisfaction = 5;
+    state.orderSecondsLeft = 0;
+    state.orderSecondsTotal = 0;
+    state.timerPenaltyApplied = false;
+    stopOrderTimer();
+    clearMini();
+  }
+
+  function endCurrentWeek() {
+    if (state.weekSummary) {
+      showWeekPopup();
+      return;
+    }
+
+    closeActiveOrder();
+
+    var rent = weeklyRentAmount(state.week);
+    state.money -= rent;
+
+    state.weekSummary = {
+      week: state.week,
+      orders: state.weeklyOrders,
+      revenue: state.weeklyRevenue,
+      bonus: state.weeklyExcellentBonus,
+      rent: rent,
+      net: state.weeklyRevenue + state.weeklyExcellentBonus - rent,
+      hoursUsed: WEEK_HOURS_LIMIT - state.weekHoursLeft
+    };
+
+    addLog(interpolate(langPack().logs.weekRentPaid, {
+      rent: formatMoney(rent)
+    }));
+
+    addLog(interpolate(langPack().logs.weekClosed, {
+      week: String(state.weekSummary.week),
+      net: formatMoney(state.weekSummary.net),
+      revenue: formatMoney(state.weekSummary.revenue),
+      bonus: formatMoney(state.weekSummary.bonus),
+      rent: formatMoney(state.weekSummary.rent)
+    }));
+
+    saveProgress();
+    renderAll();
+    showWeekPopup();
+  }
+
+  function startNextWeek() {
+    if (!state.weekSummary) {
+      return;
+    }
+
+    state.week += 1;
+    state.weekHoursLeft = WEEK_HOURS_LIMIT;
+    state.weeklyRevenue = 0;
+    state.weeklyExcellentBonus = 0;
+    state.weeklyOrders = 0;
+    state.weekSummary = null;
+    state.completionSummary = null;
+    hideWeekPopup();
+    hideCompletionPopup();
+
+    addLog(interpolate(langPack().logs.weekStarted, {
+      week: String(state.week),
+      hours: formatHours(WEEK_HOURS_LIMIT)
+    }));
+
+    saveProgress();
+    renderAll();
+  }
+
+  function buyUpgrade(upgradeId) {
+    if (!upgradeId || !UPGRADE_MAP[upgradeId]) {
+      return;
+    }
+
+    var upgrade = UPGRADE_MAP[upgradeId];
+    var status = upgradeStatus(upgrade);
+
+    if (status === 'owned') {
+      updateWeekPopupContent();
+      return;
+    }
+
+    if (status === 'locked') {
+      addLog(interpolate(langPack().logs.upgradeLocked, {
+        upgrade: upgradeText(upgrade).label
+      }));
+      updateWeekPopupContent();
+      return;
+    }
+
+    if (status === 'needCash') {
+      addLog(interpolate(langPack().logs.upgradeNeedCash, {
+        upgrade: upgradeText(upgrade).label
+      }));
+      updateWeekPopupContent();
+      return;
+    }
+
+    state.money -= upgrade.cost;
+    state.ownedUpgrades.push(upgrade.id);
+
+    addLog(interpolate(langPack().logs.upgradeBought, {
+      upgrade: upgradeText(upgrade).label,
+      services: upgradeUnlockedServicesLabel(upgrade)
+    }));
+
+    saveProgress();
+    renderAll();
+    updateWeekPopupContent();
   }
 
   function mainActionLabel() {
@@ -2014,13 +2610,13 @@
       line.appendChild(broken);
 
       var missionMeta = document.createElement('span');
-      var missionMinutes = Math.max(1, Math.round((issue.baseSeconds || 60) / 60));
       missionMeta.className = 'cg-issue-solution';
-      missionMeta.textContent =
-        starsDifficulty(issue.difficulty || 1) +
-        ' | ' + missionMinutes + ' min' +
-        ' | ' + rewardLabel(issue.rewardTier || 1) +
-        ' | ' + riskLabel(issue.risk || 'medium');
+      missionMeta.textContent = interpolate(langPack().ui.serviceMetaTemplate, {
+        stars: starsDifficulty(issue.difficulty || 1),
+        hours: formatHours(issue.serviceHours || serviceHours(issue.key)),
+        price: formatMoney(issue.serviceFee || serviceFee(issue.key)),
+        risk: riskLabel(issue.risk || 'medium')
+      });
       line.appendChild(missionMeta);
 
       if (issue.selectedRepairType) {
@@ -2154,6 +2750,10 @@
 
   function renderStats() {
     elements.score.textContent = String(Math.round(state.score));
+    elements.money.textContent = formatMoney(state.money);
+    elements.week.textContent = String(state.week);
+    elements.hoursLeft.textContent = formatHours(state.weekHoursLeft) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
+    elements.servicesUnlocked.textContent = String(unlockedServiceCount());
     elements.best.textContent = String(Math.round(state.bestScore));
     elements.completed.textContent = String(Math.round(state.completedOrders));
     elements.reputation.textContent = String(Math.round(state.reputation));
@@ -2344,6 +2944,7 @@
     renderWorkshopPanels();
     renderStage();
     renderStats();
+    updateWeekPopupContent();
     updateButtons();
   }
 
@@ -2362,34 +2963,51 @@
     elements.langToggle.setAttribute('aria-label', pack.languageToggleLabel);
 
     updateCompletionPopupContent();
+    updateWeekPopupContent();
 
     if (state.mini.type === 'clicks') {
       updateClicksCounter();
     }
   }
 
-  function pickIssueSet(level) {
+  function pickIssueSet() {
+    var pool = ISSUE_LIBRARY.filter(function (definition) {
+      return (
+        isServiceUnlocked(definition.key) &&
+        serviceHours(definition.key) <= state.weekHoursLeft
+      );
+    });
+
+    if (pool.length === 0) {
+      return [];
+    }
+
     var issueCount = 1;
-    if (level >= 4) {
-      var chance = Math.min(0.18 + (level - 3) * 0.12, 0.72);
+    if (state.level >= 4 && state.weekHoursLeft >= 6) {
+      var chance = Math.min(0.18 + (state.level - 3) * 0.12, 0.72);
       if (Math.random() < chance) {
         issueCount = 2;
       }
     }
 
-    var pool = ISSUE_LIBRARY.filter(function (definition) {
-      return level >= (definition.minLevel || 1);
-    });
-
-    if (pool.length === 0) {
-      pool = ISSUE_LIBRARY.slice(0, 3);
-    }
-
     var selected = [];
+    var remainingHours = state.weekHoursLeft;
 
-    while (selected.length < issueCount && pool.length > 0) {
-      var index = Math.floor(Math.random() * pool.length);
-      selected.push(pool.splice(index, 1)[0]);
+    while (selected.length < issueCount) {
+      var options = pool.filter(function (definition) {
+        if (selected.indexOf(definition) !== -1) {
+          return false;
+        }
+        return serviceHours(definition.key) <= remainingHours;
+      });
+
+      if (options.length === 0) {
+        break;
+      }
+
+      var index = Math.floor(Math.random() * options.length);
+      selected.push(options[index]);
+      remainingHours -= serviceHours(options[index].key);
     }
 
     return selected;
@@ -2398,6 +3016,7 @@
   function buildIssueTask(definition, level, issueCount) {
     var missionDifficulty = definition.difficulty || 1;
     var hardness = missionDifficulty * 1.8 + level * 0.85 + (issueCount - 1) * 1.7;
+    var economy = serviceEconomy(definition.key);
 
     return {
       key: definition.key,
@@ -2413,6 +3032,9 @@
       clickDurationMs: Math.round(clamp(9200 - hardness * 320, 3000, 9200)),
       decayRate: clamp(0.14 + hardness * 0.018, 0.14, 0.5),
       gainPerClick: clamp(1 + hardness * 0.045, 1, 2.4),
+      serviceFee: economy.fee,
+      serviceHours: economy.hours,
+      serviceExcellenceBonus: economy.excellenceBonus,
       selectedRepairType: '',
       selectedMaterial: '',
       selectedTool: ''
@@ -2420,13 +3042,20 @@
   }
 
   function generateOrder() {
-    var selected = pickIssueSet(state.level);
+    var selected = pickIssueSet();
+
+    if (selected.length === 0) {
+      return null;
+    }
+
     var issues = [];
     var totalSeconds = 0;
+    var totalHours = 0;
 
     for (var i = 0; i < selected.length; i += 1) {
       var task = buildIssueTask(selected[i], state.level, selected.length);
       totalSeconds += task.baseSeconds;
+      totalHours += task.serviceHours;
       issues.push(task);
     }
 
@@ -2438,7 +3067,8 @@
       id: 'CMD-' + Date.now().toString(36).slice(-6).toUpperCase(),
       client: randomItem(CLIENT_NAMES[state.lang]),
       issues: issues,
-      timeLimit: Math.round(limit)
+      timeLimit: Math.round(limit),
+      estimatedHours: totalHours
     };
   }
 
@@ -2466,10 +3096,28 @@
   function startNewOrder() {
     hideCompletionPopup();
     state.completionSummary = null;
+
+    if (state.weekSummary) {
+      addLog(langPack().logs.weekNeedsSummary);
+      showWeekPopup();
+      return;
+    }
+
+    if (shouldEndWeek()) {
+      endCurrentWeek();
+      return;
+    }
+
     clearMini();
     stopOrderTimer();
 
     state.currentOrder = generateOrder();
+
+    if (!state.currentOrder || state.currentOrder.estimatedHours > state.weekHoursLeft) {
+      endCurrentWeek();
+      return;
+    }
+
     state.stage = 'diagnosis';
     state.diagnosed = false;
     state.repairIndex = 0;
@@ -2821,6 +3469,46 @@
       tierTotal += state.currentOrder.issues[tierIndex].rewardTier || 1;
     }
 
+    var baseRevenue = 0;
+    var excellenceBonus = 0;
+    var orderHoursSpent = state.currentOrder.estimatedHours || 0;
+
+    for (var billingIndex = 0; billingIndex < state.currentOrder.issues.length; billingIndex += 1) {
+      var billedIssue = state.currentOrder.issues[billingIndex];
+      var issuePrice = billedIssue.serviceFee || serviceFee(billedIssue.key);
+      if (billedIssue.status === 'fixed') {
+        baseRevenue += issuePrice;
+      } else {
+        baseRevenue += Math.round(issuePrice * 0.55);
+      }
+    }
+
+    if (finishSuccess && rough === 0 && state.satisfaction >= 4) {
+      for (var bonusIndex = 0; bonusIndex < state.currentOrder.issues.length; bonusIndex += 1) {
+        excellenceBonus += state.currentOrder.issues[bonusIndex].serviceExcellenceBonus ||
+          serviceExcellenceBonus(state.currentOrder.issues[bonusIndex].key);
+      }
+    }
+
+    var payout = Math.max(0, Math.round(baseRevenue + excellenceBonus));
+
+    state.money += payout;
+    state.weeklyRevenue += Math.round(baseRevenue);
+    state.weeklyExcellentBonus += Math.round(excellenceBonus);
+    state.weeklyOrders += 1;
+    state.weekHoursLeft = clamp(state.weekHoursLeft - orderHoursSpent, 0, WEEK_HOURS_LIMIT);
+
+    addLog(interpolate(langPack().logs.servicePayout, {
+      amount: formatMoney(payout),
+      hours: formatHours(orderHoursSpent)
+    }));
+
+    if (excellenceBonus > 0) {
+      addLog(interpolate(langPack().logs.serviceExcellentBonus, {
+        amount: formatMoney(excellenceBonus)
+      }));
+    }
+
     state.completedOrders += 1;
 
     var reputationGain = state.satisfaction * 4 + fixed * 3 + tierTotal * 2 + (finishSuccess ? 4 : 0) - rough * 2;
@@ -2848,6 +3536,12 @@
 
     saveProgress();
     renderAll();
+
+    if (shouldEndWeek()) {
+      endCurrentWeek();
+      return;
+    }
+
     showCompletionPopup({
       stars: state.satisfaction,
       fixed: fixed,
@@ -2979,6 +3673,12 @@
   }
 
   function handleMainAction() {
+    if (state.weekSummary) {
+      addLog(langPack().logs.weekNeedsSummary);
+      showWeekPopup();
+      return;
+    }
+
     if (!state.currentOrder || state.stage === 'done') {
       addLog(langPack().logs.noOrder);
       return;
@@ -3031,6 +3731,14 @@
     clearMini();
 
     state.score = 0;
+    state.money = STARTING_CASH;
+    state.week = 1;
+    state.weekHoursLeft = WEEK_HOURS_LIMIT;
+    state.ownedUpgrades = [];
+    state.weeklyRevenue = 0;
+    state.weeklyExcellentBonus = 0;
+    state.weeklyOrders = 0;
+    state.weekSummary = null;
     state.bestScore = 0;
     state.completedOrders = 0;
     state.reputation = 0;
@@ -3045,6 +3753,7 @@
     state.timerPenaltyApplied = false;
     state.completionSummary = null;
     hideCompletionPopup();
+    hideWeekPopup();
 
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -3110,6 +3819,16 @@
     renderRepairPlan();
   }
 
+  function handleWeekUpgradeClick(event) {
+    var target = event.target;
+
+    if (!target || !target.hasAttribute('data-upgrade-buy')) {
+      return;
+    }
+
+    buyUpgrade(target.getAttribute('data-upgrade-buy'));
+  }
+
   function handleShortcuts(event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
       return;
@@ -3172,6 +3891,7 @@
   elements.resetSave.addEventListener('click', resetProgress);
   elements.mainAction.addEventListener('click', handleMainAction);
   elements.completionNewOrder.addEventListener('click', startNewOrder);
+  elements.weekNext.addEventListener('click', startNextWeek);
 
   elements.actionTiming.addEventListener('click', handleTimingHit);
   elements.actionClicks.addEventListener('click', handleClicksHit);
@@ -3180,14 +3900,20 @@
   elements.diagnosisList.addEventListener('change', handleDiagnosisSelectionChange);
   elements.repairMaterial.addEventListener('change', handleRepairMaterialChange);
   elements.repairTool.addEventListener('change', handleRepairToolChange);
+  elements.weekUpgrades.addEventListener('click', handleWeekUpgradeClick);
 
   document.addEventListener('keydown', handleShortcuts);
 
   loadProgress();
   clearMini();
   hideCompletionPopup();
+  hideWeekPopup();
   applyStaticTranslations();
   clearLogs();
   addLog(langPack().logs.workshopReady);
   renderAll();
+
+  if (state.weekSummary) {
+    showWeekPopup();
+  }
 })();

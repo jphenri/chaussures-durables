@@ -500,6 +500,94 @@
   width: 100%;
 }
 
+.cg-week-popup {
+  width: min(660px, 100%);
+}
+
+.cg-week-summary {
+  margin-bottom: 0.75rem;
+  color: #4e3a33;
+}
+
+.cg-week-metrics {
+  display: grid;
+  gap: 0.35rem 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 0.85rem;
+}
+
+.cg-week-metrics p {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.cg-week-upgrades {
+  list-style: none;
+  margin: 0 0 0.85rem;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.cg-week-upgrade {
+  border: 1px solid #ddb9aa;
+  border-radius: 11px;
+  background: #fff3ea;
+  padding: 0.62rem;
+}
+
+.cg-week-upgrade h4 {
+  margin: 0 0 0.2rem;
+  color: #60261f;
+  font-size: 0.96rem;
+}
+
+.cg-week-upgrade p {
+  margin: 0 0 0.28rem;
+  font-size: 0.86rem;
+  color: #5e4a42;
+}
+
+.cg-upgrade-meta {
+  color: #76584e;
+}
+
+.cg-upgrade-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.cg-upgrade-status {
+  font-size: 0.82rem;
+  color: #5b473f;
+}
+
+.cg-upgrade-status.is-owned {
+  color: #21673d;
+}
+
+.cg-upgrade-status.is-blocked {
+  color: #8a2f28;
+}
+
+.cg-upgrade-buy {
+  min-width: 120px;
+}
+
+.cg-week-empty {
+  margin: 0;
+  border: 1px dashed #d7b6a8;
+  border-radius: 11px;
+  background: #fff8f4;
+  color: #674f46;
+  padding: 0.65rem;
+  font-size: 0.9rem;
+}
+
 @media (min-width: 740px) {
   .cg-diagnosis-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -515,6 +603,12 @@
 
   .cg-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .cg-week-metrics {
+    grid-template-columns: 1fr;
   }
 }
 

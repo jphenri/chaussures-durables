@@ -122,6 +122,10 @@ keywords:
 
       <div class="cg-stats">
         <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
+        <p><span data-i18n="cashLabel">Caisse</span>: <strong data-stat-money>$0</strong></p>
+        <p><span data-i18n="weekLabel">Semaine</span>: <strong data-stat-week>1</strong></p>
+        <p><span data-i18n="hoursLeftLabel">Heures restantes</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
+        <p><span data-i18n="servicesUnlockedLabel">Services debloques</span>: <strong data-stat-services>2</strong></p>
         <p><span data-i18n="bestScoreLabel">Meilleur score</span>: <strong data-stat-best>0</strong></p>
         <p><span data-i18n="completedLabel">Commandes complétées</span>: <strong data-stat-completed>0</strong></p>
         <p><span data-i18n="reputationLabel">Réputation</span>: <strong data-stat-reputation>0</strong></p>
@@ -169,6 +173,27 @@ keywords:
       <h2 id="cg-popup-title" data-i18n="completionPopupTitle">Commande terminee</h2>
       <p data-completion-popup-message data-i18n="completionPopupDefault">Pret pour un nouveau client ?</p>
       <button class="btn btn-primary" type="button" data-completion-new-order data-i18n="completionPopupAction">Nouveau client</button>
+    </section>
+  </div>
+
+  <div class="cg-popup-overlay" data-week-popup hidden>
+    <section class="cg-popup cg-week-popup" role="dialog" aria-modal="true" aria-labelledby="cg-week-popup-title">
+      <h2 id="cg-week-popup-title" data-i18n="weekPopupTitle">Resume de semaine</h2>
+      <p class="cg-week-summary" data-week-popup-summary data-i18n="weekPopupDefault">Fin de semaine. Analyse tes resultats puis ameliore ton atelier.</p>
+
+      <div class="cg-week-metrics">
+        <p><span data-i18n="weekRevenueLabel">Revenus services</span>: <strong data-week-revenue>$0</strong></p>
+        <p><span data-i18n="weekBonusLabel">Bonus excellence</span>: <strong data-week-bonus>$0</strong></p>
+        <p><span data-i18n="weekRentLabel">Loyer</span>: <strong data-week-rent>$0</strong></p>
+        <p><span data-i18n="weekNetLabel">Net de semaine</span>: <strong data-week-net>$0</strong></p>
+        <p><span data-i18n="weekCashAfterLabel">Caisse finale</span>: <strong data-week-cash>$0</strong></p>
+        <p><span data-i18n="weekHoursUsedLabel">Heures utilisees</span>: <strong data-week-hours-used>0h / 40h</strong></p>
+      </div>
+
+      <h3 data-i18n="weekUpgradeTitle">Ameliorer les outils</h3>
+      <ul class="cg-week-upgrades" data-week-upgrades></ul>
+
+      <button class="btn btn-primary" type="button" data-week-next data-i18n="weekNextBtn">Lancer la semaine suivante</button>
     </section>
   </div>
 </div>
