@@ -10,6 +10,169 @@
   var WEEK_HOURS_LIMIT = 40;
   var BASE_WEEKLY_RENT = 240;
   var STARTING_CASH = 180;
+  var SUPPLY_COOLDOWN_HOURS = 8;
+  var QUEUE_WEEK_PENALTY_RATE = 0.3;
+  var QUEUE_MAX_ITEMS = 12;
+
+  var STARTING_STOCK = {
+    contactGlue: 2,
+    resinCement: 1,
+    solePrimer: 1,
+    waxedThread: 1,
+    seamTape: 1,
+    rubberTopLift: 0,
+    heelNails: 0,
+    heelLeather: 0,
+    conditioningCream: 3,
+    nourishingOil: 3,
+    leatherFiller: 1,
+    polishCream: 3,
+    leatherCleaner: 3,
+    saddleSoap: 2,
+    halfSolePiece: 0,
+    heelLiningLeather: 0,
+    leatherDye: 0,
+    colorFixative: 0,
+    newOutsole: 0,
+    corkFiller: 0,
+    newWeltStrip: 0,
+    steelShank: 0,
+    leatherShank: 0,
+    leatherPatch: 0
+  };
+
+  var SUPPLY_CATALOG = [
+    {
+      id: 'careCrate',
+      cost: 82,
+      requires: '',
+      stock: {
+        polishCream: 2,
+        leatherCleaner: 2,
+        saddleSoap: 1,
+        nourishingOil: 2,
+        conditioningCream: 2
+      },
+      text: {
+        fr: {
+          label: 'Caisse entretien',
+          desc: 'Stock de base pour cirage, nettoyage et nutrition.'
+        },
+        en: {
+          label: 'Care crate',
+          desc: 'Core stock for shine, cleaning, and conditioning.'
+        }
+      }
+    },
+    {
+      id: 'heelPack',
+      cost: 146,
+      requires: 'heelBench',
+      stock: {
+        rubberTopLift: 2,
+        heelNails: 6,
+        contactGlue: 2,
+        heelLiningLeather: 1
+      },
+      text: {
+        fr: {
+          label: 'Pack talon',
+          desc: 'Bonbouts et fixations pour reparations talon.'
+        },
+        en: {
+          label: 'Heel pack',
+          desc: 'Top-lifts and fasteners for heel work.'
+        }
+      }
+    },
+    {
+      id: 'stitchPack',
+      cost: 228,
+      requires: 'stitchBench',
+      stock: {
+        halfSolePiece: 2,
+        waxedThread: 4,
+        seamTape: 3,
+        solePrimer: 2,
+        contactGlue: 2
+      },
+      text: {
+        fr: {
+          label: 'Pack couture',
+          desc: 'Materiaux demi-semelle et recousu tige.'
+        },
+        en: {
+          label: 'Stitch pack',
+          desc: 'Half-sole and upper stitching materials.'
+        }
+      }
+    },
+    {
+      id: 'dyePack',
+      cost: 264,
+      requires: 'dyeStation',
+      stock: {
+        leatherDye: 3,
+        colorFixative: 3,
+        conditioningCream: 2,
+        nourishingOil: 1
+      },
+      text: {
+        fr: {
+          label: 'Pack teinture',
+          desc: 'Teinture et fixateur pour recoloration.'
+        },
+        en: {
+          label: 'Dye pack',
+          desc: 'Dye and fixative for recolor services.'
+        }
+      }
+    },
+    {
+      id: 'resolePack',
+      cost: 412,
+      requires: 'resoleBench',
+      stock: {
+        newOutsole: 1,
+        corkFiller: 2,
+        newWeltStrip: 1,
+        waxedThread: 4,
+        contactGlue: 2
+      },
+      text: {
+        fr: {
+          label: 'Pack ressemelage',
+          desc: 'Semelle, liege et trepointe pour missions expert.'
+        },
+        en: {
+          label: 'Resole pack',
+          desc: 'Outsole, cork, and welt stock for expert jobs.'
+        }
+      }
+    },
+    {
+      id: 'masterPack',
+      cost: 560,
+      requires: 'moulin',
+      stock: {
+        steelShank: 2,
+        leatherShank: 2,
+        leatherPatch: 2,
+        leatherFiller: 2,
+        resinCement: 2
+      },
+      text: {
+        fr: {
+          label: 'Pack maitre',
+          desc: 'Pieces structurelles avancees et patch cuir.'
+        },
+        en: {
+          label: 'Master pack',
+          desc: 'Advanced structural parts and leather patch stock.'
+        }
+      }
+    }
+  ];
 
   var ISSUE_LIBRARY = [
     {
@@ -816,6 +979,14 @@
         levelLabel: 'Niveau',
         satisfactionLabel: 'Satisfaction client',
         newOrderBtn: 'Nouveau client',
+        queueTitle: 'File clients',
+        queueClientLabel: 'Client',
+        queueServiceLabel: 'Service',
+        queueAddBtn: 'Ajouter a la file',
+        queueEmpty: 'Aucun client en file.',
+        queueSummaryDefault: 'Aucun client en file.',
+        queueSummaryTemplate: '{count} client(s) en file ({hours}).',
+        queueItemTemplate: '{client} - {service} ({hours})',
         resetProgressBtn: 'Reinitialiser progression',
         shortcutsText: 'Raccourcis clavier: N (nouveau client), A (action principale), Espace/Entree (mini-jeu).',
         logTitle: 'Journal atelier',
@@ -874,10 +1045,24 @@
         weekBonusLabel: 'Bonus excellence',
         weekRentLabel: 'Loyer atelier',
         weekNetLabel: 'Net de semaine',
+        weekQueuePenaltyLabel: 'Penalite file',
         weekCashAfterLabel: 'Caisse finale',
         weekHoursUsedLabel: 'Heures utilisees',
         weekUpgradeTitle: 'Ameliorer les outils',
         weekNextBtn: 'Lancer la semaine suivante',
+        openSupplyBtn: 'Commander materiaux',
+        supplyPopupTitle: 'Commander materiaux',
+        supplyPopupDefault: 'Commande possible toutes les 8h de production.',
+        closeSupplyBtn: 'Fermer',
+        supplyBuyBtn: 'Commander',
+        supplyOwnedStockLabel: 'Stock',
+        supplyMetaTemplate: '{cost} | +{items}',
+        supplyNeedCashStatus: 'Fonds insuffisants',
+        supplyLockedStatus: 'Prerequis manquant',
+        supplyCooldownStatus: 'Attendre {hours}',
+        supplyReadyStatus: 'Disponible maintenant',
+        supplyCooldownReady: 'Commande disponible maintenant.',
+        supplyCooldownWait: 'Prochaine commande dans {hours}.',
         upgradeBuyBtn: 'Acheter',
         upgradeOwnedStatus: 'Deja possede',
         upgradeNeedCashStatus: 'Fonds insuffisants',
@@ -1038,8 +1223,14 @@
       logs: {
         workshopReady: 'Atelier pret pour une nouvelle commande.',
         noOrder: 'Aucune commande active. Lance un nouveau client.',
+        noQueueOrder: 'File vide: ajoute un client et un service dans la file.',
         miniLocked: 'Mini-jeu en cours: termine l\'action actuelle.',
         newOrder: 'Nouveau client: {client}. Probleme(s): {issues}.',
+        queueAdded: 'Client ajoute a la file: {client} ({service}, {hours}).',
+        queueSelectionMissing: 'Selection incomplete: choisis client et service.',
+        queueCapacityReached: 'File pleine: termine des commandes avant d\'en ajouter.',
+        queueWeekCapacity: 'Cette commande depasse les heures disponibles cette semaine.',
+        queueStarted: 'Commande sortie de file: {client} ({service}).',
         diagnosisDone: 'Diagnostic valide: {solutions}.',
         diagnosisMissingChoice: 'Diagnostic incomplet: choisis un type pour {issues}.',
         needDiagnosis: 'Mauvaise action: commence par le diagnostic.',
@@ -1051,6 +1242,8 @@
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
         repairSetupPenalty: 'Setup fragile: la reparation sera plus difficile.',
         repairExpected: 'Reference {issue}: materiel {material}, outil {tool}, resultat attendu {result}.',
+        repairNoMaterialStock: 'Stock insuffisant pour {material}. Commande des materiaux.',
+        repairMaterialConsumed: 'Consommation atelier: {material} -1 (reste {remaining}).',
         repairMaterialWhy: 'Materiel: {explanation}',
         repairToolWhy: 'Outil: {explanation}',
         repairStarted: 'Reparation lancee sur: {issue}.',
@@ -1065,10 +1258,16 @@
         orderSummary: 'Commande livree avec {stars} etoiles ({fixed}/{total} reparations solides).',
         servicePayout: 'Facturation: {amount} pour {hours}.',
         serviceExcellentBonus: 'Service excellent: bonus client {amount}.',
-        weekClosed: 'Semaine {week} terminee. Bilan: {net} (revenus {revenue}, bonus {bonus}, loyer {rent}).',
-        weekRentPaid: 'Loyer hebdomadaire paye: {rent}.',
+        weekClosed: 'Semaine {week} terminee. Bilan: {net} (revenus {revenue}, bonus {bonus}, loyer {rent}, penalite file {queue}).',
+        weekRentPaid: 'Loyer paye: {rent}.',
+        weekNoRentDue: 'Pas de loyer cette semaine (paiement toutes les 4 semaines).',
+        weekQueuePenalty: 'Commandes non terminees en file: {count}. Penalite: {penalty}.',
         weekStarted: 'Semaine {week} demarree. Capacite: {hours}.',
         weekNeedsSummary: 'Semaine terminee: consulte le resume pour payer le loyer et upgrader.',
+        supplyBought: 'Commande materiaux: {pack} pour {cost}.',
+        supplyNeedCash: 'Commande refusee: fonds insuffisants pour {pack}.',
+        supplyLocked: 'Commande refusee: prerequis manquant pour {pack}.',
+        supplyCooldown: 'Commande indisponible. Attends encore {hours}.',
         upgradeBought: 'Outil achete: {upgrade}. Services debloques: {services}.',
         upgradeNeedCash: 'Achat refuse: fonds insuffisants pour {upgrade}.',
         upgradeLocked: 'Achat refuse: prerequis manquant pour {upgrade}.',
@@ -1101,6 +1300,14 @@
         levelLabel: 'Level',
         satisfactionLabel: 'Client satisfaction',
         newOrderBtn: 'New client',
+        queueTitle: 'Client queue',
+        queueClientLabel: 'Client',
+        queueServiceLabel: 'Service',
+        queueAddBtn: 'Add to queue',
+        queueEmpty: 'No queued client.',
+        queueSummaryDefault: 'No queued client.',
+        queueSummaryTemplate: '{count} client(s) in queue ({hours}).',
+        queueItemTemplate: '{client} - {service} ({hours})',
         resetProgressBtn: 'Reset progress',
         shortcutsText: 'Keyboard shortcuts: N (new client), A (main action), Space/Enter (mini-game).',
         logTitle: 'Workshop log',
@@ -1159,10 +1366,24 @@
         weekBonusLabel: 'Excellence bonus',
         weekRentLabel: 'Workshop rent',
         weekNetLabel: 'Weekly net',
+        weekQueuePenaltyLabel: 'Queue penalty',
         weekCashAfterLabel: 'Closing cash',
         weekHoursUsedLabel: 'Hours used',
         weekUpgradeTitle: 'Upgrade tools',
         weekNextBtn: 'Start next week',
+        openSupplyBtn: 'Order materials',
+        supplyPopupTitle: 'Order materials',
+        supplyPopupDefault: 'You can place one supply order every 8 production hours.',
+        closeSupplyBtn: 'Close',
+        supplyBuyBtn: 'Order',
+        supplyOwnedStockLabel: 'Stock',
+        supplyMetaTemplate: '{cost} | +{items}',
+        supplyNeedCashStatus: 'Not enough cash',
+        supplyLockedStatus: 'Missing prerequisite',
+        supplyCooldownStatus: 'Wait {hours}',
+        supplyReadyStatus: 'Ready now',
+        supplyCooldownReady: 'Supply order is available now.',
+        supplyCooldownWait: 'Next supply order in {hours}.',
         upgradeBuyBtn: 'Buy',
         upgradeOwnedStatus: 'Already owned',
         upgradeNeedCashStatus: 'Not enough cash',
@@ -1323,8 +1544,14 @@
       logs: {
         workshopReady: 'Workshop ready for a new order.',
         noOrder: 'No active order. Start a new client.',
+        noQueueOrder: 'Queue is empty: add a client and service first.',
         miniLocked: 'Mini-game running: finish the current action first.',
         newOrder: 'New client: {client}. Issue(s): {issues}.',
+        queueAdded: 'Client queued: {client} ({service}, {hours}).',
+        queueSelectionMissing: 'Incomplete selection: choose client and service.',
+        queueCapacityReached: 'Queue is full: complete orders before adding more.',
+        queueWeekCapacity: 'This queued order exceeds remaining weekly hours.',
+        queueStarted: 'Order pulled from queue: {client} ({service}).',
         diagnosisDone: 'Diagnosis confirmed: {solutions}.',
         diagnosisMissingChoice: 'Diagnosis incomplete: choose a repair type for {issues}.',
         needDiagnosis: 'Wrong action: start with diagnosis first.',
@@ -1336,6 +1563,8 @@
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
         repairSetupPenalty: 'Weak setup: repair mini-game is harder.',
         repairExpected: 'Reference {issue}: material {material}, tool {tool}, expected result {result}.',
+        repairNoMaterialStock: 'Not enough stock for {material}. Order materials first.',
+        repairMaterialConsumed: 'Workshop usage: {material} -1 ({remaining} left).',
         repairMaterialWhy: 'Material: {explanation}',
         repairToolWhy: 'Tool: {explanation}',
         repairStarted: 'Repair started on: {issue}.',
@@ -1350,10 +1579,16 @@
         orderSummary: 'Order delivered with {stars} stars ({fixed}/{total} strong repairs).',
         servicePayout: 'Invoice paid: {amount} for {hours}.',
         serviceExcellentBonus: 'Excellent service: client bonus {amount}.',
-        weekClosed: 'Week {week} closed. Net result: {net} (revenue {revenue}, bonus {bonus}, rent {rent}).',
-        weekRentPaid: 'Weekly rent paid: {rent}.',
+        weekClosed: 'Week {week} closed. Net result: {net} (revenue {revenue}, bonus {bonus}, rent {rent}, queue penalty {queue}).',
+        weekRentPaid: 'Rent paid: {rent}.',
+        weekNoRentDue: 'No rent due this week (rent is charged every 4 weeks).',
+        weekQueuePenalty: 'Queued orders missed: {count}. Penalty: {penalty}.',
         weekStarted: 'Week {week} started. Capacity: {hours}.',
         weekNeedsSummary: 'Week completed: open summary to pay rent and upgrade.',
+        supplyBought: 'Supply order placed: {pack} for {cost}.',
+        supplyNeedCash: 'Supply blocked: not enough cash for {pack}.',
+        supplyLocked: 'Supply blocked: missing prerequisite for {pack}.',
+        supplyCooldown: 'Supply unavailable. Wait {hours}.',
         upgradeBought: 'Tool purchased: {upgrade}. Services unlocked: {services}.',
         upgradeNeedCash: 'Purchase blocked: not enough cash for {upgrade}.',
         upgradeLocked: 'Purchase blocked: prerequisite missing for {upgrade}.',
@@ -1373,6 +1608,11 @@
     orderDifficulty: root.querySelector('[data-order-difficulty]'),
     orderTimer: root.querySelector('[data-order-timer]'),
     issuesList: root.querySelector('[data-order-issues]'),
+    queueClient: root.querySelector('[data-queue-client]'),
+    queueService: root.querySelector('[data-queue-service]'),
+    queueAdd: root.querySelector('[data-queue-add]'),
+    queueSummary: root.querySelector('[data-queue-summary]'),
+    queueList: root.querySelector('[data-queue-list]'),
     stepDiagnosis: root.querySelector('[data-step-item="diagnosis"]'),
     stepRepair: root.querySelector('[data-step-item="repair"]'),
     stepFinish: root.querySelector('[data-step-item="finish"]'),
@@ -1430,10 +1670,16 @@
     weekBonus: root.querySelector('[data-week-bonus]'),
     weekRent: root.querySelector('[data-week-rent]'),
     weekNet: root.querySelector('[data-week-net]'),
+    weekQueuePenalty: root.querySelector('[data-week-queue-penalty]'),
     weekCash: root.querySelector('[data-week-cash]'),
     weekHoursUsed: root.querySelector('[data-week-hours-used]'),
     weekUpgrades: root.querySelector('[data-week-upgrades]'),
-    weekNext: root.querySelector('[data-week-next]')
+    weekNext: root.querySelector('[data-week-next]'),
+    openSupply: root.querySelector('[data-open-supply]'),
+    supplyPopup: root.querySelector('[data-supply-popup]'),
+    supplyPopupSummary: root.querySelector('[data-supply-popup-summary]'),
+    supplyList: root.querySelector('[data-supply-list]'),
+    supplyClose: root.querySelector('[data-supply-close]')
   };
 
   if (
@@ -1442,6 +1688,11 @@
     !elements.orderDifficulty ||
     !elements.orderTimer ||
     !elements.issuesList ||
+    !elements.queueClient ||
+    !elements.queueService ||
+    !elements.queueAdd ||
+    !elements.queueSummary ||
+    !elements.queueList ||
     !elements.stepDiagnosis ||
     !elements.stepRepair ||
     !elements.stepFinish ||
@@ -1497,10 +1748,16 @@
     !elements.weekBonus ||
     !elements.weekRent ||
     !elements.weekNet ||
+    !elements.weekQueuePenalty ||
     !elements.weekCash ||
     !elements.weekHoursUsed ||
     !elements.weekUpgrades ||
-    !elements.weekNext
+    !elements.weekNext ||
+    !elements.openSupply ||
+    !elements.supplyPopup ||
+    !elements.supplyPopupSummary ||
+    !elements.supplyList ||
+    !elements.supplyClose
   ) {
     return;
   }
@@ -1512,6 +1769,9 @@
     week: 1,
     weekHoursLeft: WEEK_HOURS_LIMIT,
     ownedUpgrades: [],
+    clientQueue: [],
+    stock: Object.assign({}, STARTING_STOCK),
+    hoursSinceSupplyOrder: SUPPLY_COOLDOWN_HOURS,
     weeklyRevenue: 0,
     weeklyExcellentBonus: 0,
     weeklyOrders: 0,
@@ -1657,8 +1917,123 @@
     return count;
   }
 
+  function materialStock(materialKey) {
+    return Math.max(0, Number(state.stock[materialKey]) || 0);
+  }
+
+  function formatHoursRemaining(value) {
+    var safe = Math.max(0, Math.ceil(value));
+    return formatHours(safe);
+  }
+
+  function formatStockCount(value) {
+    return 'x' + String(Math.max(0, Math.round(value || 0)));
+  }
+
+  function supplyPackText(pack) {
+    return pack.text[state.lang] || pack.text.fr;
+  }
+
+  function cloneStartingStock() {
+    return Object.assign({}, STARTING_STOCK);
+  }
+
+  function supplyHoursRemaining() {
+    return Math.max(0, SUPPLY_COOLDOWN_HOURS - state.hoursSinceSupplyOrder);
+  }
+
+  function canOrderSupplyNow() {
+    return supplyHoursRemaining() <= 0;
+  }
+
+  function serviceDefinition(issueKey) {
+    return ISSUE_MAP[issueKey] || null;
+  }
+
+  function queueHoursPlanned() {
+    var hours = 0;
+
+    for (var i = 0; i < state.clientQueue.length; i += 1) {
+      hours += serviceHours(state.clientQueue[i].issueKey);
+    }
+
+    return hours;
+  }
+
+  function queuedCapacityHoursLeft() {
+    var reservedCurrent = state.currentOrder && state.stage !== 'done'
+      ? (state.currentOrder.estimatedHours || 0)
+      : 0;
+    return Math.max(0, state.weekHoursLeft - reservedCurrent - queueHoursPlanned());
+  }
+
+  function canQueueWithinWeek(issueKey) {
+    return serviceHours(issueKey) <= queuedCapacityHoursLeft();
+  }
+
+  function queuePenaltyForEntry(entry) {
+    return Math.max(20, Math.round(serviceFee(entry.issueKey) * QUEUE_WEEK_PENALTY_RATE));
+  }
+
+  function totalQueuePenalty(queueList) {
+    var list = Array.isArray(queueList) ? queueList : [];
+    var penalty = 0;
+
+    for (var i = 0; i < list.length; i += 1) {
+      penalty += queuePenaltyForEntry(list[i]);
+    }
+
+    return penalty;
+  }
+
+  function hasStockForMaterial(materialKey, amount) {
+    var qty = typeof amount === 'number' ? amount : 1;
+    return materialStock(materialKey) >= qty;
+  }
+
+  function consumeMaterial(materialKey, amount) {
+    var qty = typeof amount === 'number' ? amount : 1;
+    var current = materialStock(materialKey);
+    state.stock[materialKey] = Math.max(0, current - qty);
+  }
+
+  function addMaterialStock(materialKey, amount) {
+    var qty = typeof amount === 'number' ? amount : 0;
+    state.stock[materialKey] = materialStock(materialKey) + Math.max(0, qty);
+  }
+
+  function supplyPackStatus(pack) {
+    if (pack.requires && !hasUpgrade(pack.requires)) {
+      return 'locked';
+    }
+    if (!canOrderSupplyNow()) {
+      return 'cooldown';
+    }
+    if (state.money < pack.cost) {
+      return 'needCash';
+    }
+    return 'buy';
+  }
+
+  function queuedOrderFitIndex() {
+    for (var i = 0; i < state.clientQueue.length; i += 1) {
+      if (serviceHours(state.clientQueue[i].issueKey) <= state.weekHoursLeft) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  function hasQueuedServiceForRemainingHours() {
+    return queuedOrderFitIndex() !== -1;
+  }
+
   function weeklyRentAmount(weekNumber) {
-    return BASE_WEEKLY_RENT + Math.max(0, weekNumber - 1) * 35;
+    if (weekNumber % 4 !== 0) {
+      return 0;
+    }
+
+    return BASE_WEEKLY_RENT + Math.max(0, Math.floor((weekNumber - 4) / 4)) * 60;
   }
 
   function upgradeText(upgrade) {
@@ -2066,6 +2441,9 @@
       week: state.week,
       weekHoursLeft: state.weekHoursLeft,
       ownedUpgrades: state.ownedUpgrades,
+      clientQueue: state.clientQueue,
+      stock: state.stock,
+      hoursSinceSupplyOrder: state.hoursSinceSupplyOrder,
       weeklyRevenue: state.weeklyRevenue,
       weeklyExcellentBonus: state.weeklyExcellentBonus,
       weeklyOrders: state.weeklyOrders,
@@ -2120,6 +2498,47 @@
         }
       }
 
+      state.clientQueue = [];
+      if (Array.isArray(parsed.clientQueue)) {
+        for (var queueIndex = 0; queueIndex < parsed.clientQueue.length; queueIndex += 1) {
+          var queued = parsed.clientQueue[queueIndex];
+          if (
+            queued &&
+            typeof queued.client === 'string' &&
+            ISSUE_MAP[queued.issueKey] &&
+            state.clientQueue.length < QUEUE_MAX_ITEMS
+          ) {
+            state.clientQueue.push({
+              id: queued.id || ('Q-' + Date.now().toString(36) + '-' + queueIndex),
+              client: queued.client,
+              issueKey: queued.issueKey,
+              weekAdded: clamp(Number(queued.weekAdded) || state.week, 1, 999)
+            });
+          }
+        }
+      }
+
+      state.stock = cloneStartingStock();
+      if (parsed.stock && typeof parsed.stock === 'object') {
+        var stockKeys = Object.keys(state.stock);
+        for (var stockIndex = 0; stockIndex < stockKeys.length; stockIndex += 1) {
+          var stockKey = stockKeys[stockIndex];
+          var qty = Number(parsed.stock[stockKey]);
+          if (Number.isFinite(qty)) {
+            state.stock[stockKey] = Math.max(0, Math.floor(qty));
+          }
+        }
+      }
+
+      state.hoursSinceSupplyOrder = clamp(
+        Number(parsed.hoursSinceSupplyOrder),
+        0,
+        SUPPLY_COOLDOWN_HOURS
+      );
+      if (!Number.isFinite(state.hoursSinceSupplyOrder)) {
+        state.hoursSinceSupplyOrder = SUPPLY_COOLDOWN_HOURS;
+      }
+
       if (parsed.weekSummary && typeof parsed.weekSummary === 'object') {
         state.weekSummary = {
           week: clamp(Number(parsed.weekSummary.week) || state.week, 1, 999),
@@ -2127,6 +2546,7 @@
           revenue: Number(parsed.weekSummary.revenue) || 0,
           bonus: Number(parsed.weekSummary.bonus) || 0,
           rent: Number(parsed.weekSummary.rent) || 0,
+          queuePenalty: Number(parsed.weekSummary.queuePenalty) || 0,
           net: Number(parsed.weekSummary.net) || 0,
           hoursUsed: clamp(Number(parsed.weekSummary.hoursUsed) || 0, 0, WEEK_HOURS_LIMIT)
         };
@@ -2207,6 +2627,7 @@
   }
 
   function showCompletionPopup(summary) {
+    hideSupplyPopup();
     state.completionSummary = summary || null;
     updateCompletionPopupContent();
     elements.completionPopup.hidden = false;
@@ -2239,22 +2660,20 @@
     elements.weekPopup.hidden = true;
   }
 
-  function hasAnyServiceForRemainingHours() {
-    for (var i = 0; i < ISSUE_LIBRARY.length; i += 1) {
-      var definition = ISSUE_LIBRARY[i];
-      if (!isServiceUnlocked(definition.key)) {
-        continue;
-      }
-      if (serviceHours(definition.key) <= state.weekHoursLeft) {
-        return true;
-      }
-    }
-
-    return false;
+  function hideSupplyPopup() {
+    elements.supplyPopup.hidden = true;
   }
 
   function shouldEndWeek() {
-    return state.weekHoursLeft <= 0 || !hasAnyServiceForRemainingHours();
+    if (state.weekHoursLeft <= 0) {
+      return true;
+    }
+
+    if (state.clientQueue.length === 0) {
+      return false;
+    }
+
+    return !hasQueuedServiceForRemainingHours();
   }
 
   function upgradeStatus(upgrade) {
@@ -2347,6 +2766,207 @@
     }
   }
 
+  function queueServiceOptionLabel(issueKey) {
+    return (
+      issueLabel(issueKey) +
+      ' | ' +
+      formatHours(serviceHours(issueKey)) +
+      ' | ' +
+      formatMoney(serviceFee(issueKey))
+    );
+  }
+
+  function renderQueuePanel() {
+    var ui = langPack().ui;
+    var clients = CLIENT_NAMES[state.lang] || CLIENT_NAMES.fr;
+    var selectedClient = elements.queueClient.value;
+    var selectedService = elements.queueService.value;
+
+    populateSelect(
+      elements.queueClient,
+      clients,
+      ui.queueClientLabel + '...',
+      selectedClient,
+      function (name) {
+        return name;
+      }
+    );
+
+    var serviceKeys = [];
+    for (var i = 0; i < ISSUE_LIBRARY.length; i += 1) {
+      if (isServiceUnlocked(ISSUE_LIBRARY[i].key)) {
+        serviceKeys.push(ISSUE_LIBRARY[i].key);
+      }
+    }
+
+    populateSelect(
+      elements.queueService,
+      serviceKeys,
+      ui.queueServiceLabel + '...',
+      selectedService,
+      queueServiceOptionLabel
+    );
+
+    elements.queueList.innerHTML = '';
+
+    if (state.clientQueue.length === 0) {
+      var empty = document.createElement('li');
+      empty.textContent = ui.queueEmpty;
+      elements.queueList.appendChild(empty);
+      elements.queueSummary.textContent = ui.queueSummaryDefault;
+    } else {
+      for (var queueIndex = 0; queueIndex < state.clientQueue.length; queueIndex += 1) {
+        var entry = state.clientQueue[queueIndex];
+        var item = document.createElement('li');
+        item.textContent = interpolate(ui.queueItemTemplate, {
+          client: entry.client,
+          service: issueLabel(entry.issueKey),
+          hours: formatHours(serviceHours(entry.issueKey))
+        });
+        elements.queueList.appendChild(item);
+      }
+
+      elements.queueSummary.textContent = interpolate(ui.queueSummaryTemplate, {
+        count: String(state.clientQueue.length),
+        hours: formatHours(queueHoursPlanned())
+      });
+    }
+
+    elements.queueAdd.disabled =
+      state.weekSummary !== null ||
+      state.clientQueue.length >= QUEUE_MAX_ITEMS ||
+      serviceKeys.length === 0;
+  }
+
+  function supplyPackById(packId) {
+    for (var i = 0; i < SUPPLY_CATALOG.length; i += 1) {
+      if (SUPPLY_CATALOG[i].id === packId) {
+        return SUPPLY_CATALOG[i];
+      }
+    }
+
+    return null;
+  }
+
+  function supplyPackAddedItemsText(pack) {
+    var segments = [];
+    var keys = Object.keys(pack.stock);
+
+    for (var i = 0; i < keys.length; i += 1) {
+      segments.push(materialLabel(keys[i]) + ' ' + formatStockCount(pack.stock[keys[i]]));
+    }
+
+    return segments.join(', ');
+  }
+
+  function supplyPackCurrentStockText(pack) {
+    var segments = [];
+    var keys = Object.keys(pack.stock);
+
+    for (var i = 0; i < keys.length; i += 1) {
+      segments.push(materialLabel(keys[i]) + ' ' + formatStockCount(materialStock(keys[i])));
+    }
+
+    return segments.join(', ');
+  }
+
+  function supplyStatusText(statusKey) {
+    var ui = langPack().ui;
+
+    if (statusKey === 'needCash') {
+      return ui.supplyNeedCashStatus;
+    }
+
+    if (statusKey === 'locked') {
+      return ui.supplyLockedStatus;
+    }
+
+    if (statusKey === 'cooldown') {
+      return interpolate(ui.supplyCooldownStatus, {
+        hours: formatHoursRemaining(supplyHoursRemaining())
+      });
+    }
+
+    return ui.supplyReadyStatus;
+  }
+
+  function renderSupplyList() {
+    var ui = langPack().ui;
+    elements.supplyList.innerHTML = '';
+
+    for (var i = 0; i < SUPPLY_CATALOG.length; i += 1) {
+      var pack = SUPPLY_CATALOG[i];
+      var item = document.createElement('li');
+      item.className = 'cg-week-upgrade';
+
+      var title = document.createElement('h4');
+      title.textContent = supplyPackText(pack).label;
+      item.appendChild(title);
+
+      var desc = document.createElement('p');
+      desc.textContent = supplyPackText(pack).desc;
+      item.appendChild(desc);
+
+      var meta = document.createElement('p');
+      meta.className = 'cg-upgrade-meta';
+      meta.textContent = interpolate(ui.supplyMetaTemplate, {
+        cost: formatMoney(pack.cost),
+        items: supplyPackAddedItemsText(pack)
+      });
+      item.appendChild(meta);
+
+      var stockLine = document.createElement('p');
+      stockLine.className = 'cg-upgrade-meta';
+      stockLine.textContent = ui.supplyOwnedStockLabel + ': ' + supplyPackCurrentStockText(pack);
+      item.appendChild(stockLine);
+
+      var row = document.createElement('div');
+      row.className = 'cg-upgrade-row';
+
+      var status = supplyPackStatus(pack);
+      var statusEl = document.createElement('span');
+      statusEl.className = 'cg-upgrade-status';
+      if (status === 'buy') {
+        statusEl.classList.add('is-owned');
+      } else {
+        statusEl.classList.add('is-blocked');
+      }
+      statusEl.textContent = supplyStatusText(status);
+      row.appendChild(statusEl);
+
+      var buyBtn = document.createElement('button');
+      buyBtn.type = 'button';
+      buyBtn.className = 'btn cg-upgrade-buy';
+      buyBtn.textContent = ui.supplyBuyBtn;
+      buyBtn.setAttribute('data-supply-buy', pack.id);
+      buyBtn.disabled = status !== 'buy';
+      row.appendChild(buyBtn);
+
+      item.appendChild(row);
+      elements.supplyList.appendChild(item);
+    }
+  }
+
+  function updateSupplyPopupContent() {
+    var ui = langPack().ui;
+    if (canOrderSupplyNow()) {
+      elements.supplyPopupSummary.textContent = ui.supplyCooldownReady;
+    } else {
+      elements.supplyPopupSummary.textContent = interpolate(ui.supplyCooldownWait, {
+        hours: formatHoursRemaining(supplyHoursRemaining())
+      });
+    }
+    renderSupplyList();
+  }
+
+  function showSupplyPopup() {
+    hideCompletionPopup();
+    hideWeekPopup();
+    updateSupplyPopupContent();
+    elements.supplyPopup.hidden = false;
+    elements.supplyClose.focus();
+  }
+
   function updateWeekPopupContent() {
     var ui = langPack().ui;
 
@@ -2356,6 +2976,7 @@
       elements.weekBonus.textContent = formatMoney(0);
       elements.weekRent.textContent = formatMoney(0);
       elements.weekNet.textContent = formatMoney(0);
+      elements.weekQueuePenalty.textContent = formatMoney(0);
       elements.weekCash.textContent = formatMoney(state.money);
       elements.weekHoursUsed.textContent = formatHours(0) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
       renderWeekUpgrades();
@@ -2371,6 +2992,7 @@
     elements.weekBonus.textContent = formatMoney(state.weekSummary.bonus);
     elements.weekRent.textContent = formatMoney(state.weekSummary.rent);
     elements.weekNet.textContent = formatMoney(state.weekSummary.net);
+    elements.weekQueuePenalty.textContent = formatMoney(state.weekSummary.queuePenalty || 0);
     elements.weekCash.textContent = formatMoney(state.money);
     elements.weekHoursUsed.textContent =
       formatHours(state.weekSummary.hoursUsed) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
@@ -2379,6 +3001,7 @@
 
   function showWeekPopup() {
     hideCompletionPopup();
+    hideSupplyPopup();
     updateWeekPopupContent();
     elements.weekPopup.hidden = false;
     elements.weekNext.focus();
@@ -2405,8 +3028,11 @@
 
     closeActiveOrder();
 
+    var missedQueue = state.clientQueue.slice();
+    var queuePenalty = totalQueuePenalty(missedQueue);
     var rent = weeklyRentAmount(state.week);
-    state.money -= rent;
+    state.clientQueue = [];
+    state.money -= (rent + queuePenalty);
 
     state.weekSummary = {
       week: state.week,
@@ -2414,20 +3040,33 @@
       revenue: state.weeklyRevenue,
       bonus: state.weeklyExcellentBonus,
       rent: rent,
-      net: state.weeklyRevenue + state.weeklyExcellentBonus - rent,
+      queuePenalty: queuePenalty,
+      net: state.weeklyRevenue + state.weeklyExcellentBonus - rent - queuePenalty,
       hoursUsed: WEEK_HOURS_LIMIT - state.weekHoursLeft
     };
 
-    addLog(interpolate(langPack().logs.weekRentPaid, {
-      rent: formatMoney(rent)
-    }));
+    if (rent > 0) {
+      addLog(interpolate(langPack().logs.weekRentPaid, {
+        rent: formatMoney(rent)
+      }));
+    } else {
+      addLog(langPack().logs.weekNoRentDue);
+    }
+
+    if (queuePenalty > 0) {
+      addLog(interpolate(langPack().logs.weekQueuePenalty, {
+        count: String(missedQueue.length),
+        penalty: formatMoney(queuePenalty)
+      }));
+    }
 
     addLog(interpolate(langPack().logs.weekClosed, {
       week: String(state.weekSummary.week),
       net: formatMoney(state.weekSummary.net),
       revenue: formatMoney(state.weekSummary.revenue),
       bonus: formatMoney(state.weekSummary.bonus),
-      rent: formatMoney(state.weekSummary.rent)
+      rent: formatMoney(state.weekSummary.rent),
+      queue: formatMoney(state.weekSummary.queuePenalty || 0)
     }));
 
     saveProgress();
@@ -2449,6 +3088,7 @@
     state.completionSummary = null;
     hideWeekPopup();
     hideCompletionPopup();
+    hideSupplyPopup();
 
     addLog(interpolate(langPack().logs.weekStarted, {
       week: String(state.week),
@@ -2934,7 +3574,9 @@
       typeDef.materialOptions,
       langPack().ui.chooseMaterialPlaceholder,
       issue.selectedMaterial,
-      materialLabel
+      function (materialKey) {
+        return materialLabel(materialKey) + ' (' + formatStockCount(materialStock(materialKey)) + ')';
+      }
     );
 
     populateSelect(
@@ -2969,10 +3611,12 @@
 
   function renderAll() {
     renderOrderPanel();
+    renderQueuePanel();
     renderWorkshopPanels();
     renderStage();
     renderStats();
     updateWeekPopupContent();
+    updateSupplyPopupContent();
     updateButtons();
   }
 
@@ -2992,6 +3636,8 @@
 
     updateCompletionPopupContent();
     updateWeekPopupContent();
+    renderQueuePanel();
+    updateSupplyPopupContent();
 
     if (state.mini.type === 'clicks') {
       updateClicksCounter();
@@ -3100,6 +3746,30 @@
     };
   }
 
+  function buildOrderFromQueueEntry(queueEntry) {
+    if (!queueEntry || !queueEntry.issueKey) {
+      return null;
+    }
+
+    var definition = serviceDefinition(queueEntry.issueKey);
+
+    if (!definition) {
+      return null;
+    }
+
+    var issueTask = buildIssueTask(definition, state.level, 1);
+    var pressureCut = Math.round((state.level - 1) * 3.2);
+    var limit = clamp(issueTask.baseSeconds - pressureCut, 50, 360);
+
+    return {
+      id: 'CMD-' + Date.now().toString(36).slice(-6).toUpperCase(),
+      client: queueEntry.client,
+      issues: [issueTask],
+      timeLimit: Math.round(limit),
+      estimatedHours: issueTask.serviceHours
+    };
+  }
+
   function startOrderTimer() {
     stopOrderTimer();
     state.timerPenaltyApplied = false;
@@ -3123,6 +3793,7 @@
 
   function startNewOrder() {
     hideCompletionPopup();
+    hideSupplyPopup();
     state.completionSummary = null;
 
     if (state.weekSummary) {
@@ -3139,7 +3810,24 @@
     clearMini();
     stopOrderTimer();
 
-    state.currentOrder = generateOrder();
+    if (state.clientQueue.length === 0) {
+      if (state.weeklyOrders > 0 || state.weekHoursLeft < WEEK_HOURS_LIMIT) {
+        endCurrentWeek();
+        return;
+      }
+      addLog(langPack().logs.noQueueOrder);
+      renderAll();
+      return;
+    }
+
+    var queueIndex = queuedOrderFitIndex();
+    if (queueIndex === -1) {
+      endCurrentWeek();
+      return;
+    }
+
+    var queuedEntry = state.clientQueue.splice(queueIndex, 1)[0];
+    state.currentOrder = buildOrderFromQueueEntry(queuedEntry);
 
     if (!state.currentOrder || state.currentOrder.estimatedHours > state.weekHoursLeft) {
       endCurrentWeek();
@@ -3157,12 +3845,18 @@
       return issueLabel(issue.key);
     }).join(', ');
 
+    addLog(interpolate(langPack().logs.queueStarted, {
+      client: queuedEntry.client,
+      service: issueLabel(queuedEntry.issueKey)
+    }));
+
     addLog(interpolate(langPack().logs.newOrder, {
       client: state.currentOrder.client,
       issues: issueNames
     }));
 
     hideAllMiniPanels();
+    saveProgress();
     startOrderTimer();
     renderAll();
   }
@@ -3528,6 +4222,11 @@
     state.weeklyExcellentBonus += Math.round(excellenceBonus);
     state.weeklyOrders += 1;
     state.weekHoursLeft = clamp(state.weekHoursLeft - orderHoursSpent, 0, WEEK_HOURS_LIMIT);
+    state.hoursSinceSupplyOrder = clamp(
+      state.hoursSinceSupplyOrder + orderHoursSpent,
+      0,
+      SUPPLY_COOLDOWN_HOURS
+    );
 
     addLog(interpolate(langPack().logs.servicePayout, {
       amount: formatMoney(payout),
@@ -3656,6 +4355,14 @@
       return;
     }
 
+    if (!hasStockForMaterial(issue.selectedMaterial, 1)) {
+      applyPenalty(6, 1, interpolate(langPack().logs.repairNoMaterialStock, {
+        material: materialLabel(issue.selectedMaterial)
+      }));
+      renderAll();
+      return;
+    }
+
     addLog(interpolate(langPack().logs.repairExpected, {
       issue: issueLabel(issue.key),
       material: materialLabel(typeDef.best.material),
@@ -3687,6 +4394,13 @@
     if (setupProfile.startPenalty > 0) {
       applyPenalty(setupProfile.startPenalty, 0, langPack().logs.repairSetupPenalty);
     }
+
+    consumeMaterial(issue.selectedMaterial, 1);
+    addLog(interpolate(langPack().logs.repairMaterialConsumed, {
+      material: materialLabel(issue.selectedMaterial),
+      remaining: String(materialStock(issue.selectedMaterial))
+    }));
+    renderRepairPlan();
 
     addLog(interpolate(langPack().logs.repairStarted, {
       issue: issueLabel(issue.key)
@@ -3766,6 +4480,9 @@
     state.week = 1;
     state.weekHoursLeft = WEEK_HOURS_LIMIT;
     state.ownedUpgrades = [];
+    state.clientQueue = [];
+    state.stock = cloneStartingStock();
+    state.hoursSinceSupplyOrder = SUPPLY_COOLDOWN_HOURS;
     state.weeklyRevenue = 0;
     state.weeklyExcellentBonus = 0;
     state.weeklyOrders = 0;
@@ -3785,6 +4502,7 @@
     state.completionSummary = null;
     hideCompletionPopup();
     hideWeekPopup();
+    hideSupplyPopup();
 
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -3860,6 +4578,118 @@
     buyUpgrade(target.getAttribute('data-upgrade-buy'));
   }
 
+  function handleQueueAdd() {
+    if (state.weekSummary) {
+      addLog(langPack().logs.weekNeedsSummary);
+      showWeekPopup();
+      return;
+    }
+
+    if (state.clientQueue.length >= QUEUE_MAX_ITEMS) {
+      addLog(langPack().logs.queueCapacityReached);
+      return;
+    }
+
+    var client = elements.queueClient.value || '';
+    var issueKey = elements.queueService.value || '';
+
+    if (!client || !issueKey) {
+      addLog(langPack().logs.queueSelectionMissing);
+      return;
+    }
+
+    if (!canQueueWithinWeek(issueKey)) {
+      addLog(langPack().logs.queueWeekCapacity);
+      return;
+    }
+
+    state.clientQueue.push({
+      id: 'Q-' + Date.now().toString(36).toUpperCase() + '-' + String(state.clientQueue.length + 1),
+      client: client,
+      issueKey: issueKey,
+      weekAdded: state.week
+    });
+
+    addLog(interpolate(langPack().logs.queueAdded, {
+      client: client,
+      service: issueLabel(issueKey),
+      hours: formatHours(serviceHours(issueKey))
+    }));
+
+    saveProgress();
+    renderAll();
+  }
+
+  function placeSupplyOrder(packId) {
+    var pack = supplyPackById(packId);
+
+    if (!pack) {
+      return;
+    }
+
+    var status = supplyPackStatus(pack);
+
+    if (status === 'locked') {
+      addLog(interpolate(langPack().logs.supplyLocked, {
+        pack: supplyPackText(pack).label
+      }));
+      updateSupplyPopupContent();
+      return;
+    }
+
+    if (status === 'needCash') {
+      addLog(interpolate(langPack().logs.supplyNeedCash, {
+        pack: supplyPackText(pack).label
+      }));
+      updateSupplyPopupContent();
+      return;
+    }
+
+    if (status === 'cooldown') {
+      addLog(interpolate(langPack().logs.supplyCooldown, {
+        hours: formatHoursRemaining(supplyHoursRemaining())
+      }));
+      updateSupplyPopupContent();
+      return;
+    }
+
+    state.money -= pack.cost;
+    var keys = Object.keys(pack.stock);
+
+    for (var i = 0; i < keys.length; i += 1) {
+      addMaterialStock(keys[i], pack.stock[keys[i]]);
+    }
+
+    state.hoursSinceSupplyOrder = 0;
+
+    addLog(interpolate(langPack().logs.supplyBought, {
+      pack: supplyPackText(pack).label,
+      cost: formatMoney(pack.cost)
+    }));
+
+    saveProgress();
+    renderAll();
+  }
+
+  function handleSupplyOpen() {
+    showSupplyPopup();
+  }
+
+  function handleSupplyClose() {
+    hideSupplyPopup();
+    renderAll();
+  }
+
+  function handleSupplyBuyClick(event) {
+    var target = event.target;
+
+    if (!target || !target.hasAttribute('data-supply-buy')) {
+      return;
+    }
+
+    placeSupplyOrder(target.getAttribute('data-supply-buy'));
+  }
+
   function handleShortcuts(event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
       return;
@@ -3919,6 +4749,9 @@
   elements.langToggle.addEventListener('click', switchLanguage);
 
   elements.newOrder.addEventListener('click', startNewOrder);
+  elements.queueAdd.addEventListener('click', handleQueueAdd);
+  elements.openSupply.addEventListener('click', handleSupplyOpen);
+  elements.supplyClose.addEventListener('click', handleSupplyClose);
   elements.resetSave.addEventListener('click', resetProgress);
   elements.mainAction.addEventListener('click', handleMainAction);
   elements.completionNewOrder.addEventListener('click', startNewOrder);
@@ -3932,6 +4765,7 @@
   elements.repairMaterial.addEventListener('change', handleRepairMaterialChange);
   elements.repairTool.addEventListener('change', handleRepairToolChange);
   elements.weekUpgrades.addEventListener('click', handleWeekUpgradeClick);
+  elements.supplyList.addEventListener('click', handleSupplyBuyClick);
 
   document.addEventListener('keydown', handleShortcuts);
 
@@ -3939,6 +4773,7 @@
   clearMini();
   hideCompletionPopup();
   hideWeekPopup();
+  hideSupplyPopup();
   applyStaticTranslations();
   clearLogs();
   addLog(langPack().logs.workshopReady);

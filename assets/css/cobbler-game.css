@@ -72,6 +72,43 @@
   width: 100%;
 }
 
+.cg-queue-builder {
+  margin-bottom: 0.9rem;
+  border: 1px solid #dfc2b0;
+  border-radius: 12px;
+  background: #fff6f0;
+  padding: 0.58rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.cg-queue-builder .btn {
+  width: 100%;
+}
+
+.cg-queue-summary {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #6b4e43;
+}
+
+.cg-queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.cg-queue-list li {
+  border: 1px solid #e1c0ad;
+  border-radius: 10px;
+  background: #fff9f5;
+  padding: 0.36rem 0.48rem;
+  color: #5d443a;
+  font-size: 0.86rem;
+}
+
 .cg-issues {
   margin: 0;
   padding-left: 1.05rem;
@@ -254,7 +291,8 @@
 }
 
 .cg-diagnosis-select,
-.cg-repair-plan select {
+.cg-repair-plan select,
+.cg-queue-builder select {
   width: 100%;
   border: 1px solid #c99c8c;
   border-radius: 10px;
@@ -595,6 +633,14 @@
 
 .cg-upgrade-buy {
   min-width: 120px;
+}
+
+.cg-supply-popup {
+  width: min(620px, 100%);
+}
+
+.cg-supply-list {
+  margin-bottom: 0.9rem;
 }
 
 .cg-week-empty {

@@ -28,6 +28,20 @@ keywords:
       <div class="cg-order-cta">
         <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">New client</button>
       </div>
+
+      <section class="cg-queue-builder">
+        <h3 data-i18n="queueTitle">Client queue</h3>
+        <label class="cg-field-label" for="queue-client-en" data-i18n="queueClientLabel">Client</label>
+        <select id="queue-client-en" data-queue-client></select>
+        <label class="cg-field-label" for="queue-service-en" data-i18n="queueServiceLabel">Service</label>
+        <select id="queue-service-en" data-queue-service></select>
+        <button class="btn" type="button" data-queue-add data-i18n="queueAddBtn">Add to queue</button>
+        <p class="cg-queue-summary" data-queue-summary data-i18n="queueSummaryDefault">No queued client.</p>
+        <ul class="cg-queue-list" data-queue-list>
+          <li data-i18n="queueEmpty">No queued client.</li>
+        </ul>
+      </section>
+
       <h2 data-i18n="orderTitle">Order</h2>
       <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
       <p><span data-i18n="difficultyLabel">Difficulty</span>: <strong data-order-difficulty>-</strong></p>
@@ -135,6 +149,7 @@ keywords:
       </div>
 
       <div class="cg-actions">
+        <button class="btn" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
         <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Reset progress</button>
       </div>
 
@@ -186,6 +201,7 @@ keywords:
         <p><span data-i18n="weekBonusLabel">Excellence bonus</span>: <strong data-week-bonus>$0</strong></p>
         <p><span data-i18n="weekRentLabel">Rent</span>: <strong data-week-rent>$0</strong></p>
         <p><span data-i18n="weekNetLabel">Weekly net</span>: <strong data-week-net>$0</strong></p>
+        <p><span data-i18n="weekQueuePenaltyLabel">Queue penalty</span>: <strong data-week-queue-penalty>$0</strong></p>
         <p><span data-i18n="weekCashAfterLabel">Closing cash</span>: <strong data-week-cash>$0</strong></p>
         <p><span data-i18n="weekHoursUsedLabel">Hours used</span>: <strong data-week-hours-used>0h / 40h</strong></p>
       </div>
@@ -194,6 +210,15 @@ keywords:
       <ul class="cg-week-upgrades" data-week-upgrades></ul>
 
       <button class="btn btn-primary" type="button" data-week-next data-i18n="weekNextBtn">Start next week</button>
+    </section>
+  </div>
+
+  <div class="cg-popup-overlay" data-supply-popup hidden>
+    <section class="cg-popup cg-supply-popup" role="dialog" aria-modal="true" aria-labelledby="cg-supply-popup-title-en">
+      <h2 id="cg-supply-popup-title-en" data-i18n="supplyPopupTitle">Order materials</h2>
+      <p class="cg-week-summary" data-supply-popup-summary data-i18n="supplyPopupDefault">You can place one supply order every 8 production hours.</p>
+      <ul class="cg-week-upgrades cg-supply-list" data-supply-list></ul>
+      <button class="btn btn-outline" type="button" data-supply-close data-i18n="closeSupplyBtn">Close</button>
     </section>
   </div>
 </div>
