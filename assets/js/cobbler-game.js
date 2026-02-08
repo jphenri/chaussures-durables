@@ -735,6 +735,10 @@
         mainActionDiagnosis: 'Valider diagnostic',
         mainActionRepair: 'Lancer reparation',
         mainActionFinish: 'Lancer finition',
+        completionPopupTitle: 'Commande terminee',
+        completionPopupDefault: 'Pret pour un nouveau client ?',
+        completionPopupAction: 'Nouveau client',
+        completionPopupSummary: 'Commande livree: {stars}/5 etoiles, {fixed}/{total} reparations solides. Pret pour un nouveau client ?',
         sceneAltIdle: 'Illustration atelier de cordonnerie.',
         sceneAltIssue: 'Illustration mission: {issue}.',
         sceneAltFinishing: 'Illustration botte en finition.',
@@ -986,6 +990,10 @@
         mainActionDiagnosis: 'Confirm diagnosis',
         mainActionRepair: 'Start repair',
         mainActionFinish: 'Start finishing',
+        completionPopupTitle: 'Order completed',
+        completionPopupDefault: 'Ready for a new client?',
+        completionPopupAction: 'New client',
+        completionPopupSummary: 'Order delivered: {stars}/5 stars, {fixed}/{total} strong repairs. Ready for a new client?',
         sceneAltIdle: 'Cobbler workshop illustration.',
         sceneAltIssue: 'Mission illustration: {issue}.',
         sceneAltFinishing: 'Boot finishing illustration.',
@@ -1224,7 +1232,10 @@
     satisfactionStars: root.querySelector('[data-satisfaction-stars]'),
     newOrder: root.querySelector('[data-new-order]'),
     resetSave: root.querySelector('[data-reset-save]'),
-    logList: root.querySelector('[data-log-list]')
+    logList: root.querySelector('[data-log-list]'),
+    completionPopup: root.querySelector('[data-completion-popup]'),
+    completionPopupMessage: root.querySelector('[data-completion-popup-message]'),
+    completionNewOrder: root.querySelector('[data-completion-new-order]')
   };
 
   if (
@@ -1274,7 +1285,10 @@
     !elements.satisfactionStars ||
     !elements.newOrder ||
     !elements.resetSave ||
-    !elements.logList
+    !elements.logList ||
+    !elements.completionPopup ||
+    !elements.completionPopupMessage ||
+    !elements.completionNewOrder
   ) {
     return;
   }
@@ -1296,6 +1310,7 @@
     orderSecondsTotal: 0,
     timerIntervalId: 0,
     timerPenaltyApplied: false,
+    completionSummary: null,
     mini: {
       type: 'none',
       context: 'none',
@@ -1837,6 +1852,32 @@
     state.actionLock = false;
   }
 
+  function hideCompletionPopup() {
+    elements.completionPopup.hidden = true;
+  }
+
+  function updateCompletionPopupContent() {
+    var ui = langPack().ui;
+
+    if (!state.completionSummary) {
+      elements.completionPopupMessage.textContent = ui.completionPopupDefault;
+      return;
+    }
+
+    elements.completionPopupMessage.textContent = interpolate(ui.completionPopupSummary, {
+      stars: String(state.completionSummary.stars),
+      fixed: String(state.completionSummary.fixed),
+      total: String(state.completionSummary.total)
+    });
+  }
+
+  function showCompletionPopup(summary) {
+    state.completionSummary = summary || null;
+    updateCompletionPopupContent();
+    elements.completionPopup.hidden = false;
+    elements.completionNewOrder.focus();
+  }
+
   function mainActionLabel() {
     var ui = langPack().ui;
 
@@ -2320,6 +2361,8 @@
     elements.langToggle.textContent = state.lang === 'fr' ? 'EN' : 'FR';
     elements.langToggle.setAttribute('aria-label', pack.languageToggleLabel);
 
+    updateCompletionPopupContent();
+
     if (state.mini.type === 'clicks') {
       updateClicksCounter();
     }
@@ -2421,6 +2464,8 @@
   }
 
   function startNewOrder() {
+    hideCompletionPopup();
+    state.completionSummary = null;
     clearMini();
     stopOrderTimer();
 
@@ -2803,6 +2848,11 @@
 
     saveProgress();
     renderAll();
+    showCompletionPopup({
+      stars: state.satisfaction,
+      fixed: fixed,
+      total: state.currentOrder.issues.length
+    });
   }
 
   function handleTimingHit() {
@@ -2993,6 +3043,8 @@
     state.orderSecondsLeft = 0;
     state.orderSecondsTotal = 0;
     state.timerPenaltyApplied = false;
+    state.completionSummary = null;
+    hideCompletionPopup();
 
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -3119,6 +3171,7 @@
   elements.newOrder.addEventListener('click', startNewOrder);
   elements.resetSave.addEventListener('click', resetProgress);
   elements.mainAction.addEventListener('click', handleMainAction);
+  elements.completionNewOrder.addEventListener('click', startNewOrder);
 
   elements.actionTiming.addEventListener('click', handleTimingHit);
   elements.actionClicks.addEventListener('click', handleClicksHit);
@@ -3132,6 +3185,7 @@
 
   loadProgress();
   clearMini();
+  hideCompletionPopup();
   applyStaticTranslations();
   clearLogs();
   addLog(langPack().logs.workshopReady);
