@@ -1,100 +1,124 @@
 ---
 layout: page
-title: "Workshop game: build your welted boot"
-description: "Pick materials, then stitch, glue, and assemble to build a durable boot."
+title: "Cobbler game: repair workshop simulator"
+description: "Playable cobbler simulation: diagnose, repair, finish jobs, and build your workshop reputation."
 lang: en
 lang_ref: boot-game
 permalink: /en/welt-boot-game/
+extra_css:
+  - /assets/css/cobbler-game.css
+extra_js:
+  - /assets/js/cobbler-game.js
 keywords:
-  - shoe game
-  - welted boot
-  - shoe workshop
   - cobbler game
-  - durable footwear
+  - repair workshop
+  - shoe simulator
+  - durable shoes
+  - browser game
 ---
 
-<div class="boot-game" data-boot-game data-lang="en">
-  <p class="boot-game-intro">
-    Build a welted boot step by step. Final quality depends on your material choices and workshop actions.
-  </p>
-
-  <div class="boot-game-grid">
-    <form class="boot-game-panel boot-game-setup" data-game-form>
-      <h2>1. Pick materials</h2>
-
-      <label for="game-upper-en">Upper leather</label>
-      <select id="game-upper-en" name="upper" required>
-        <option value="calfskin">Full-grain calfskin (city balance)</option>
-        <option value="waxed">Waxed leather (rain resistance)</option>
-        <option value="roughout">Oiled roughout (heavy duty)</option>
-      </select>
-
-      <label for="game-welt-en">Welt type</label>
-      <select id="game-welt-en" name="welt" required>
-        <option value="goodyear270">Goodyear 270 (versatile)</option>
-        <option value="storm360">Storm welt 360 (wet weather)</option>
-        <option value="norwegian">Norwegian stitch (very robust)</option>
-      </select>
-
-      <label for="game-outsole-en">Outsole</label>
-      <select id="game-outsole-en" name="outsole" required>
-        <option value="leather">Leather outsole (elegance)</option>
-        <option value="dainite">Dainite rubber (all-round use)</option>
-        <option value="commando">Commando lug (max traction)</option>
-      </select>
-
-      <label for="game-thread-en">Main thread</label>
-      <select id="game-thread-en" name="thread" required>
-        <option value="linen">Waxed linen (traditional)</option>
-        <option value="polyester">Reinforced polyester (easy)</option>
-        <option value="aramid">Aramid (ultra strong)</option>
-      </select>
-
-      <label for="game-glue-en">Glue type</label>
-      <select id="game-glue-en" name="glue" required>
-        <option value="neoprene">Neoprene (fast grip)</option>
-        <option value="waterbased">Water-based (clean and flexible)</option>
-        <option value="resin">Technical resin (high hold)</option>
-      </select>
-
-      <button class="btn btn-primary boot-game-start" type="submit" data-game-start>Start build</button>
-      <p class="boot-game-meta">Game actions: <strong>stitch</strong>, <strong>glue</strong>, <strong>assemble</strong>.</p>
-    </form>
-
-    <section class="boot-game-panel boot-game-workshop" aria-live="polite">
-      <h2>2. Workshop</h2>
-      <p class="boot-game-status"><strong data-game-progress-text>Step 0/6</strong></p>
-      <div class="boot-game-progress-track" aria-hidden="true">
-        <div class="boot-game-progress-fill" data-game-progress></div>
-      </div>
-
-      <article class="boot-game-stage">
-        <h3 data-game-step-title>Pick materials to begin.</h3>
-        <p data-game-step-desc>The boot goes through 6 steps: lasting, upper stitching, welt positioning, outsole stitching, sole bonding, and finishing.</p>
-        <p class="boot-game-hint" data-game-step-hint>Choose the right action at each stage to maximize quality.</p>
-      </article>
-
-      <div class="boot-game-actions">
-        <button class="btn boot-game-action" type="button" data-game-action="coudre" disabled>Stitch</button>
-        <button class="btn boot-game-action" type="button" data-game-action="coller" disabled>Glue</button>
-        <button class="btn boot-game-action" type="button" data-game-action="assembler" disabled>Assemble</button>
-      </div>
-
-      <div class="boot-game-scoreboard">
-        <p>Quality: <strong data-game-quality>--</strong></p>
-        <p>Score: <strong data-game-score>--</strong></p>
-      </div>
-
-      <div class="boot-game-result" data-game-result></div>
-
-      <button class="btn btn-outline boot-game-restart" type="button" data-game-restart>Reset</button>
-    </section>
+<div class="cobbler-game" data-cobbler-game data-lang="en" data-issue="none">
+  <div class="cg-topbar">
+    <p class="cg-intro" data-i18n="introText">Run your workshop: diagnose, repair, finish, and grow your reputation.</p>
+    <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
   </div>
 
-  <section class="boot-game-panel boot-game-log-panel">
-    <h2>Workshop log</h2>
-    <ul class="boot-game-log" data-game-log>
-      <li>Ready for a new boot build.</li>
+  <div class="cg-layout">
+    <aside class="cg-panel cg-order" aria-live="polite">
+      <h2 data-i18n="orderTitle">Order</h2>
+      <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
+      <p><span data-i18n="difficultyLabel">Difficulty</span>: <strong data-order-difficulty>-</strong></p>
+      <p><span data-i18n="timerLabel">Time left</span>: <strong data-order-timer>--:--</strong></p>
+
+      <h3 data-i18n="issuesTitle">Issues</h3>
+      <ul class="cg-issues" data-order-issues>
+        <li data-i18n="noOrderYet">No active order yet.</li>
+      </ul>
+
+      <h3 data-i18n="stepsTitle">Steps</h3>
+      <ol class="cg-steps">
+        <li data-step-item="diagnosis">Diagnose</li>
+        <li data-step-item="repair">Repair</li>
+        <li data-step-item="finish">Finish</li>
+      </ol>
+    </aside>
+
+    <section class="cg-panel cg-workshop" aria-live="polite">
+      <h2 data-i18n="workshopTitle">Workshop</h2>
+      <p class="cg-stage-name" data-stage-name>Workshop ready</p>
+      <p class="cg-stage-desc" data-stage-desc>Press “New client” to start an order.</p>
+
+      <div class="cg-shoe-scene" aria-hidden="true">
+        <div class="cg-shoe-upper"></div>
+        <div class="cg-shoe-stitch"></div>
+        <div class="cg-shoe-sole"></div>
+        <div class="cg-shoe-heel"></div>
+      </div>
+
+      <div class="cg-mini-wrap">
+        <section class="cg-mini" data-mini="timing" hidden>
+          <h3 data-i18n="miniTimingTitle">Precision mini-game</h3>
+          <p data-mini-timing-text>Click at the right moment in the green zone.</p>
+          <div class="cg-track" role="img" aria-label="Timing bar">
+            <div class="cg-zone" data-timing-zone></div>
+            <div class="cg-cursor" data-timing-cursor></div>
+          </div>
+          <button class="btn cg-mini-action" type="button" data-action-timing data-i18n="miniTimingAction">Apply move</button>
+        </section>
+
+        <section class="cg-mini" data-mini="clicks" hidden>
+          <h3 data-i18n="miniClicksTitle">Rhythm mini-game</h3>
+          <p data-mini-clicks-text>Click fast to reach the threshold before time runs out.</p>
+          <div class="cg-fill-track" role="img" aria-label="Repair progress">
+            <div class="cg-fill" data-clicks-fill></div>
+          </div>
+          <p class="cg-mini-counter" data-clicks-counter>0 / 0</p>
+          <button class="btn cg-mini-action" type="button" data-action-clicks data-i18n="miniClicksAction">Repeat action</button>
+        </section>
+
+        <section class="cg-mini" data-mini="finish" hidden>
+          <h3 data-i18n="miniFinishTitle">Finishing mini-game</h3>
+          <p data-mini-finish-text>Stop at the right moment for a clean finish.</p>
+          <div class="cg-track" role="img" aria-label="Finishing bar">
+            <div class="cg-zone" data-finish-zone></div>
+            <div class="cg-cursor" data-finish-cursor></div>
+          </div>
+          <button class="btn cg-mini-action" type="button" data-action-finish data-i18n="miniFinishAction">Finalize</button>
+        </section>
+      </div>
+    </section>
+
+    <aside class="cg-panel cg-tools">
+      <h2 data-i18n="toolsTitle">Tools</h2>
+      <div class="cg-tools-grid">
+        <button class="btn cg-tool-btn" type="button" data-tool="diagnostic" data-i18n="toolDiagnostic">Diagnose</button>
+        <button class="btn cg-tool-btn" type="button" data-tool="repair" data-i18n="toolRepair">Repair</button>
+        <button class="btn cg-tool-btn" type="button" data-tool="finish" data-i18n="toolFinish">Finish</button>
+      </div>
+
+      <div class="cg-stats">
+        <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
+        <p><span data-i18n="bestScoreLabel">Best score</span>: <strong data-stat-best>0</strong></p>
+        <p><span data-i18n="completedLabel">Completed orders</span>: <strong data-stat-completed>0</strong></p>
+        <p><span data-i18n="reputationLabel">Reputation</span>: <strong data-stat-reputation>0</strong></p>
+        <p><span data-i18n="levelLabel">Level</span>: <strong data-stat-level>1</strong></p>
+        <p><span data-i18n="satisfactionLabel">Client satisfaction</span>: <strong data-stat-satisfaction>5/5</strong></p>
+        <p class="cg-stars" data-satisfaction-stars aria-live="polite">★★★★★</p>
+      </div>
+
+      <div class="cg-actions">
+        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">New client</button>
+        <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Reset progress</button>
+      </div>
+
+      <p class="cg-shortcuts" data-i18n="shortcutsText">Keyboard shortcuts: N (new client), D (diagnose), R (repair), F (finish).</p>
+    </aside>
+  </div>
+
+  <section class="cg-panel cg-log">
+    <h2 data-i18n="logTitle">Workshop log</h2>
+    <ul data-log-list>
+      <li>Workshop ready.</li>
     </ul>
   </section>
 </div>

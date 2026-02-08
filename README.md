@@ -43,6 +43,7 @@ http://127.0.0.1:4000/chaussures-durables/
 - `/histoire-chaussures-durables/` Histoire + fast fashion vs durable
 - `/blog/` Articles
 - `/projects/` Modèles et services
+- `/jeu-botte-trepointe/` Jeu cordonnier (simulation atelier)
 - `/contact/` Contact
 
 ### English
@@ -52,7 +53,38 @@ http://127.0.0.1:4000/chaussures-durables/
 - `/en/shoe-history-and-welted-shoes/` History + fast fashion vs durable
 - `/en/blog/` Posts
 - `/en/projects/` Models and services
+- `/en/welt-boot-game/` Cobbler game (workshop simulation)
 - `/en/contact/` Contact
+
+## Jeu cordonnier
+
+Le prototype jouable est intégré au site, dans la section:
+
+- `jeu-botte-trepointe.md` (FR)
+- `en/welt-boot-game.md` (EN)
+
+Assets dédiés:
+
+- `assets/js/cobbler-game.js` (logique gameplay)
+- `assets/css/cobbler-game.css` (UI responsive mobile-first)
+- `assets/sfx/PLACEHOLDER.txt` (emplacement des futurs sons)
+
+Fonctionnalités:
+
+- commandes clients aléatoires (semelle, talon, couture, cuir)
+- étapes obligatoires: diagnostic -> réparation -> finition
+- mini-jeux: timing + clics répétés
+- score, satisfaction (5 étoiles), réputation, niveau
+- progression (double réparation selon niveau)
+- sauvegarde locale via `localStorage`
+- bascule de langue FR/EN dans la page de jeu
+
+### Idées d'extension rapide
+
+1. Ajouter des types de panne (zip, doublure, montage complet).
+2. Ajouter des assets visuels (sprites outil, chaussures, avatars clients).
+3. Ajouter des SFX dans `assets/sfx/` et déclencher audio sur succès/échec.
+4. Ajouter des commandes premium (3 pannes, timer plus court, bonus élevé).
 
 ## Articles de blog
 

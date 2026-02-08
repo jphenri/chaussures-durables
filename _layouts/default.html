@@ -16,5 +16,10 @@
       {% include footer.html %}
     </div>
     <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+    {% if page.extra_js %}
+      {% for script in page.extra_js %}
+        <script src="{{ script | relative_url }}"></script>
+      {% endfor %}
+    {% endif %}
   </body>
 </html>

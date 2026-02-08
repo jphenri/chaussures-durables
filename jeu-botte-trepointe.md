@@ -1,100 +1,124 @@
 ---
 layout: page
-title: "Jeu atelier : fabrique ta botte trépointe"
-description: "Choisis les matériaux puis couds, colles et assembles pour créer une botte durable."
+title: "Jeu cordonnier : atelier de réparation"
+description: "Simulation jouable de cordonnerie: diagnostic, réparation, finition, réputation et clients satisfaits."
 lang: fr
 lang_ref: boot-game
 permalink: /jeu-botte-trepointe/
+extra_css:
+  - /assets/css/cobbler-game.css
+extra_js:
+  - /assets/js/cobbler-game.js
 keywords:
-  - jeu chaussure
-  - botte trépointe
-  - goodyear welt
-  - cordonnerie
-  - chaussure durable
+  - jeu cordonnier
+  - atelier réparation
+  - chaussures durables
+  - simulation bottier
+  - trépointe
 ---
 
-<div class="boot-game" data-boot-game data-lang="fr">
-  <p class="boot-game-intro">
-    Monte une botte étape par étape. La qualité finale dépend de tes matériaux et de tes gestes à l’atelier.
-  </p>
-
-  <div class="boot-game-grid">
-    <form class="boot-game-panel boot-game-setup" data-game-form>
-      <h2>1. Choisis tes matériaux</h2>
-
-      <label for="game-upper">Cuir de tige</label>
-      <select id="game-upper" name="upper" required>
-        <option value="calfskin">Box calf pleine fleur (équilibre ville)</option>
-        <option value="waxed">Cuir gras ciré (résistant pluie)</option>
-        <option value="roughout">Roughout huilé (usage intensif)</option>
-      </select>
-
-      <label for="game-welt">Type de trépointe</label>
-      <select id="game-welt" name="welt" required>
-        <option value="goodyear270">Goodyear 270° (polyvalent)</option>
-        <option value="storm360">Storm welt 360° (mauvais temps)</option>
-        <option value="norwegian">Cousu norvégien (très robuste)</option>
-      </select>
-
-      <label for="game-outsole">Semelle extérieure</label>
-      <select id="game-outsole" name="outsole" required>
-        <option value="leather">Cuir naturel (élégance)</option>
-        <option value="dainite">Gomme Dainite (polyvalence)</option>
-        <option value="commando">Commando crantée (adhérence max)</option>
-      </select>
-
-      <label for="game-thread">Fil principal</label>
-      <select id="game-thread" name="thread" required>
-        <option value="linen">Lin poissé (tradition)</option>
-        <option value="polyester">Polyester renforcé (facile)</option>
-        <option value="aramid">Aramide (ultra-résistant)</option>
-      </select>
-
-      <label for="game-glue">Type de colle</label>
-      <select id="game-glue" name="glue" required>
-        <option value="neoprene">Néoprène (prise rapide)</option>
-        <option value="waterbased">Aqueuse (propre et souple)</option>
-        <option value="resin">Résine technique (tenue forte)</option>
-      </select>
-
-      <button class="btn btn-primary boot-game-start" type="submit" data-game-start>Lancer la fabrication</button>
-      <p class="boot-game-meta">Actions de jeu: <strong>coudre</strong>, <strong>coller</strong>, <strong>assembler</strong>.</p>
-    </form>
-
-    <section class="boot-game-panel boot-game-workshop" aria-live="polite">
-      <h2>2. Atelier</h2>
-      <p class="boot-game-status"><strong data-game-progress-text>Étape 0/6</strong></p>
-      <div class="boot-game-progress-track" aria-hidden="true">
-        <div class="boot-game-progress-fill" data-game-progress></div>
-      </div>
-
-      <article class="boot-game-stage">
-        <h3 data-game-step-title>Sélectionne des matériaux pour commencer.</h3>
-        <p data-game-step-desc>La botte passera par 6 étapes: forme, couture de tige, pose de trépointe, piqûre, collage semelle, finitions.</p>
-        <p class="boot-game-hint" data-game-step-hint>Choisis la bonne action à chaque étape pour maximiser la qualité.</p>
-      </article>
-
-      <div class="boot-game-actions">
-        <button class="btn boot-game-action" type="button" data-game-action="coudre" disabled>Coudre</button>
-        <button class="btn boot-game-action" type="button" data-game-action="coller" disabled>Coller</button>
-        <button class="btn boot-game-action" type="button" data-game-action="assembler" disabled>Assembler</button>
-      </div>
-
-      <div class="boot-game-scoreboard">
-        <p>Qualité: <strong data-game-quality>--</strong></p>
-        <p>Score: <strong data-game-score>--</strong></p>
-      </div>
-
-      <div class="boot-game-result" data-game-result></div>
-
-      <button class="btn btn-outline boot-game-restart" type="button" data-game-restart>Recommencer</button>
-    </section>
+<div class="cobbler-game" data-cobbler-game data-lang="fr" data-issue="none">
+  <div class="cg-topbar">
+    <p class="cg-intro" data-i18n="introText">Gère ton atelier: diagnostique, répare, finalise, puis fais grimper ta réputation.</p>
+    <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Passer en anglais">EN</button>
   </div>
 
-  <section class="boot-game-panel boot-game-log-panel">
-    <h2>Journal d’atelier</h2>
-    <ul class="boot-game-log" data-game-log>
-      <li>Prêt pour une nouvelle fabrication.</li>
+  <div class="cg-layout">
+    <aside class="cg-panel cg-order" aria-live="polite">
+      <h2 data-i18n="orderTitle">Commande</h2>
+      <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
+      <p><span data-i18n="difficultyLabel">Difficulté</span>: <strong data-order-difficulty>-</strong></p>
+      <p><span data-i18n="timerLabel">Temps restant</span>: <strong data-order-timer>--:--</strong></p>
+
+      <h3 data-i18n="issuesTitle">Problèmes</h3>
+      <ul class="cg-issues" data-order-issues>
+        <li data-i18n="noOrderYet">Aucune commande en cours.</li>
+      </ul>
+
+      <h3 data-i18n="stepsTitle">Étapes</h3>
+      <ol class="cg-steps">
+        <li data-step-item="diagnosis">Diagnostiquer</li>
+        <li data-step-item="repair">Réparer</li>
+        <li data-step-item="finish">Finition</li>
+      </ol>
+    </aside>
+
+    <section class="cg-panel cg-workshop" aria-live="polite">
+      <h2 data-i18n="workshopTitle">Atelier</h2>
+      <p class="cg-stage-name" data-stage-name>Atelier prêt</p>
+      <p class="cg-stage-desc" data-stage-desc>Clique sur “Nouveau client” pour commencer une commande.</p>
+
+      <div class="cg-shoe-scene" aria-hidden="true">
+        <div class="cg-shoe-upper"></div>
+        <div class="cg-shoe-stitch"></div>
+        <div class="cg-shoe-sole"></div>
+        <div class="cg-shoe-heel"></div>
+      </div>
+
+      <div class="cg-mini-wrap">
+        <section class="cg-mini" data-mini="timing" hidden>
+          <h3 data-i18n="miniTimingTitle">Mini-jeu précision</h3>
+          <p data-mini-timing-text>Clique au bon moment dans la zone verte.</p>
+          <div class="cg-track" role="img" aria-label="Barre de timing">
+            <div class="cg-zone" data-timing-zone></div>
+            <div class="cg-cursor" data-timing-cursor></div>
+          </div>
+          <button class="btn cg-mini-action" type="button" data-action-timing data-i18n="miniTimingAction">Valider le geste</button>
+        </section>
+
+        <section class="cg-mini" data-mini="clicks" hidden>
+          <h3 data-i18n="miniClicksTitle">Mini-jeu cadence</h3>
+          <p data-mini-clicks-text>Clique rapidement pour atteindre le seuil avant la fin du chrono.</p>
+          <div class="cg-fill-track" role="img" aria-label="Progression de réparation">
+            <div class="cg-fill" data-clicks-fill></div>
+          </div>
+          <p class="cg-mini-counter" data-clicks-counter>0 / 0</p>
+          <button class="btn cg-mini-action" type="button" data-action-clicks data-i18n="miniClicksAction">Action répétée</button>
+        </section>
+
+        <section class="cg-mini" data-mini="finish" hidden>
+          <h3 data-i18n="miniFinishTitle">Mini-jeu finition</h3>
+          <p data-mini-finish-text>Stoppe au bon moment pour une finition nette.</p>
+          <div class="cg-track" role="img" aria-label="Barre de finition">
+            <div class="cg-zone" data-finish-zone></div>
+            <div class="cg-cursor" data-finish-cursor></div>
+          </div>
+          <button class="btn cg-mini-action" type="button" data-action-finish data-i18n="miniFinishAction">Finaliser</button>
+        </section>
+      </div>
+    </section>
+
+    <aside class="cg-panel cg-tools">
+      <h2 data-i18n="toolsTitle">Outils</h2>
+      <div class="cg-tools-grid">
+        <button class="btn cg-tool-btn" type="button" data-tool="diagnostic" data-i18n="toolDiagnostic">Diagnostic</button>
+        <button class="btn cg-tool-btn" type="button" data-tool="repair" data-i18n="toolRepair">Réparation</button>
+        <button class="btn cg-tool-btn" type="button" data-tool="finish" data-i18n="toolFinish">Finition</button>
+      </div>
+
+      <div class="cg-stats">
+        <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
+        <p><span data-i18n="bestScoreLabel">Meilleur score</span>: <strong data-stat-best>0</strong></p>
+        <p><span data-i18n="completedLabel">Commandes complétées</span>: <strong data-stat-completed>0</strong></p>
+        <p><span data-i18n="reputationLabel">Réputation</span>: <strong data-stat-reputation>0</strong></p>
+        <p><span data-i18n="levelLabel">Niveau</span>: <strong data-stat-level>1</strong></p>
+        <p><span data-i18n="satisfactionLabel">Satisfaction client</span>: <strong data-stat-satisfaction>5/5</strong></p>
+        <p class="cg-stars" data-satisfaction-stars aria-live="polite">★★★★★</p>
+      </div>
+
+      <div class="cg-actions">
+        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">Nouveau client</button>
+        <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Réinitialiser progression</button>
+      </div>
+
+      <p class="cg-shortcuts" data-i18n="shortcutsText">Raccourcis clavier: N (nouveau client), D (diagnostic), R (réparation), F (finition).</p>
+    </aside>
+  </div>
+
+  <section class="cg-panel cg-log">
+    <h2 data-i18n="logTitle">Journal d'atelier</h2>
+    <ul data-log-list>
+      <li>Atelier prêt.</li>
     </ul>
   </section>
 </div>

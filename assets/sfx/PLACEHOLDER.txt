@@ -1,0 +1,6 @@
+Placeholders SFX directory for future game sounds.
+Suggested files:
+- click.wav
+- success.wav
+- fail.wav
+- finish.wav
