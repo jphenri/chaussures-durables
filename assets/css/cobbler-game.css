@@ -190,6 +190,14 @@
   order: 30 !important;
 }
 
+.cobbler-game[data-stage="repair"] .cg-workshop > .cg-mini-wrap {
+  order: 18 !important;
+}
+
+.cobbler-game[data-stage="repair"] .cg-workshop > .cg-repair-plan {
+  order: 22 !important;
+}
+
 .cg-mini {
   border: 1px solid #e5c6b8;
   border-radius: 14px;
