@@ -1,40 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
-  <title id="title">Schéma Storm Welt</title>
-  <desc id="desc">Coupe simplifiée d'une trépointe relevée type storm welt.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Montage Storm Welt</title>
+  <desc id="desc">Schéma technique premium du storm welt avec trépointe relevée pour meilleure protection à l'eau.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#fff8f3"/>
-      <stop offset="100%" stop-color="#f3ded2"/>
+      <stop offset="0%" stop-color="#fdf6f0"/>
+      <stop offset="100%" stop-color="#edd8cb"/>
     </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fffdfa"/>
+      <stop offset="100%" stop-color="#fff4ec"/>
+    </linearGradient>
+    <linearGradient id="upper" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f5dccd"/>
+      <stop offset="100%" stop-color="#ebc0a8"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#6a241d" flood-opacity="0.2"/>
+    </filter>
   </defs>
-  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
-  <text x="70" y="86" font-size="44" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">STORM WELT (TRÉPOINTE RELEVÉE)</text>
 
-  <g transform="translate(112 176)">
-    <path d="M0 176c0-30 26-52 56-52h474c95 0 164 23 202 66H0z" fill="#f9ddcf"/>
-    <path d="M60 118c0-12 10-22 22-22h520c12 0 22 10 22 22v12H60z" fill="#ab2a22"/>
-    <path d="M52 146h618" stroke="#5a4a43" stroke-width="32" stroke-linecap="round"/>
-    <path d="M48 112l28-30h560l26 30" stroke="#ab2a22" stroke-width="10" fill="none" stroke-linejoin="round"/>
-    <path d="M65 120h560" stroke="#fff8f3" stroke-width="6" stroke-dasharray="4 14" stroke-linecap="round"/>
-    <path d="M74 147h580" stroke="#ffcfb8" stroke-width="6" stroke-dasharray="5 12" stroke-linecap="round"/>
-    <path d="M610 54c20 17 31 40 31 65" stroke="#7a1d18" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <rect width="1400" height="820" fill="url(#bg)"/>
+  <circle cx="1320" cy="96" r="172" fill="#ffffff" opacity="0.32"/>
+  <circle cx="126" cy="758" r="224" fill="#ffffff" opacity="0.24"/>
+
+  <text x="72" y="88" font-size="52" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif" letter-spacing="1.2">STORM WELT</text>
+  <text x="72" y="124" font-size="24" fill="#8d4e42" font-family="'Nunito Sans','Segoe UI',sans-serif">Trépointe relevée anti-intempéries: meilleure barrière contre pluie, boue et éclaboussures.</text>
+
+  <rect x="56" y="150" width="1288" height="622" rx="28" fill="url(#panel)" stroke="#e6c8b8" stroke-width="3"/>
+
+  <g transform="translate(92 188)">
+    <rect x="0" y="0" width="804" height="546" rx="22" fill="#fffaf6" stroke="#ecd6c8" stroke-width="2"/>
+
+    <text x="26" y="44" font-size="24" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">COUPE DE MONTAGE</text>
+
+    <g transform="translate(30 106)" filter="url(#shadow)">
+      <path d="M0 238c0-34 30-56 63-56h462c104 0 192 32 240 88H0z" fill="url(#upper)"/>
+      <path d="M46 200h584" stroke="#d1ad98" stroke-width="22" stroke-linecap="round"/>
+
+      <path d="M40 218l20-28h560l22 28" stroke="#ab2a22" stroke-width="10" fill="none" stroke-linejoin="round"/>
+      <path d="M48 228h598" stroke="#ab2a22" stroke-width="24" stroke-linecap="round"/>
+      <path d="M54 262h650" stroke="#3f3531" stroke-width="36" stroke-linecap="round"/>
+
+      <path d="M52 229h586" stroke="#fff3ec" stroke-width="5" stroke-linecap="round" stroke-dasharray="3 11"/>
+      <path d="M64 262h620" stroke="#f5c7b1" stroke-width="5" stroke-linecap="round" stroke-dasharray="3 11"/>
+
+      <path d="M644 150c20 18 33 43 33 71" stroke="#7a1d18" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <rect x="548" y="244" width="114" height="82" rx="12" fill="#5b4d46"/>
+    </g>
+
+    <g fill="#6c4a3f" font-family="'Nunito Sans','Segoe UI',sans-serif" font-size="20">
+      <text x="56" y="470">1. Bourrelet relevé de trépointe</text>
+      <text x="56" y="502">2. Couture protégée des infiltrations</text>
+      <text x="56" y="534">3. Semelle robuste adaptée météo humide</text>
+    </g>
+
+    <g stroke="#8f3b31" stroke-width="3" fill="none" stroke-linecap="round">
+      <path d="M486 462h172"/>
+      <path d="M528 495h156"/>
+      <path d="M600 528h118"/>
+    </g>
   </g>
 
-  <g fill="#5a4a43" font-size="24" font-family="'Nunito Sans','Segoe UI',sans-serif">
-    <text x="792" y="230">Bourrelet relevé contre l'eau</text>
-    <text x="792" y="274">Canalise pluie et éclaboussures</text>
-    <text x="792" y="318">Très apprécié sur boots d'hiver</text>
-    <text x="792" y="362">Ressemelage toujours possible</text>
-    <text x="792" y="406">Look plus utilitaire / outdoor chic</text>
-  </g>
+  <g transform="translate(926 188)">
+    <rect x="0" y="0" width="382" height="546" rx="22" fill="#fff8f2" stroke="#ecd2c1" stroke-width="2"/>
 
-  <g stroke="#7a1d18" stroke-width="4" fill="none" stroke-linecap="round">
-    <path d="M752 223H668"/>
-    <path d="M752 267H626"/>
-    <path d="M752 312H653"/>
-    <path d="M752 355H646"/>
-    <path d="M752 399H664"/>
-  </g>
+    <text x="24" y="46" font-size="24" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">SPÉCIFICITÉS</text>
 
-  <text x="70" y="558" font-size="28" fill="#7a1d18" font-family="'Nunito Sans','Segoe UI',sans-serif">Le meilleur choix pour le climat humide quand on veut rester sur une chaussure élégante et réparable.</text>
+    <g font-family="'Nunito Sans','Segoe UI',sans-serif" font-size="21" fill="#65463d">
+      <circle cx="26" cy="100" r="6" fill="#ab2a22"/>
+      <text x="42" y="107">Rebord qui bloque mieux l'eau</text>
+
+      <circle cx="26" cy="148" r="6" fill="#ab2a22"/>
+      <text x="42" y="155">Protection renforcée des coutures</text>
+
+      <circle cx="26" cy="196" r="6" fill="#ab2a22"/>
+      <text x="42" y="203">Esthétique plus utilitaire chic</text>
+
+      <circle cx="26" cy="244" r="6" fill="#ab2a22"/>
+      <text x="42" y="251">Toujours ressemelable</text>
+    </g>
+
+    <rect x="22" y="296" width="338" height="220" rx="16" fill="#fff" stroke="#e8cec0"/>
+    <text x="42" y="336" font-size="20" fill="#8a4a3f" font-family="'Oswald','Arial Narrow',sans-serif">IDÉAL POUR</text>
+    <text x="42" y="374" font-size="19" fill="#6a4a3e" font-family="'Nunito Sans','Segoe UI',sans-serif">• Boots automne / hiver</text>
+    <text x="42" y="406" font-size="19" fill="#6a4a3e" font-family="'Nunito Sans','Segoe UI',sans-serif">• Villes pluvieuses et froides</text>
+    <text x="42" y="438" font-size="19" fill="#6a4a3e" font-family="'Nunito Sans','Segoe UI',sans-serif">• Marche quotidienne prolongée</text>
+
+    <rect x="22" y="474" width="194" height="32" rx="16" fill="#f5e0d3"/>
+    <text x="40" y="496" font-size="16" fill="#8a4a3f" font-family="'Nunito Sans','Segoe UI',sans-serif">Résistance eau: élevée</text>
+    <rect x="230" y="474" width="130" height="32" rx="16" fill="#f5e0d3"/>
+    <text x="248" y="496" font-size="16" fill="#8a4a3f" font-family="'Nunito Sans','Segoe UI',sans-serif">Style: outdoor</text>
+  </g>
 </svg>

@@ -1,46 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
-  <title id="title">Schéma Cousu Main</title>
-  <desc id="desc">Coupe simplifiée d'une trépointe cousue main pour chaussure haut de gamme.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Montage trépointe cousue main</title>
+  <desc id="desc">Schéma technique premium du hand-welted avec couture manuelle et finition haut de gamme.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#fff8f3"/>
-      <stop offset="100%" stop-color="#f7e4da"/>
+      <stop offset="0%" stop-color="#fdf5ef"/>
+      <stop offset="100%" stop-color="#f3ddd1"/>
     </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fffdfa"/>
+      <stop offset="100%" stop-color="#fff5ee"/>
+    </linearGradient>
+    <linearGradient id="upper" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7dece"/>
+      <stop offset="100%" stop-color="#eec3ad"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#6a241d" flood-opacity="0.2"/>
+    </filter>
   </defs>
-  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
-  <text x="70" y="86" font-size="44" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">TRÉPOINTE COUSUE MAIN (HAND-WELTED)</text>
 
-  <g transform="translate(110 174)">
-    <path d="M0 180c0-33 28-56 60-56h486c100 0 174 25 210 70H0z" fill="#f7d9cb"/>
-    <rect x="68" y="104" width="610" height="30" rx="10" fill="#ab2a22"/>
-    <rect x="78" y="144" width="642" height="34" rx="12" fill="#5a4a43"/>
-    <rect x="98" y="80" width="558" height="22" rx="7" fill="#ffecd8"/>
-    <path d="M76 120h592" stroke="#fff8f3" stroke-width="6" stroke-dasharray="2 11" stroke-linecap="round"/>
-    <path d="M90 160h610" stroke="#ffcfb8" stroke-width="6" stroke-dasharray="3 10" stroke-linecap="round"/>
+  <rect width="1400" height="820" fill="url(#bg)"/>
+  <circle cx="1328" cy="102" r="174" fill="#ffffff" opacity="0.32"/>
+  <circle cx="128" cy="758" r="224" fill="#ffffff" opacity="0.24"/>
 
-    <g transform="translate(520 24)">
-      <path d="M0 0l18 20-38 46-24-4z" fill="#ffcfb8"/>
-      <circle cx="20" cy="22" r="10" fill="#7a1d18"/>
-      <path d="M30 30l28 18" stroke="#7a1d18" stroke-width="6" stroke-linecap="round"/>
-      <circle cx="62" cy="49" r="6" fill="#7a1d18"/>
+  <text x="72" y="88" font-size="52" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif" letter-spacing="1.2">TRÉPOINTE COUSUE MAIN</text>
+  <text x="72" y="124" font-size="24" fill="#8d4e42" font-family="'Nunito Sans','Segoe UI',sans-serif">Montage hand-welted: précision artisanale, confort sur mesure et restauration haut de gamme.</text>
+
+  <rect x="56" y="150" width="1288" height="622" rx="28" fill="url(#panel)" stroke="#e6c8b8" stroke-width="3"/>
+
+  <g transform="translate(92 188)">
+    <rect x="0" y="0" width="804" height="546" rx="22" fill="#fffaf6" stroke="#ecd6c8" stroke-width="2"/>
+
+    <text x="26" y="44" font-size="24" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">COUPE DE MONTAGE</text>
+
+    <g transform="translate(30 108)" filter="url(#shadow)">
+      <path d="M0 236c0-35 30-58 64-58h456c102 0 188 33 236 90H0z" fill="url(#upper)"/>
+      <path d="M48 198h578" stroke="#d1ad98" stroke-width="22" stroke-linecap="round"/>
+
+      <path d="M54 222h574" stroke="#ab2a22" stroke-width="26" stroke-linecap="round"/>
+      <path d="M60 258h636" stroke="#3f3531" stroke-width="36" stroke-linecap="round"/>
+      <rect x="544" y="242" width="116" height="82" rx="12" fill="#5b4d46"/>
+
+      <path d="M56 223h568" stroke="#fff3ec" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 9"/>
+      <path d="M68 258h616" stroke="#f5c7b1" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 9"/>
+
+      <g transform="translate(520 112)">
+        <path d="M0 0l16 18-36 42-22-4z" fill="#ffcfb8"/>
+        <circle cx="18" cy="20" r="9" fill="#7a1d18"/>
+        <path d="M28 28l26 16" stroke="#7a1d18" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="58" cy="45" r="5" fill="#7a1d18"/>
+      </g>
+    </g>
+
+    <g fill="#6c4a3f" font-family="'Nunito Sans','Segoe UI',sans-serif" font-size="20">
+      <text x="56" y="470">1. Couture de trépointe réalisée à la main</text>
+      <text x="56" y="502">2. Ajustement fin de la cambrure et du chaussant</text>
+      <text x="56" y="534">3. Excellente base pour restaurations premium</text>
+    </g>
+
+    <g stroke="#8f3b31" stroke-width="3" fill="none" stroke-linecap="round">
+      <path d="M520 462h176"/>
+      <path d="M568 495h146"/>
+      <path d="M604 528h128"/>
     </g>
   </g>
 
-  <g fill="#5a4a43" font-size="24" font-family="'Nunito Sans','Segoe UI',sans-serif">
-    <text x="790" y="232">Couture de trépointe réalisée à la main</text>
-    <text x="790" y="276">Tolérances fines et ajustement personnalisé</text>
-    <text x="790" y="320">Confort progressif haut de gamme</text>
-    <text x="790" y="364">Ressemelages successifs de grande qualité</text>
-    <text x="790" y="408">Temps de fabrication plus long</text>
-  </g>
+  <g transform="translate(926 188)">
+    <rect x="0" y="0" width="382" height="546" rx="22" fill="#fff8f2" stroke="#ecd2c1" stroke-width="2"/>
 
-  <g stroke="#7a1d18" stroke-width="4" fill="none" stroke-linecap="round">
-    <path d="M750 225H677"/>
-    <path d="M750 269H650"/>
-    <path d="M750 313H648"/>
-    <path d="M750 357H694"/>
-    <path d="M750 401H718"/>
-  </g>
+    <text x="24" y="46" font-size="24" fill="#7a1d18" font-family="'Oswald','Arial Narrow',sans-serif">SPÉCIFICITÉS</text>
 
-  <text x="70" y="558" font-size="28" fill="#7a1d18" font-family="'Nunito Sans','Segoe UI',sans-serif">Le choix passion pour une paire d'exception : longévité, précision et réparabilité maximale.</text>
+    <g font-family="'Nunito Sans','Segoe UI',sans-serif" font-size="21" fill="#65463d">
+      <circle cx="26" cy="100" r="6" fill="#ab2a22"/>
+      <text x="42" y="107">Pièces ajustées avec grande précision</text>
+
+      <circle cx="26" cy="148" r="6" fill="#ab2a22"/>
+      <text x="42" y="155">Confort évolutif haut de gamme</text>
+
+      <circle cx="26" cy="196" r="6" fill="#ab2a22"/>
+      <text x="42" y="203">Finitions artisanales distinctives</text>
+
+      <circle cx="26" cy="244" r="6" fill="#ab2a22"/>
+      <text x="42" y="251">Ressemelage et restauration premium</text>
+    </g>
+
+    <rect x="22" y="296" width="338" height="220" rx="16" fill="#fff" stroke="#e8cec0"/>
+    <text x="42" y="336" font-size="20" fill="#8a4a3f" font-family="'Oswald','Arial Narrow',sans-serif">IDÉAL POUR</text>
+    <text x="42" y="374" font-size="19" fill="#6a4a3e" font-family="'Nunito Sans','Segoe UI',sans-serif">• Souliers de collection et passion</text>
+    <text x="42" y="406" font-size="19" fill="#6a4a3e" font-family="'Nunito Sans','Segoe UI',sans-serif">• Port régulier longue durée</text>
+    <text x="42" y="438" font-size="19" fill="#6a4a3e" font-family="'Nunito Sans','Segoe UI',sans-serif">• Recherche de confort précis</text>
+
+    <rect x="22" y="474" width="210" height="32" rx="16" fill="#f5e0d3"/>
+    <text x="40" y="496" font-size="16" fill="#8a4a3f" font-family="'Nunito Sans','Segoe UI',sans-serif">Niveau artisanal: très élevé</text>
+    <rect x="246" y="474" width="114" height="32" rx="16" fill="#f5e0d3"/>
+    <text x="264" y="496" font-size="16" fill="#8a4a3f" font-family="'Nunito Sans','Segoe UI',sans-serif">Temps: long</text>
+  </g>
 </svg>
