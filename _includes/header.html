@@ -41,24 +41,28 @@
       {% if current_lang == 'fr' %}
         {% assign fr_home = '/' %}
         {% assign fr_durable = '/chaussures-durables/' %}
+        {% assign fr_history = '/histoire-chaussures-durables/' %}
         {% assign fr_blog = '/blog/' %}
         {% assign fr_projects = '/projects/' %}
         {% assign fr_contact = '/contact/' %}
 
         <a href="{{ fr_home | relative_url }}" {% if current_path == fr_home %}aria-current="page"{% endif %}>Accueil</a>
         <a href="{{ fr_durable | relative_url }}" {% if current_path == fr_durable %}aria-current="page"{% endif %}>Durables</a>
+        <a href="{{ fr_history | relative_url }}" {% if current_path == fr_history %}aria-current="page"{% endif %}>Histoire</a>
         <a href="{{ fr_blog | relative_url }}" {% if current_path == fr_blog or is_post %}aria-current="page"{% endif %}>Blog</a>
         <a href="{{ fr_projects | relative_url }}" {% if current_path == fr_projects %}aria-current="page"{% endif %}>Modèles et services</a>
         <a href="{{ fr_contact | relative_url }}" {% if current_path == fr_contact %}aria-current="page"{% endif %}>Contact</a>
       {% else %}
         {% assign en_home = '/en/' %}
         {% assign en_durable = '/en/durable-shoes/' %}
+        {% assign en_history = '/en/shoe-history-and-welted-shoes/' %}
         {% assign en_blog = '/en/blog/' %}
         {% assign en_projects = '/en/projects/' %}
         {% assign en_contact = '/en/contact/' %}
 
         <a href="{{ en_home | relative_url }}" {% if current_path == en_home %}aria-current="page"{% endif %}>Home</a>
         <a href="{{ en_durable | relative_url }}" {% if current_path == en_durable %}aria-current="page"{% endif %}>Durable Shoes</a>
+        <a href="{{ en_history | relative_url }}" {% if current_path == en_history %}aria-current="page"{% endif %}>History</a>
         <a href="{{ en_blog | relative_url }}" {% if current_path == en_blog or is_post %}aria-current="page"{% endif %}>Blog</a>
         <a href="{{ en_projects | relative_url }}" {% if current_path == en_projects %}aria-current="page"{% endif %}>Models and services</a>
         <a href="{{ en_contact | relative_url }}" {% if current_path == en_contact %}aria-current="page"{% endif %}>Contact</a>

@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Blog"
-description: "All posts published with this template."
+description: "Articles and guides to understand, care for, and choose durable footwear."
 lang: en
 lang_ref: blog
 permalink: /en/blog/

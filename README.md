@@ -1,83 +1,109 @@
-# Basic GH Page Template
+# Chaussures Durables
 
-Template Jekyll pour GitHub Pages avec:
+Site Jekyll bilingue (FR/EN) dédié à l'éducation autour des chaussures et bottes durables:
 
-- accueil moderne + sections prêtes a personnaliser
-- blog bilingue FR/EN
-- navigation responsive (desktop + mobile)
-- base SEO (jekyll-seo-tag, flux feed, donnees structurees)
-- deploiement automatique via GitHub Actions
+- culture de la chaussure réparable
+- histoire de la chaussure et de la trépointe
+- comparaison fast fashion vs durable
+- conseils d'entretien et astuces de longévité
 
-## Demarrage rapide
+## Démarrage local
 
-1. Clone le depot
+1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/jphenri/basic-gh-page-template.git
-cd basic-gh-page-template
+git clone https://github.com/jphenri/chaussures-durables.git
+cd chaussures-durables
 ```
 
-2. Installe les dependances Ruby/Jekyll
+2. Installer les dépendances
 
 ```bash
 bundle install
 ```
 
-3. Lance le serveur local
+3. Lancer Jekyll
 
 ```bash
 bundle exec jekyll serve
 ```
 
-4. Ouvre le site local
+4. Ouvrir le site
 
 ```text
-http://127.0.0.1:4000/basic-gh-page-template/
+http://127.0.0.1:4000/chaussures-durables/
 ```
 
-Le fichier `Gemfile` est inclus pour garder un environnement local proche de GitHub Pages.
+## Pages principales
 
-## Personnalisation
+### Français
 
-Modifie `/_config.yml`:
+- `/` Accueil
+- `/chaussures-durables/` Guide durable (types de trépointe + marques)
+- `/histoire-chaussures-durables/` Histoire + fast fashion vs durable
+- `/blog/` Articles
+- `/projects/` Modèles et services
+- `/contact/` Contact
 
-- `title`, `description`
-- `url`, `baseurl`
-- `repository_url`
-- `author`, `author_title`, `author_country`, `author_locality`
+### English
 
-Note: pour un nouveau repo GitHub Pages, adapte `baseurl` avec le nom du repo (ou laisse vide pour un domaine custom).
+- `/en/` Home
+- `/en/durable-shoes/` Durable guide
+- `/en/shoe-history-and-welted-shoes/` History + fast fashion vs durable
+- `/en/blog/` Posts
+- `/en/projects/` Models and services
+- `/en/contact/` Contact
 
-Pages principales:
+## Articles de blog
 
-- FR: `/index.md`, `/blog.md`, `/projects.md`, `/contact.md`
-- EN: `/en/index.md`, `/en/blog.md`, `/en/projects.md`, `/en/contact.md`
+Les articles sont dans `/_posts/`.
 
-Articles:
+Pour publier un article bilingue:
 
-- dossier `/_posts/`
-- ajoute `lang: fr|en`
-- ajoute `lang_ref:` identique sur les versions FR/EN d'un meme article pour activer le switch de langue
+1. Créer un post FR et un post EN.
+2. Utiliser le même `lang_ref` pour les deux.
+3. Définir `lang: fr` et `lang: en` selon le fichier.
+4. Ajouter des `tags` utiles pour la lecture et le SEO.
 
-## Structure
+Exemple minimal:
 
-```text
-.
-├── _config.yml
-├── _includes/
-├── _layouts/
-├── _posts/
-├── assets/
-│   ├── css/main.css
-│   └── js/main.js
-├── en/
-└── .github/workflows/jekyll-gh-pages.yml
+```yaml
+---
+title: "Titre"
+lang: fr
+lang_ref: mon-article
+tags:
+  - chaussures durables
+---
 ```
 
-## Publication GitHub Pages
+## Images et identité
 
-Le workflow `/.github/workflows/jekyll-gh-pages.yml` deploie automatiquement sur la branche `main`.
+Les visuels sont stockés dans `assets/img/`:
 
-Pense a activer GitHub Pages dans les parametres du depot:
+- logos: `logo-chaussures-durables.svg`, `logo-chaussures-durables-mark.svg`
+- illustrations: `atelier-cordonnerie.svg`, `chaussures-durables-hero.svg`
+- schémas techniques trépointe: `assets/img/trepointes/`
 
-- Source: GitHub Actions
+## SEO
+
+Le site utilise:
+
+- `jekyll-seo-tag`
+- pages FR/EN liées via `lang_ref`
+- métadonnées (`title`, `description`, `keywords`)
+- JSON-LD (WebPage, Person, etc.)
+
+## Déploiement GitHub Pages
+
+Le workflow `/.github/workflows/jekyll-gh-pages.yml` déploie automatiquement depuis `main`.
+
+Dans GitHub > Settings > Pages:
+
+- Source: **GitHub Actions**
+
+## Contact
+
+Nous n'avons pas encore de façon de nous contacter.
+
+Désolé.
