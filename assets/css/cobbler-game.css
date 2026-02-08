@@ -182,11 +182,20 @@
   order: 30;
 }
 
+.cg-workshop > .cg-mini-wrap {
+  order: 20 !important;
+}
+
+.cg-workshop > .cg-shoe-scene {
+  order: 30 !important;
+}
+
 .cg-mini {
   border: 1px solid #e5c6b8;
   border-radius: 14px;
   background: #fff2ea;
   padding: 0.78rem;
+  scroll-margin-top: 1rem;
 }
 
 .cg-mini h3 {

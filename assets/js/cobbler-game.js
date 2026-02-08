@@ -2208,6 +2208,28 @@
     elements.completionNewOrder.focus();
   }
 
+  function focusAndScrollMiniPanel(panelElement, actionButton, autoClick) {
+    if (!panelElement || panelElement.hidden) {
+      return;
+    }
+
+    panelElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest'
+    });
+
+    window.setTimeout(function () {
+      if (actionButton) {
+        actionButton.focus();
+      }
+
+      if (autoClick && actionButton && !actionButton.disabled) {
+        actionButton.click();
+      }
+    }, 160);
+  }
+
   function hideWeekPopup() {
     elements.weekPopup.hidden = true;
   }
@@ -3295,11 +3317,13 @@
     if (context === 'finish') {
       elements.miniFinishText.textContent = langPack().miniText.finish;
       elements.miniPanels.finish.hidden = false;
+      focusAndScrollMiniPanel(elements.miniPanels.finish, elements.actionFinish, false);
     } else {
       elements.miniTimingText.textContent = interpolate(langPack().miniText.timing, {
         issue: issueLabel(issue.key)
       });
       elements.miniPanels.timing.hidden = false;
+      focusAndScrollMiniPanel(elements.miniPanels.timing, elements.actionTiming, false);
     }
 
     function tick(ts) {
@@ -3374,6 +3398,7 @@
     elements.clicksFill.style.width = '0%';
     updateClicksCounter();
     elements.miniPanels.clicks.hidden = false;
+    focusAndScrollMiniPanel(elements.miniPanels.clicks, elements.actionClicks, true);
 
     state.mini.intervalId = window.setInterval(function () {
       if (state.mini.type !== 'clicks') {
