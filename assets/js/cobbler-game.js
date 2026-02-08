@@ -2052,6 +2052,10 @@
     root.setAttribute('data-stage', stageKey || 'idle');
   }
 
+  function setMiniVisual(isActive) {
+    root.setAttribute('data-mini-active', isActive ? 'true' : 'false');
+  }
+
   function saveProgress() {
     var payload = {
       score: state.score,
@@ -2180,6 +2184,7 @@
 
     hideAllMiniPanels();
     state.actionLock = false;
+    setMiniVisual(false);
   }
 
   function hideCompletionPopup() {
@@ -2524,6 +2529,7 @@
 
   function updateButtons() {
     var activeOrder = !!state.currentOrder && state.stage !== 'done';
+    setMiniVisual(state.mini.type !== 'none');
     elements.mainAction.disabled = !activeOrder || state.actionLock;
     elements.mainAction.textContent = mainActionLabel();
 
