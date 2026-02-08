@@ -75,13 +75,6 @@ keywords:
         <p class="cg-repair-hint" data-repair-hint>Le bon combo matériel + outil facilite le mini-jeu de réparation.</p>
       </section>
 
-      <div class="cg-shoe-scene" aria-hidden="true">
-        <div class="cg-shoe-upper"></div>
-        <div class="cg-shoe-stitch"></div>
-        <div class="cg-shoe-sole"></div>
-        <div class="cg-shoe-heel"></div>
-      </div>
-
       <div class="cg-mini-wrap">
         <section class="cg-mini" data-mini="timing" hidden>
           <h3 data-i18n="miniTimingTitle">Mini-jeu précision</h3>
@@ -112,6 +105,13 @@ keywords:
           </div>
           <button class="btn cg-mini-action" type="button" data-action-finish data-i18n="miniFinishAction">Finaliser</button>
         </section>
+      </div>
+
+      <div class="cg-shoe-scene" aria-hidden="true">
+        <div class="cg-shoe-upper"></div>
+        <div class="cg-shoe-stitch"></div>
+        <div class="cg-shoe-sole"></div>
+        <div class="cg-shoe-heel"></div>
       </div>
     </section>
 
