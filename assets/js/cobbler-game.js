@@ -598,20 +598,76 @@
   };
 
   var ISSUE_SCENE_IMAGE_MAP = {
-    premiumShine: 'mission-premium-shine.png',
-    deepCleaning: 'mission-deep-cleaning.png',
-    leatherHydration: 'mission-leather-hydration.png',
-    replaceTopLiftMission: 'boot-broken.png',
-    halfSoleMission: 'boot-broken.png',
-    upperStitchMission: 'boot-broken.png',
-    heelLiningMission: 'boot-broken.png',
-    recolorMission: 'mission-premium-shine.png',
-    fullResoleMission: 'boot-deconstructed.png',
-    corkReplaceMission: 'boot-deconstructed.png',
-    weltRestitchMission: 'boot-broken.png',
-    weltReplaceMission: 'boot-deconstructed.png',
-    shankReplaceMission: 'boot-deconstructed.png',
-    tornLeatherMission: 'boot-broken.png'
+    premiumShine: {
+      active: 'mission-premium-shine.png',
+      result: 'scene-polished.png',
+      failed: 'scene-worn.png'
+    },
+    deepCleaning: {
+      active: 'mission-deep-cleaning.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    leatherHydration: {
+      active: 'mission-leather-hydration.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    replaceTopLiftMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    halfSoleMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    upperStitchMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    heelLiningMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    recolorMission: {
+      active: 'scene-worn.png',
+      result: 'scene-polished.png',
+      failed: 'scene-worn.png'
+    },
+    fullResoleMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    corkReplaceMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    weltRestitchMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    weltReplaceMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    shankReplaceMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    },
+    tornLeatherMission: {
+      active: 'scene-worn.png',
+      result: 'scene-restored.png',
+      failed: 'scene-worn.png'
+    }
   };
 
   var I18N = {
@@ -660,6 +716,8 @@
         chooseMaterialPlaceholder: 'Choisir un materiel',
         chooseToolPlaceholder: 'Choisir un outil',
         repairHintDefault: 'Le bon combo materiel + outil facilite le mini-jeu.',
+        repairExpectedSetup: 'Setup recommande: {material} + {tool}.',
+        repairExpectedResult: 'Resultat attendu: {result}.',
         materialFeedbackDefault: 'Choisis un materiel pour voir pourquoi ce choix est adapte (ou non).',
         toolFeedbackDefault: 'Choisis un outil pour voir pourquoi ce choix est adapte (ou non).',
         materialFeedbackBest: 'Excellent choix materiel: {selected} est ideal pour {repair}.',
@@ -843,6 +901,7 @@
         repairSetupMissing: 'Choisis le materiel et l\'outil avant la reparation.',
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
         repairSetupPenalty: 'Setup fragile: la reparation sera plus difficile.',
+        repairExpected: 'Reference {issue}: materiel {material}, outil {tool}, resultat attendu {result}.',
         repairMaterialWhy: 'Materiel: {explanation}',
         repairToolWhy: 'Outil: {explanation}',
         repairStarted: 'Reparation lancee sur: {issue}.',
@@ -908,6 +967,8 @@
         chooseMaterialPlaceholder: 'Choose a material',
         chooseToolPlaceholder: 'Choose a tool',
         repairHintDefault: 'The right material + tool combo makes the mini-game easier.',
+        repairExpectedSetup: 'Recommended setup: {material} + {tool}.',
+        repairExpectedResult: 'Expected result: {result}.',
         materialFeedbackDefault: 'Select a material to see why this choice fits (or not).',
         toolFeedbackDefault: 'Select a tool to see why this choice fits (or not).',
         materialFeedbackBest: 'Great material choice: {selected} is ideal for {repair}.',
@@ -1091,6 +1152,7 @@
         repairSetupMissing: 'Choose material and tool before launching repair.',
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
         repairSetupPenalty: 'Weak setup: repair mini-game is harder.',
+        repairExpected: 'Reference {issue}: material {material}, tool {tool}, expected result {result}.',
         repairMaterialWhy: 'Material: {explanation}',
         repairToolWhy: 'Tool: {explanation}',
         repairStarted: 'Repair started on: {issue}.',
@@ -1607,17 +1669,48 @@
     return base.charAt(base.length - 1) === '/' ? base : (base + '/');
   }
 
-  function sceneFileForIssue(issueKey) {
-    return ISSUE_SCENE_IMAGE_MAP[issueKey] || 'boot-broken.png';
-  }
+  function sceneEntryForIssue(issueKey) {
+    var entry = ISSUE_SCENE_IMAGE_MAP[issueKey];
 
-  function sceneFileForStage(stageKey, issueKey) {
-    if (stageKey === 'finishing' || stageKey === 'done') {
-      return 'boot-repaired.png';
+    if (!entry) {
+      return {
+        active: 'scene-worn.png',
+        result: 'scene-restored.png',
+        failed: 'scene-worn.png'
+      };
     }
 
+    if (typeof entry === 'string') {
+      return {
+        active: entry,
+        result: 'scene-restored.png',
+        failed: 'scene-worn.png'
+      };
+    }
+
+    return entry;
+  }
+
+  function sceneFileForIssue(issueKey, variant) {
+    var entry = sceneEntryForIssue(issueKey);
+    var safeVariant = variant || 'active';
+    return entry[safeVariant] || entry.active || 'scene-worn.png';
+  }
+
+  function sceneFileForStage(stageKey, issueKey, outcomeKey) {
     if (issueKey) {
-      return sceneFileForIssue(issueKey);
+      if (stageKey === 'finishing') {
+        return sceneFileForIssue(issueKey, 'result');
+      }
+
+      if (stageKey === 'done') {
+        if (outcomeKey === 'failed') {
+          return sceneFileForIssue(issueKey, 'failed');
+        }
+        return sceneFileForIssue(issueKey, 'result');
+      }
+
+      return sceneFileForIssue(issueKey, 'active');
     }
 
     return 'mission-premium-shine.png';
@@ -1643,8 +1736,8 @@
     return ui.sceneAltIdle;
   }
 
-  function updateSceneImage(stageKey, issueKey) {
-    var src = sceneBasePath() + sceneFileForStage(stageKey, issueKey);
+  function updateSceneImage(stageKey, issueKey, outcomeKey) {
+    var src = sceneBasePath() + sceneFileForStage(stageKey, issueKey, outcomeKey);
     var alt = sceneAltForStage(stageKey, issueKey);
 
     if (src && elements.sceneImage.getAttribute('src') !== src) {
@@ -1947,7 +2040,7 @@
       elements.stageDesc.textContent = pack.stage.idleDesc;
       setIssueVisual('none');
       setStageVisual('idle');
-      updateSceneImage('idle', null);
+      updateSceneImage('idle', null, 'success');
       return;
     }
 
@@ -1956,7 +2049,7 @@
       elements.stageDesc.textContent = pack.stage.diagnosisDesc;
       setIssueVisual(state.currentOrder.issues[0].key);
       setStageVisual('diagnosis');
-      updateSceneImage('diagnosis', state.currentOrder.issues[0].key);
+      updateSceneImage('diagnosis', state.currentOrder.issues[0].key, 'success');
       return;
     }
 
@@ -1968,7 +2061,7 @@
         elements.stageDesc.textContent = pack.stage.finishDesc;
         setIssueVisual('none');
         setStageVisual('repair');
-        updateSceneImage('repair', null);
+        updateSceneImage('repair', null, 'success');
         return;
       }
 
@@ -1982,24 +2075,40 @@
       });
       setIssueVisual(issue.key);
       setStageVisual('repair');
-      updateSceneImage('repair', issue.key);
+      updateSceneImage('repair', issue.key, 'success');
       return;
     }
 
     if (state.stage === 'finishing') {
+      var previewIssue = null;
+      if (state.currentOrder.issues.length > 0) {
+        var previewIndex = clamp(state.repairIndex - 1, 0, state.currentOrder.issues.length - 1);
+        previewIssue = state.currentOrder.issues[previewIndex].key;
+      }
       elements.stageName.textContent = pack.stage.finishTitle;
       elements.stageDesc.textContent = pack.stage.finishDesc;
       setIssueVisual('none');
       setStageVisual('finishing');
-      updateSceneImage('finishing', null);
+      updateSceneImage('finishing', previewIssue, 'success');
       return;
     }
+
+    var fixedCount = 0;
+    for (var doneIndex = 0; doneIndex < state.currentOrder.issues.length; doneIndex += 1) {
+      if (state.currentOrder.issues[doneIndex].status === 'fixed') {
+        fixedCount += 1;
+      }
+    }
+    var doneIssue = state.currentOrder.issues.length > 0
+      ? state.currentOrder.issues[state.currentOrder.issues.length - 1].key
+      : null;
+    var doneOutcome = fixedCount >= state.currentOrder.issues.length ? 'success' : 'failed';
 
     elements.stageName.textContent = pack.stage.doneTitle;
     elements.stageDesc.textContent = pack.stage.doneDesc;
     setIssueVisual('none');
     setStageVisual('done');
-    updateSceneImage('done', null);
+    updateSceneImage('done', doneIssue, doneOutcome);
   }
 
   function renderStats() {
@@ -2169,12 +2278,19 @@
 
     var materialFeedback = explainMaterialChoice(issue, typeDef);
     var toolFeedback = explainToolChoice(issue, typeDef);
+    var expectedSetup = interpolate(langPack().ui.repairExpectedSetup, {
+      material: materialLabel(typeDef.best.material),
+      tool: toolLabel(typeDef.best.tool)
+    });
+    var expectedResult = interpolate(langPack().ui.repairExpectedResult, {
+      result: issueSolution(issue.key)
+    });
 
     setFeedbackText(elements.materialFeedback, materialFeedback.text, materialFeedback.rating);
     setFeedbackText(elements.toolFeedback, toolFeedback.text, toolFeedback.rating);
 
     elements.repairHint.textContent =
-      repairTypeDesc(issue.selectedRepairType) + ' ' + langPack().ui.repairHintDefault;
+      repairTypeDesc(issue.selectedRepairType) + ' ' + expectedSetup + ' ' + expectedResult;
   }
 
   function renderWorkshopPanels() {
@@ -2757,6 +2873,20 @@
       applyPenalty(7, 0, langPack().logs.repairSetupMissing);
       return;
     }
+
+    var typeDef = repairTypeDefinition(issue.key, issue.selectedRepairType);
+
+    if (!typeDef) {
+      applyPenalty(7, 0, langPack().logs.repairSetupMissing);
+      return;
+    }
+
+    addLog(interpolate(langPack().logs.repairExpected, {
+      issue: issueLabel(issue.key),
+      material: materialLabel(typeDef.best.material),
+      tool: toolLabel(typeDef.best.tool),
+      result: issueSolution(issue.key)
+    }));
 
     var setupProfile = evaluateRepairSetup(issue);
 

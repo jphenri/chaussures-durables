@@ -163,4 +163,12 @@ keywords:
     </div>
     <p class="cg-gallery-note">Ces visuels correspondent aux 3 premieres missions. On peut ajouter les autres au fur et a mesure.</p>
   </section>
+
+  <div class="cg-popup-overlay" data-completion-popup hidden>
+    <section class="cg-popup" role="dialog" aria-modal="true" aria-labelledby="cg-popup-title">
+      <h2 id="cg-popup-title" data-i18n="completionPopupTitle">Commande terminee</h2>
+      <p data-completion-popup-message data-i18n="completionPopupDefault">Pret pour un nouveau client ?</p>
+      <button class="btn btn-primary" type="button" data-completion-new-order data-i18n="completionPopupAction">Nouveau client</button>
+    </section>
+  </div>
 </div>

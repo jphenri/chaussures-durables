@@ -182,14 +182,6 @@
   order: 30;
 }
 
-.cobbler-game[data-stage="repair"] .cg-workshop .cg-shoe-scene {
-  order: 20;
-}
-
-.cobbler-game[data-stage="repair"] .cg-workshop .cg-mini-wrap {
-  order: 30;
-}
-
 .cg-mini {
   border: 1px solid #e5c6b8;
   border-radius: 14px;
@@ -471,6 +463,41 @@
   margin-bottom: 0;
   font-size: 0.88rem;
   color: #6d554c;
+}
+
+.cg-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(26, 13, 10, 0.6);
+}
+
+.cg-popup {
+  width: min(460px, 100%);
+  border: 1px solid #d9b8aa;
+  border-radius: 16px;
+  background: #fffaf6;
+  box-shadow: 0 18px 40px rgba(24, 8, 6, 0.34);
+  padding: 1rem;
+}
+
+.cg-popup h2 {
+  margin-top: 0;
+  margin-bottom: 0.55rem;
+  color: #65231d;
+}
+
+.cg-popup p {
+  margin-top: 0;
+  margin-bottom: 0.9rem;
+  color: #5a433b;
+}
+
+.cg-popup .btn {
+  width: 100%;
 }
 
 @media (min-width: 740px) {
