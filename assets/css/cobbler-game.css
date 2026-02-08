@@ -499,6 +499,54 @@
   font-size: 1.12rem;
 }
 
+.cg-inventory {
+  margin-top: 0.7rem;
+  border: 1px solid #e1c0af;
+  border-radius: 12px;
+  background: #fff7f1;
+  padding: 0.58rem;
+}
+
+.cg-inventory h3 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+}
+
+.cg-inventory-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.24rem;
+  max-height: 210px;
+  overflow: auto;
+}
+
+.cg-inventory-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border: 1px solid #ecd0c3;
+  border-radius: 8px;
+  background: #fffdfb;
+  padding: 0.25rem 0.45rem;
+  color: #58423a;
+  font-size: 0.82rem;
+}
+
+.cg-inventory-name {
+  flex: 1;
+}
+
+.cg-inventory-qty {
+  color: #6e2b16;
+}
+
+.cg-inventory-list li.is-low .cg-inventory-qty {
+  color: #9b1e19;
+}
+
 .cg-actions {
   margin-top: 0.8rem;
   display: grid;

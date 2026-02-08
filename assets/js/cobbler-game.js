@@ -1005,6 +1005,8 @@
         marketingLabel: 'Marketing',
         marketingNone: 'Aucun',
         marketingActive: 'Actif ({days}j)',
+        inventoryTitle: 'Inventaire materiaux',
+        inventoryLowTag: 'faible',
         incomingTitle: 'Demandes entrantes',
         incomingSummaryDefault: 'Nouvelles demandes en attente.',
         incomingSummaryTemplate: '{count} demande(s) en attente.',
@@ -1360,6 +1362,8 @@
         marketingLabel: 'Marketing',
         marketingNone: 'None',
         marketingActive: 'Active ({days}d)',
+        inventoryTitle: 'Material inventory',
+        inventoryLowTag: 'low',
         incomingTitle: 'Incoming requests',
         incomingSummaryDefault: 'New requests waiting for your decision.',
         incomingSummaryTemplate: '{count} request(s) waiting.',
@@ -1742,6 +1746,7 @@
     hoursLeft: root.querySelector('[data-stat-hours-left]'),
     marketing: root.querySelector('[data-stat-marketing]'),
     servicesUnlocked: root.querySelector('[data-stat-services]'),
+    inventoryList: root.querySelector('[data-inventory-list]'),
     best: root.querySelector('[data-stat-best]'),
     completed: root.querySelector('[data-stat-completed]'),
     reputation: root.querySelector('[data-stat-reputation]'),
@@ -1823,6 +1828,7 @@
     !elements.hoursLeft ||
     !elements.marketing ||
     !elements.servicesUnlocked ||
+    !elements.inventoryList ||
     !elements.best ||
     !elements.completed ||
     !elements.reputation ||
@@ -3967,6 +3973,39 @@
     elements.satisfactionStars.setAttribute('aria-label', state.satisfaction + '/5');
   }
 
+  function renderInventoryPanel() {
+    elements.inventoryList.innerHTML = '';
+
+    var materialMap = langPack().materials;
+    var keys = Object.keys(materialMap);
+
+    keys.sort(function (a, b) {
+      return materialLabel(a).localeCompare(materialLabel(b), state.lang === 'fr' ? 'fr' : 'en');
+    });
+
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      var qty = materialStock(key);
+      var line = document.createElement('li');
+
+      if (qty <= 1) {
+        line.classList.add('is-low');
+      }
+
+      var nameEl = document.createElement('span');
+      nameEl.className = 'cg-inventory-name';
+      nameEl.textContent = materialLabel(key);
+      line.appendChild(nameEl);
+
+      var qtyEl = document.createElement('strong');
+      qtyEl.className = 'cg-inventory-qty';
+      qtyEl.textContent = formatStockCount(qty) + (qty <= 1 ? ' (' + langPack().ui.inventoryLowTag + ')' : '');
+      line.appendChild(qtyEl);
+
+      elements.inventoryList.appendChild(line);
+    }
+  }
+
   function clearSelect(element, placeholderText) {
     element.innerHTML = '';
     var placeholder = document.createElement('option');
@@ -4151,6 +4190,7 @@
     renderWorkshopPanels();
     renderStage();
     renderStats();
+    renderInventoryPanel();
     updateWeekPopupContent();
     updateSupplyPopupContent();
     updateButtons();

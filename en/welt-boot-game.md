@@ -150,6 +150,13 @@ keywords:
         <p class="cg-stars" data-satisfaction-stars aria-live="polite">★★★★★</p>
       </div>
 
+      <section class="cg-inventory">
+        <h3 data-i18n="inventoryTitle">Inventory</h3>
+        <ul class="cg-inventory-list" data-inventory-list>
+          <li>Contact cement: x0</li>
+        </ul>
+      </section>
+
       <div class="cg-actions">
         <button class="btn" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
         <button class="btn" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Run marketing</button>
