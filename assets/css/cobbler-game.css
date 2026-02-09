@@ -14,8 +14,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
     "intro lang"
-    "stats stats"
-    "order order";
+    "stats stats";
   align-items: start;
   column-gap: 0.7rem;
   row-gap: 0.55rem;
@@ -23,6 +22,9 @@
   border: 1px solid #d9b8aa;
   border-radius: 14px;
   background: linear-gradient(130deg, #fff4ed, #ffece3);
+  position: sticky;
+  top: 0.5rem;
+  z-index: 25;
 }
 
 .cg-intro {
@@ -92,12 +94,12 @@
 }
 
 .cg-topbar-order {
-  grid-area: order;
   width: 100%;
   border: 1px solid #d8b49b;
   border-radius: 12px;
   background: rgba(255, 251, 247, 0.9);
   padding: 0.62rem 0.72rem;
+  margin-top: -0.35rem;
 }
 
 .cg-topbar-order-grid {

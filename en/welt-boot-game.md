@@ -6,6 +6,7 @@ lang: en
 lang_ref: boot-game
 permalink: /en/welt-boot-game/
 hide_site_header: true
+hide_page_header: true
 extra_css:
   - /assets/css/cobbler-game.css
 extra_js:
@@ -40,46 +41,46 @@ keywords:
       <p><span data-i18n="satisfactionLabel">Client satisfaction</span>: <strong data-stat-satisfaction>5/5</strong></p>
       <p class="cg-stars" data-satisfaction-stars aria-live="polite">★★★★★</p>
     </div>
+  </div>
 
-    <section class="cg-topbar-order" aria-live="polite">
-      <div class="cg-topbar-order-grid">
-        <div class="cg-topbar-order-main">
-          <div class="cg-topbar-order-head">
-            <h2 data-i18n="orderTitle">Order</h2>
-            <button class="btn btn-outline cg-shelve-btn" type="button" data-shelve-order data-i18n="shelveOrderBtn">Set aside</button>
-          </div>
-          <div class="cg-order-meta">
-            <p class="cg-order-meta-item">
-              <span data-i18n="clientLabel">Client</span>
-              <strong data-order-client>-</strong>
-            </p>
-            <p class="cg-order-meta-item">
-              <span data-i18n="difficultyLabel">Difficulty</span>
-              <strong data-order-difficulty>-</strong>
-            </p>
-            <p class="cg-order-meta-item">
-              <span data-i18n="timerLabel">Time left</span>
-              <strong data-order-timer>--:--</strong>
-            </p>
-          </div>
+  <section class="cg-topbar-order" aria-live="polite">
+    <div class="cg-topbar-order-grid">
+      <div class="cg-topbar-order-main">
+        <div class="cg-topbar-order-head">
+          <h2 data-i18n="orderTitle">Order</h2>
+          <button class="btn btn-outline cg-shelve-btn" type="button" data-shelve-order data-i18n="shelveOrderBtn">Set aside</button>
         </div>
-
-        <div class="cg-topbar-order-details">
-          <h3 data-i18n="issuesTitle">Issues</h3>
-          <ul class="cg-issues" data-order-issues>
-            <li data-i18n="noOrderYet">No active order yet.</li>
-          </ul>
-
-          <h3 data-i18n="stepsTitle">Steps</h3>
-          <ol class="cg-steps">
-            <li data-step-item="diagnosis">Diagnose</li>
-            <li data-step-item="repair">Repair</li>
-            <li data-step-item="finish">Finish</li>
-          </ol>
+        <div class="cg-order-meta">
+          <p class="cg-order-meta-item">
+            <span data-i18n="clientLabel">Client</span>
+            <strong data-order-client>-</strong>
+          </p>
+          <p class="cg-order-meta-item">
+            <span data-i18n="difficultyLabel">Difficulty</span>
+            <strong data-order-difficulty>-</strong>
+          </p>
+          <p class="cg-order-meta-item">
+            <span data-i18n="timerLabel">Time left</span>
+            <strong data-order-timer>--:--</strong>
+          </p>
         </div>
       </div>
-    </section>
-  </div>
+
+      <div class="cg-topbar-order-details">
+        <h3 data-i18n="issuesTitle">Issues</h3>
+        <ul class="cg-issues" data-order-issues>
+          <li data-i18n="noOrderYet">No active order yet.</li>
+        </ul>
+
+        <h3 data-i18n="stepsTitle">Steps</h3>
+        <ol class="cg-steps">
+          <li data-step-item="diagnosis">Diagnose</li>
+          <li data-step-item="repair">Repair</li>
+          <li data-step-item="finish">Finish</li>
+        </ol>
+      </div>
+    </div>
+  </section>
 
   <div class="cg-layout">
     <aside class="cg-panel cg-order" aria-live="polite">
