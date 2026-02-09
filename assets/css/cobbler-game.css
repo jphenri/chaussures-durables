@@ -1923,3 +1923,51 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Supply popup compaction */
+.cobbler-game .cg-supply-popup {
+  width: min(1180px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.cobbler-game .cg-supply-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.cobbler-game .cg-supply-list .cg-week-upgrade {
+  padding: 0.52rem 0.56rem;
+}
+
+.cobbler-game .cg-supply-list .cg-week-upgrade h4 {
+  margin-bottom: 0.12rem;
+  font-size: 0.92rem;
+}
+
+.cobbler-game .cg-supply-list .cg-week-upgrade p {
+  margin-bottom: 0.2rem;
+  font-size: 0.82rem;
+  line-height: 1.28;
+}
+
+.cobbler-game .cg-supply-list .cg-upgrade-row {
+  margin-top: 0.22rem;
+}
+
+@media (min-width: 880px) {
+  .cobbler-game .cg-supply-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1180px) {
+  .cobbler-game .cg-supply-popup {
+    width: min(1320px, 100%);
+  }
+
+  .cobbler-game .cg-supply-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
