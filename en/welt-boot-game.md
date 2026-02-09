@@ -21,10 +21,11 @@ keywords:
 <div class="cobbler-game" data-cobbler-game data-lang="en" data-issue="none" data-scene-base="{{ '/assets/img/sora/' | relative_url }}">
   <div class="cg-topbar">
     <div class="cg-topbar-actions">
+      <button class="btn cg-head-main-action" type="button" data-main-action data-i18n="mainActionIdle">Action unavailable</button>
+      <button class="btn btn-primary cg-head-new-order" type="button" data-new-order data-i18n="newOrderBtn">Start order</button>
       <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
       <button class="btn btn-outline cg-head-action" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Run marketing</button>
       <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
-      <button class="btn cg-head-main-action" type="button" data-main-action-header data-i18n="mainActionDiagnosis">Confirm diagnosis</button>
       <a class="btn btn-outline cg-exit-link" href="{{ '/en/' | relative_url }}" data-i18n="exitGameBtn">Exit game</a>
       <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
     </div>
@@ -86,10 +87,6 @@ keywords:
 
   <div class="cg-layout">
     <aside class="cg-panel cg-order" aria-live="polite">
-      <div class="cg-order-cta">
-        <button class="btn btn-primary" type="button" data-new-order data-i18n="newOrderBtn">Start order</button>
-      </div>
-
       <section class="cg-queue-builder">
         <h3 data-i18n="incomingTitle">Incoming requests</h3>
         <p class="cg-queue-summary" data-incoming-summary data-i18n="incomingSummaryDefault">New requests waiting for your decision.</p>
@@ -172,30 +169,20 @@ keywords:
         <img src="{{ '/assets/img/sora/mission-premium-shine.png' | relative_url }}" alt="" loading="lazy" decoding="async" data-shoe-scene-image>
       </div>
     </section>
-
-    <aside class="cg-panel cg-tools">
-      <h2 data-i18n="toolsTitle">Action</h2>
-      <div class="cg-tools-grid">
-        <button class="btn cg-tool-btn" type="button" data-main-action>Confirm diagnosis</button>
-      </div>
-
-      <section class="cg-inventory">
-        <h3 data-i18n="inventoryTitle">Inventory</h3>
-        <ul class="cg-inventory-list" data-inventory-list>
-          <li>Contact cement: x0</li>
-        </ul>
-      </section>
-
-      <div class="cg-actions">
-        <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Reset progress</button>
-      </div>
-
-      <p class="cg-shortcuts" data-i18n="shortcutsText">Keyboard shortcuts: N (new client), A (main action), Space/Enter (mini-game).</p>
-    </aside>
   </div>
 
   <section class="cg-panel cg-log">
     <h2 data-i18n="logTitle">Workshop log</h2>
+    <section class="cg-inventory">
+      <h3 data-i18n="inventoryTitle">Inventory</h3>
+      <ul class="cg-inventory-list" data-inventory-list>
+        <li>Contact cement: x0</li>
+      </ul>
+    </section>
+    <div class="cg-actions">
+      <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Reset progress</button>
+    </div>
+    <p class="cg-shortcuts" data-i18n="shortcutsText">Keyboard shortcuts: N (new client), A (main action), Space/Enter (mini-game).</p>
     <ul data-log-list>
       <li>Workshop ready.</li>
     </ul>
