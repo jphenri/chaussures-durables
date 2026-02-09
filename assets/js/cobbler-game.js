@@ -16,6 +16,9 @@
   var MONTHLY_RENT = 700;
   var MARKETING_COST = 180;
   var MARKETING_DURATION_DAYS = 7;
+  var COMPLETED_STORAGE_CAPACITY = 12;
+  var CLIENT_CALL_HOURS_COST = 2;
+  var CLIENT_CALL_BATCH_MAX = 8;
   var START_DATE_ISO = '2026-01-05';
 
   var STARTING_STOCK = {
@@ -1000,6 +1003,7 @@
         levelLabel: 'Niveau',
         satisfactionLabel: 'Satisfaction client',
         newOrderBtn: 'Demarrer une commande',
+        callClientsBtn: 'Appeler clients',
         exitGameBtn: 'Quitter le jeu',
         dateLabel: 'Date',
         dayHoursLabel: 'Heures du jour',
@@ -1050,6 +1054,7 @@
         chooseMaterialPlaceholder: 'Choisir un materiel',
         chooseToolPlaceholder: 'Choisir un outil',
         repairHintDefault: 'Le bon combo materiel + outil facilite le mini-jeu.',
+        repairMultiMaterialHintBonus: 'Bonus multi-materiaux actif ({count}): mini-jeu plus facile et evaluation amelioree.',
         repairExpectedSetup: 'Setup recommande: {material} + {tool}.',
         repairExpectedResult: 'Resultat attendu: {result}.',
         materialFeedbackDefault: 'Choisis un ou plusieurs materiaux pour voir pourquoi ce choix est adapte (ou non).',
@@ -1077,6 +1082,7 @@
         weekLabel: 'Semaine',
         hoursLeftLabel: 'Heures restantes',
         servicesUnlockedLabel: 'Services debloques',
+        storageLabel: 'Stock termine',
         weekPopupTitle: 'Resume hebdomadaire',
         weekPopupDefault: 'Semaine terminee. Verifie le bilan puis investis dans tes outils.',
         weekPopupSummary: 'Semaine {week}: {orders} commandes traitees. Tu as utilise {hoursUsed}.',
@@ -1294,6 +1300,7 @@
         repairTypeMissing: 'Type de reparation manquant pour {issue}.',
         repairSetupMissing: 'Choisis un ou plusieurs materiaux et outils avant la reparation.',
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
+        repairMaterialComboBonus: 'Bonus materiaux: {count} bons materiaux combines, mini-jeu facilite.',
         repairSetupPenalty: 'Setup fragile: la reparation sera plus difficile.',
         repairExpected: 'Reference {issue}: materiel {material}, outil {tool}, resultat attendu {result}.',
         repairNoMaterialStock: 'Stock insuffisant pour {material}. Commande des materiaux.',
@@ -1312,6 +1319,12 @@
         speedBonus: 'Bonus rapidite: +{points}.',
         timerPenalty: 'Temps ecoule: malus score + satisfaction.',
         orderSummary: 'Commande livree avec {stars} etoiles ({fixed}/{total} reparations solides).',
+        orderStored: 'Commande terminee stockee: {client}. Stock {used}/{capacity}. Paiement en attente {amount}.',
+        storageFull: 'Stock termine plein ({used}/{capacity}). Appelle les clients avant une nouvelle livraison.',
+        callClientsNone: 'Aucune paire terminee a appeler.',
+        callClientsNeedHours: 'Appeler les clients demande 2h de travail disponible.',
+        callClientsQueued: 'Clients appeles: {count} paires. Retrait prevu le {date}.',
+        pickupPaid: 'Retraits clients: {count} paires payees pour {amount}.',
         servicePayout: 'Facturation: {amount} pour {hours}.',
         serviceExcellentBonus: 'Service excellent: bonus client {amount}.',
         weekClosed: 'Semaine {week} terminee. Bilan: {net} (revenus {revenue}, bonus {bonus}, loyer {rent}, penalite file {queue}).',
@@ -1364,6 +1377,7 @@
         levelLabel: 'Level',
         satisfactionLabel: 'Client satisfaction',
         newOrderBtn: 'Start order',
+        callClientsBtn: 'Call clients',
         exitGameBtn: 'Exit game',
         dateLabel: 'Date',
         dayHoursLabel: 'Day hours',
@@ -1414,6 +1428,7 @@
         chooseMaterialPlaceholder: 'Choose a material',
         chooseToolPlaceholder: 'Choose a tool',
         repairHintDefault: 'The right material + tool combo makes the mini-game easier.',
+        repairMultiMaterialHintBonus: 'Multi-material bonus active ({count}): easier mini-game and better setup review.',
         repairExpectedSetup: 'Recommended setup: {material} + {tool}.',
         repairExpectedResult: 'Expected result: {result}.',
         materialFeedbackDefault: 'Select one or more materials to see why this choice fits (or not).',
@@ -1441,6 +1456,7 @@
         weekLabel: 'Week',
         hoursLeftLabel: 'Hours left',
         servicesUnlockedLabel: 'Unlocked services',
+        storageLabel: 'Finished stock',
         weekPopupTitle: 'Weekly summary',
         weekPopupDefault: 'Week completed. Review your results and upgrade tools.',
         weekPopupSummary: 'Week {week}: {orders} orders completed. You used {hoursUsed}.',
@@ -1658,6 +1674,7 @@
         repairTypeMissing: 'Missing repair type for {issue}.',
         repairSetupMissing: 'Choose one or more materials and tools before launching repair.',
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
+        repairMaterialComboBonus: 'Material bonus: {count} good materials combined, mini-game eased.',
         repairSetupPenalty: 'Weak setup: repair mini-game is harder.',
         repairExpected: 'Reference {issue}: material {material}, tool {tool}, expected result {result}.',
         repairNoMaterialStock: 'Not enough stock for {material}. Order materials first.',
@@ -1676,6 +1693,12 @@
         speedBonus: 'Speed bonus: +{points}.',
         timerPenalty: 'Time expired: score and satisfaction penalty.',
         orderSummary: 'Order delivered with {stars} stars ({fixed}/{total} strong repairs).',
+        orderStored: 'Completed order stored: {client}. Storage {used}/{capacity}. Waiting payment {amount}.',
+        storageFull: 'Finished storage is full ({used}/{capacity}). Call clients before finishing another order.',
+        callClientsNone: 'No completed pairs ready to call.',
+        callClientsNeedHours: 'Calling clients requires 2h of available work time.',
+        callClientsQueued: 'Clients called: {count} pairs. Pickup planned on {date}.',
+        pickupPaid: 'Client pickups: {count} pairs paid for {amount}.',
         servicePayout: 'Invoice paid: {amount} for {hours}.',
         serviceExcellentBonus: 'Excellent service: client bonus {amount}.',
         weekClosed: 'Week {week} closed. Net result: {net} (revenue {revenue}, bonus {bonus}, rent {rent}, queue penalty {queue}).',
@@ -1767,9 +1790,11 @@
     completed: root.querySelector('[data-stat-completed]'),
     reputation: root.querySelector('[data-stat-reputation]'),
     level: root.querySelector('[data-stat-level]'),
+    storage: root.querySelector('[data-stat-storage]'),
     satisfaction: root.querySelector('[data-stat-satisfaction]'),
     satisfactionStars: root.querySelector('[data-satisfaction-stars]'),
     newOrder: root.querySelector('[data-new-order]'),
+    callClients: root.querySelector('[data-call-clients]'),
     resetSave: root.querySelector('[data-reset-save]'),
     logList: root.querySelector('[data-log-list]'),
     completionPopup: root.querySelector('[data-completion-popup]'),
@@ -1849,9 +1874,11 @@
     !elements.completed ||
     !elements.reputation ||
     !elements.level ||
+    !elements.storage ||
     !elements.satisfaction ||
     !elements.satisfactionStars ||
     !elements.newOrder ||
+    !elements.callClients ||
     !elements.resetSave ||
     !elements.logList ||
     !elements.completionPopup ||
@@ -1892,6 +1919,7 @@
     clientQueue: [],
     stock: Object.assign({}, STARTING_STOCK),
     pendingSupplies: [],
+    completedStorage: [],
     hoursSinceSupplyOrder: SUPPLY_COOLDOWN_HOURS,
     marketingDaysLeft: 0,
     weeklyRevenue: 0,
@@ -2045,6 +2073,43 @@
     return isWeekendDate(currentDateObj());
   }
 
+  function completedStorageCount() {
+    return Array.isArray(state.completedStorage) ? state.completedStorage.length : 0;
+  }
+
+  function completedStorageFreeSlots() {
+    return Math.max(0, COMPLETED_STORAGE_CAPACITY - completedStorageCount());
+  }
+
+  function storageAwaitingCallEntries() {
+    var pending = [];
+    var list = Array.isArray(state.completedStorage) ? state.completedStorage : [];
+
+    for (var i = 0; i < list.length; i += 1) {
+      if (!list[i].pickupDate) {
+        pending.push(list[i]);
+      }
+    }
+
+    return pending;
+  }
+
+  function storageAwaitingCallCount() {
+    return storageAwaitingCallEntries().length;
+  }
+
+  function nextBusinessDateIsoFrom(dateIso) {
+    var cursor = parseIsoDate(dateIso || state.currentDate);
+    var guard = 0;
+
+    do {
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+      guard += 1;
+    } while (isWeekendDate(cursor) && guard < 10);
+
+    return dateToIso(cursor);
+  }
+
   function formatCalendarDate(dateIso) {
     var locale = state.lang === 'fr' ? 'fr-CA' : 'en-US';
     var dateObj = parseIsoDate(dateIso);
@@ -2157,6 +2222,50 @@
     state.pendingSupplies = remaining;
   }
 
+  function applyClientPickupsForDate(dateIso) {
+    if (!state.completedStorage.length) {
+      return;
+    }
+
+    var remaining = [];
+    var pickedCount = 0;
+    var pickedAmount = 0;
+    var pickedBonus = 0;
+
+    for (var i = 0; i < state.completedStorage.length; i += 1) {
+      var item = state.completedStorage[i];
+      if (item.pickupDate && item.pickupDate <= dateIso) {
+        var payout = Math.max(0, Math.round(Number(item.payout) || 0));
+        var baseRevenue = Math.max(0, Math.round(Number(item.baseRevenue) || 0));
+        var excellenceBonus = Math.max(0, Math.round(Number(item.excellenceBonus) || 0));
+
+        state.money += payout;
+        state.weeklyRevenue += baseRevenue;
+        state.weeklyExcellentBonus += excellenceBonus;
+        pickedCount += 1;
+        pickedAmount += payout;
+        pickedBonus += excellenceBonus;
+      } else {
+        remaining.push(item);
+      }
+    }
+
+    state.completedStorage = remaining;
+
+    if (pickedCount > 0) {
+      addLog(interpolate(langPack().logs.pickupPaid, {
+        count: String(pickedCount),
+        amount: formatMoney(pickedAmount)
+      }));
+
+      if (pickedBonus > 0) {
+        addLog(interpolate(langPack().logs.serviceExcellentBonus, {
+          amount: formatMoney(pickedBonus)
+        }));
+      }
+    }
+  }
+
   function handleDayTransition(previousDateObj, nextDateObj, addCooldown) {
     var previousMonthKey = previousDateObj.getUTCFullYear() + '-' + pad2(previousDateObj.getUTCMonth() + 1);
     var nextMonthKey = nextDateObj.getUTCFullYear() + '-' + pad2(nextDateObj.getUTCMonth() + 1);
@@ -2179,6 +2288,7 @@
     setCurrentDateFromObj(nextDateObj);
     state.dayHoursLeft = isWeekendDate(nextDateObj) ? 0 : DAY_HOURS_LIMIT;
     applySupplyDeliveriesForDate(state.currentDate);
+    applyClientPickupsForDate(state.currentDate);
     refillIncomingLeads();
   }
 
@@ -2743,6 +2853,43 @@
     return labels.join(', ');
   }
 
+  function materialSelectionStats(issue, typeDef) {
+    var selected = normalizeSelectedKeys(issueSelectedMaterials(issue), typeDef.materialOptions || []);
+    var best = typeDef.best.material;
+    var okKeys = Array.isArray(typeDef.okMaterials) ? typeDef.okMaterials : [];
+    var stats = {
+      total: selected.length,
+      good: 0,
+      bad: 0
+    };
+
+    for (var i = 0; i < selected.length; i += 1) {
+      if (selected[i] === best || okKeys.indexOf(selected[i]) !== -1) {
+        stats.good += 1;
+      } else {
+        stats.bad += 1;
+      }
+    }
+
+    return stats;
+  }
+
+  function materialComboBonusScore(issue, typeDef) {
+    var stats = materialSelectionStats(issue, typeDef);
+
+    if (stats.good < 2 || stats.bad > 0) {
+      return {
+        bonus: 0,
+        goodCount: stats.good
+      };
+    }
+
+    return {
+      bonus: Math.min(2, stats.good - 1),
+      goodCount: stats.good
+    };
+  }
+
   function choiceScore(choice) {
     if (choice === 'best') {
       return 2;
@@ -3057,6 +3204,7 @@
       clientQueue: state.clientQueue,
       stock: state.stock,
       pendingSupplies: state.pendingSupplies,
+      completedStorage: state.completedStorage,
       hoursSinceSupplyOrder: state.hoursSinceSupplyOrder,
       marketingDaysLeft: state.marketingDaysLeft,
       weeklyRevenue: state.weeklyRevenue,
@@ -3245,6 +3393,28 @@
         }
       }
 
+      state.completedStorage = [];
+      if (Array.isArray(parsed.completedStorage)) {
+        for (var storedIndex = 0; storedIndex < parsed.completedStorage.length; storedIndex += 1) {
+          var stored = parsed.completedStorage[storedIndex];
+          if (
+            stored &&
+            typeof stored.client === 'string' &&
+            Number.isFinite(Number(stored.payout))
+          ) {
+            state.completedStorage.push({
+              id: stored.id || ('STO-' + Date.now().toString(36).toUpperCase() + '-' + String(storedIndex)),
+              client: stored.client,
+              payout: Math.max(0, Math.round(Number(stored.payout) || 0)),
+              baseRevenue: Math.max(0, Math.round(Number(stored.baseRevenue) || 0)),
+              excellenceBonus: Math.max(0, Math.round(Number(stored.excellenceBonus) || 0)),
+              finishedDate: typeof stored.finishedDate === 'string' ? stored.finishedDate : state.currentDate,
+              pickupDate: typeof stored.pickupDate === 'string' ? stored.pickupDate : ''
+            });
+          }
+        }
+      }
+
       if (parsed.weekSummary && typeof parsed.weekSummary === 'object') {
         state.weekSummary = {
           week: clamp(Number(parsed.weekSummary.week) || state.week, 1, 999),
@@ -3268,6 +3438,7 @@
         state.dayHoursLeft = 0;
       }
       applySupplyDeliveriesForDate(state.currentDate);
+      applyClientPickupsForDate(state.currentDate);
       refillIncomingLeads();
     } catch (error) {
       // ignore malformed storage
@@ -4029,6 +4200,10 @@
   function updateButtons() {
     var activeOrder = !!state.currentOrder && state.stage !== 'done';
     var isMainActionDisabled = !activeOrder || state.actionLock;
+    var hasOpenOrder = !!state.currentOrder && state.stage !== 'done';
+    var hasHoursForCalls =
+      state.dayHoursLeft >= CLIENT_CALL_HOURS_COST &&
+      state.weekHoursLeft >= CLIENT_CALL_HOURS_COST;
     var actionLabel = mainActionLabel();
     setMiniVisual(state.mini.type !== 'none');
     elements.mainAction.disabled = isMainActionDisabled;
@@ -4046,6 +4221,13 @@
     setRepairChoiceDisabled(elements.repairMaterialList, 'material', !inRepairStage);
     setRepairChoiceDisabled(elements.repairToolList, 'tool', !inRepairStage);
     elements.shelveOrder.disabled = !activeOrder || state.actionLock;
+    elements.callClients.disabled =
+      state.actionLock ||
+      !!state.weekSummary ||
+      hasOpenOrder ||
+      isWeekendCurrentDay() ||
+      !hasHoursForCalls ||
+      storageAwaitingCallCount() <= 0;
     elements.waitNextDay.disabled = false;
   }
 
@@ -4300,6 +4482,7 @@
       ? interpolate(langPack().ui.marketingActive, { days: String(state.marketingDaysLeft) })
       : langPack().ui.marketingNone;
     elements.servicesUnlocked.textContent = String(unlockedServiceCount());
+    elements.storage.textContent = String(completedStorageCount()) + '/' + String(COMPLETED_STORAGE_CAPACITY);
     elements.best.textContent = String(Math.round(state.bestScore));
     elements.completed.textContent = String(Math.round(state.completedOrders));
     elements.reputation.textContent = String(Math.round(state.reputation));
@@ -4536,8 +4719,15 @@
     setFeedbackText(elements.materialFeedback, materialFeedback.text, materialFeedback.rating);
     setFeedbackText(elements.toolFeedback, toolFeedback.text, toolFeedback.rating);
 
-    elements.repairHint.textContent =
+    var repairHintText =
       repairTypeDesc(issue.selectedRepairType) + ' ' + expectedSetup + ' ' + expectedResult;
+    var comboInfo = materialComboBonusScore(issue, typeDef);
+    if (comboInfo.bonus > 0) {
+      repairHintText += ' ' + interpolate(langPack().ui.repairMultiMaterialHintBonus, {
+        count: String(comboInfo.goodCount)
+      });
+    }
+    elements.repairHint.textContent = repairHintText;
   }
 
   function renderWorkshopPanels() {
@@ -4882,6 +5072,15 @@
       return;
     }
 
+    if (completedStorageCount() >= COMPLETED_STORAGE_CAPACITY) {
+      notifyActionError(interpolate(langPack().logs.storageFull, {
+        used: String(completedStorageCount()),
+        capacity: String(COMPLETED_STORAGE_CAPACITY)
+      }));
+      renderAll();
+      return;
+    }
+
     if (state.clientQueue.length === 0) {
       if (shouldEndWeek()) {
         endCurrentWeek();
@@ -5008,10 +5207,12 @@
 
     var materialFeedback = explainMaterialChoice(issue, typeDef);
     var toolFeedback = explainToolChoice(issue, typeDef);
-    var score = choiceScore(materialFeedback.rating) + choiceScore(toolFeedback.rating);
+    var comboInfo = materialComboBonusScore(issue, typeDef);
+    var score = choiceScore(materialFeedback.rating) + choiceScore(toolFeedback.rating) + comboInfo.bonus;
+    var profile = null;
 
     if (score >= 3) {
-      return {
+      profile = {
         score: score,
         materialFeedback: materialFeedback,
         toolFeedback: toolFeedback,
@@ -5024,10 +5225,8 @@
         gainDelta: 0.3,
         startPenalty: 0
       };
-    }
-
-    if (score >= 1) {
-      return {
+    } else if (score >= 1) {
+      profile = {
         score: score,
         materialFeedback: materialFeedback,
         toolFeedback: toolFeedback,
@@ -5040,10 +5239,8 @@
         gainDelta: 0.14,
         startPenalty: 0
       };
-    }
-
-    if (score >= 0) {
-      return {
+    } else if (score >= 0) {
+      profile = {
         score: score,
         materialFeedback: materialFeedback,
         toolFeedback: toolFeedback,
@@ -5056,21 +5253,35 @@
         gainDelta: -0.06,
         startPenalty: 1
       };
+    } else {
+      profile = {
+        score: score,
+        materialFeedback: materialFeedback,
+        toolFeedback: toolFeedback,
+        ratingKey: 'poor',
+        qualityBonus: -3,
+        zoneDelta: -4,
+        speedDelta: 7,
+        requiredDelta: 4,
+        timeDelta: -900,
+        gainDelta: -0.2,
+        startPenalty: 3
+      };
     }
 
-    return {
-      score: score,
-      materialFeedback: materialFeedback,
-      toolFeedback: toolFeedback,
-      ratingKey: 'poor',
-      qualityBonus: -3,
-      zoneDelta: -4,
-      speedDelta: 7,
-      requiredDelta: 4,
-      timeDelta: -900,
-      gainDelta: -0.2,
-      startPenalty: 3
-    };
+    profile.materialComboBonus = comboInfo.bonus;
+    profile.materialGoodCount = comboInfo.goodCount;
+
+    if (comboInfo.bonus > 0) {
+      profile.qualityBonus += comboInfo.bonus * 2;
+      profile.zoneDelta += comboInfo.bonus * 2;
+      profile.speedDelta -= comboInfo.bonus * 2;
+      profile.requiredDelta -= comboInfo.bonus;
+      profile.timeDelta += comboInfo.bonus * 300;
+      profile.gainDelta += comboInfo.bonus * 0.08;
+    }
+
+    return profile;
   }
 
   function beginTimingMiniGame(context, issue, setupProfile) {
@@ -5316,24 +5527,27 @@
 
     var payout = Math.max(0, Math.round(baseRevenue + excellenceBonus));
 
-    state.money += payout;
-    state.weeklyRevenue += Math.round(baseRevenue);
-    state.weeklyExcellentBonus += Math.round(excellenceBonus);
     state.weeklyOrders += 1;
     state.weekHoursLeft = clamp(state.weekHoursLeft - orderHoursSpent, 0, WEEK_HOURS_LIMIT);
     addCooldownHours(orderHoursSpent);
     consumeWorkHours(orderHoursSpent);
 
-    addLog(interpolate(langPack().logs.servicePayout, {
-      amount: formatMoney(payout),
-      hours: formatHours(orderHoursSpent)
-    }));
+    state.completedStorage.push({
+      id: 'STO-' + Date.now().toString(36).toUpperCase() + '-' + String(Math.floor(Math.random() * 1000)),
+      client: state.currentOrder.client,
+      payout: payout,
+      baseRevenue: Math.round(baseRevenue),
+      excellenceBonus: Math.round(excellenceBonus),
+      finishedDate: state.currentDate,
+      pickupDate: ''
+    });
 
-    if (excellenceBonus > 0) {
-      addLog(interpolate(langPack().logs.serviceExcellentBonus, {
-        amount: formatMoney(excellenceBonus)
-      }));
-    }
+    addLog(interpolate(langPack().logs.orderStored, {
+      client: state.currentOrder.client,
+      used: String(completedStorageCount()),
+      capacity: String(COMPLETED_STORAGE_CAPACITY),
+      amount: formatMoney(payout)
+    }));
 
     state.completedOrders += 1;
 
@@ -5486,6 +5700,12 @@
       rating: setupRatingLabel(setupProfile.ratingKey)
     }));
 
+    if (setupProfile.materialComboBonus > 0) {
+      addLog(interpolate(langPack().logs.repairMaterialComboBonus, {
+        count: String(setupProfile.materialGoodCount)
+      }));
+    }
+
     addLog(interpolate(langPack().logs.repairMaterialWhy, {
       explanation: setupProfile.materialFeedback.text
     }));
@@ -5517,6 +5737,14 @@
   }
 
   function startFinishFromTool() {
+    if (completedStorageCount() >= COMPLETED_STORAGE_CAPACITY) {
+      notifyActionError(interpolate(langPack().logs.storageFull, {
+        used: String(completedStorageCount()),
+        capacity: String(COMPLETED_STORAGE_CAPACITY)
+      }));
+      return;
+    }
+
     beginTimingMiniGame('finish', null, null);
   }
 
@@ -5602,6 +5830,7 @@
     state.clientQueue = [];
     state.stock = cloneStartingStock();
     state.pendingSupplies = [];
+    state.completedStorage = [];
     state.hoursSinceSupplyOrder = SUPPLY_COOLDOWN_HOURS;
     state.marketingDaysLeft = 0;
     state.weeklyRevenue = 0;
@@ -5923,6 +6152,64 @@
     renderAll();
   }
 
+  function callClientsForPickup() {
+    hideSupplyPopup();
+
+    if (state.weekSummary) {
+      notifyActionError(langPack().logs.weekNeedsSummary);
+      showWeekPopup();
+      return;
+    }
+
+    if (state.actionLock) {
+      notifyActionError(langPack().logs.miniLocked);
+      return;
+    }
+
+    if (state.currentOrder && state.stage !== 'done') {
+      notifyActionError(langPack().logs.waitBlockedActiveOrder);
+      return;
+    }
+
+    if (isWeekendCurrentDay()) {
+      notifyActionError(langPack().logs.weekendClosed);
+      return;
+    }
+
+    if (
+      state.dayHoursLeft < CLIENT_CALL_HOURS_COST ||
+      state.weekHoursLeft < CLIENT_CALL_HOURS_COST
+    ) {
+      notifyActionError(langPack().logs.callClientsNeedHours);
+      return;
+    }
+
+    var awaiting = storageAwaitingCallEntries();
+    if (awaiting.length === 0) {
+      notifyActionError(langPack().logs.callClientsNone);
+      return;
+    }
+
+    var callCount = Math.min(CLIENT_CALL_BATCH_MAX, awaiting.length);
+    var pickupDateIso = nextBusinessDateIsoFrom(state.currentDate);
+
+    for (var i = 0; i < callCount; i += 1) {
+      awaiting[i].pickupDate = pickupDateIso;
+    }
+
+    state.dayHoursLeft = Math.max(0, state.dayHoursLeft - CLIENT_CALL_HOURS_COST);
+    state.weekHoursLeft = clamp(state.weekHoursLeft - CLIENT_CALL_HOURS_COST, 0, WEEK_HOURS_LIMIT);
+    addCooldownHours(CLIENT_CALL_HOURS_COST);
+
+    addLog(interpolate(langPack().logs.callClientsQueued, {
+      count: String(callCount),
+      date: formatCalendarDate(pickupDateIso)
+    }));
+
+    saveProgress();
+    renderAll();
+  }
+
   function waitNextDay() {
     hideSupplyPopup();
 
@@ -6040,6 +6327,7 @@
   elements.langToggle.addEventListener('click', switchLanguage);
 
   elements.newOrder.addEventListener('click', startNewOrder);
+  elements.callClients.addEventListener('click', callClientsForPickup);
   elements.shelveOrder.addEventListener('click', shelveCurrentOrder);
   elements.incomingList.addEventListener('click', handleIncomingLeadAction);
   elements.queueList.addEventListener('click', handleQueueAction);

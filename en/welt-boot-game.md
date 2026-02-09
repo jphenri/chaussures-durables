@@ -23,6 +23,7 @@ keywords:
     <div class="cg-topbar-actions">
       <button class="btn cg-head-main-action" type="button" data-main-action data-i18n="mainActionIdle">Action unavailable</button>
       <button class="btn btn-primary cg-head-new-order" type="button" data-new-order data-i18n="newOrderBtn">Start order</button>
+      <button class="btn btn-outline cg-head-action" type="button" data-call-clients data-i18n="callClientsBtn">Call clients</button>
       <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
       <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
       <a class="btn btn-outline cg-exit-link" href="{{ '/en/' | relative_url }}" data-i18n="exitGameBtn">Exit game</a>
@@ -36,6 +37,7 @@ keywords:
       <p><span data-i18n="hoursLeftLabel">Hours left</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
       <p><span data-i18n="marketingLabel">Marketing</span>: <strong data-stat-marketing>None</strong></p>
       <p><span data-i18n="servicesUnlockedLabel">Unlocked services</span>: <strong data-stat-services>2</strong></p>
+      <p><span data-i18n="storageLabel">Finished stock</span>: <strong data-stat-storage>0/12</strong></p>
       <p><span data-i18n="bestScoreLabel">Best score</span>: <strong data-stat-best>0</strong></p>
       <p><span data-i18n="completedLabel">Completed orders</span>: <strong data-stat-completed>0</strong></p>
       <p><span data-i18n="reputationLabel">Reputation</span>: <strong data-stat-reputation>0</strong></p>
