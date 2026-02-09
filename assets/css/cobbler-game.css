@@ -11,10 +11,10 @@
 
 .cg-topbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
-    "intro lang"
-    "stats stats";
+    "lang"
+    "stats";
   align-items: start;
   column-gap: 0.7rem;
   row-gap: 0.55rem;
@@ -38,10 +38,11 @@
 
 .cg-topbar-actions {
   grid-area: lang;
-  justify-self: end;
+  justify-self: stretch;
   align-self: start;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.45rem;
 }
 
@@ -1366,7 +1367,7 @@
   }
 
   .cg-topbar {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
   }
 
   .cg-topbar-actions {
@@ -1429,6 +1430,11 @@
 }
 
 .cobbler-game .cg-topbar {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "lang"
+    "stats";
+  row-gap: 0.45rem;
   position: sticky;
   top: var(--cg-sticky-offset);
   z-index: 30;
@@ -1442,14 +1448,9 @@
     linear-gradient(180deg, rgba(255, 247, 238, 0.94), rgba(255, 236, 221, 0.9));
 }
 
-.cobbler-game .cg-intro {
-  margin: 0;
-  font-size: 0.88rem;
-  line-height: 1.28;
-  color: #543a31;
-}
-
 .cobbler-game .cg-topbar-actions {
+  width: 100%;
+  justify-content: flex-end;
   gap: 0.4rem;
 }
 
