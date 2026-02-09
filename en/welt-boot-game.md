@@ -38,22 +38,29 @@ keywords:
     </div>
 
     <section class="cg-topbar-order" aria-live="polite">
-      <h2 data-i18n="orderTitle">Order</h2>
-      <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
-      <p><span data-i18n="difficultyLabel">Difficulty</span>: <strong data-order-difficulty>-</strong></p>
-      <p><span data-i18n="timerLabel">Time left</span>: <strong data-order-timer>--:--</strong></p>
+      <div class="cg-topbar-order-grid">
+        <div class="cg-topbar-order-main">
+          <h2 data-i18n="orderTitle">Order</h2>
+          <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
+          <p><span data-i18n="difficultyLabel">Difficulty</span>: <strong data-order-difficulty>-</strong></p>
+          <p><span data-i18n="timerLabel">Time left</span>: <strong data-order-timer>--:--</strong></p>
+          <button class="btn btn-outline cg-shelve-btn" type="button" data-shelve-order data-i18n="shelveOrderBtn">Set aside</button>
+        </div>
 
-      <h3 data-i18n="issuesTitle">Issues</h3>
-      <ul class="cg-issues" data-order-issues>
-        <li data-i18n="noOrderYet">No active order yet.</li>
-      </ul>
+        <div class="cg-topbar-order-details">
+          <h3 data-i18n="issuesTitle">Issues</h3>
+          <ul class="cg-issues" data-order-issues>
+            <li data-i18n="noOrderYet">No active order yet.</li>
+          </ul>
 
-      <h3 data-i18n="stepsTitle">Steps</h3>
-      <ol class="cg-steps">
-        <li data-step-item="diagnosis">Diagnose</li>
-        <li data-step-item="repair">Repair</li>
-        <li data-step-item="finish">Finish</li>
-      </ol>
+          <h3 data-i18n="stepsTitle">Steps</h3>
+          <ol class="cg-steps">
+            <li data-step-item="diagnosis">Diagnose</li>
+            <li data-step-item="repair">Repair</li>
+            <li data-step-item="finish">Finish</li>
+          </ol>
+        </div>
+      </div>
     </section>
   </div>
 

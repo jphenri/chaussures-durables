@@ -1088,6 +1088,7 @@
         weekHoursUsedLabel: 'Heures utilisees',
         weekUpgradeTitle: 'Ameliorer les outils',
         weekNextBtn: 'Lancer la semaine suivante',
+        shelveOrderBtn: 'Mettre de cote',
         waitNextDayBtn: 'Attendre demain',
         buyMarketingBtn: 'Lancer marketing',
         openSupplyBtn: 'Commander materiaux',
@@ -1278,6 +1279,8 @@
         queueCapacityReached: 'File pleine: termine des commandes avant d\'en ajouter.',
         queueWeekCapacity: 'Cette commande depasse les heures disponibles cette semaine.',
         queueStarted: 'Commande sortie de file: {client} ({service}).',
+        orderShelved: 'Commande mise de cote: {client} ({service}).',
+        orderResumed: 'Commande reprise: {client} ({service}).',
         diagnosisDone: 'Diagnostic valide: {solutions}.',
         diagnosisMissingChoice: 'Diagnostic incomplet: choisis un type pour {issues}.',
         needDiagnosis: 'Mauvaise action: commence par le diagnostic.',
@@ -1445,6 +1448,7 @@
         weekHoursUsedLabel: 'Hours used',
         weekUpgradeTitle: 'Upgrade tools',
         weekNextBtn: 'Start next week',
+        shelveOrderBtn: 'Set aside',
         waitNextDayBtn: 'Wait next day',
         buyMarketingBtn: 'Run marketing',
         openSupplyBtn: 'Order materials',
@@ -1635,6 +1639,8 @@
         queueCapacityReached: 'Queue is full: complete orders before adding more.',
         queueWeekCapacity: 'This queued order exceeds remaining weekly hours.',
         queueStarted: 'Order pulled from queue: {client} ({service}).',
+        orderShelved: 'Order set aside: {client} ({service}).',
+        orderResumed: 'Order resumed: {client} ({service}).',
         diagnosisDone: 'Diagnosis confirmed: {solutions}.',
         diagnosisMissingChoice: 'Diagnosis incomplete: choose a repair type for {issues}.',
         needDiagnosis: 'Wrong action: start with diagnosis first.',
@@ -1739,6 +1745,7 @@
     actionFinish: root.querySelector('[data-action-finish]'),
     sceneImage: root.querySelector('[data-shoe-scene-image]'),
     mainAction: root.querySelector('[data-main-action]'),
+    shelveOrder: root.querySelector('[data-shelve-order]'),
     date: root.querySelector('[data-stat-date]'),
     score: root.querySelector('[data-stat-score]'),
     money: root.querySelector('[data-stat-money]'),
@@ -1821,6 +1828,7 @@
     !elements.actionFinish ||
     !elements.sceneImage ||
     !elements.mainAction ||
+    !elements.shelveOrder ||
     !elements.date ||
     !elements.score ||
     !elements.money ||
@@ -2067,6 +2075,42 @@
       }
     }
     return null;
+  }
+
+  function cloneData(value) {
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function queueEntryHours(entry) {
+    if (!entry) {
+      return 0;
+    }
+
+    var saved = Number(entry.estimatedHours);
+    if (Number.isFinite(saved) && saved > 0) {
+      return saved;
+    }
+
+    return serviceHours(entry.issueKey);
+  }
+
+  function queueEntryServiceKey(entry) {
+    if (!entry) {
+      return '';
+    }
+
+    if (entry.savedOrder && Array.isArray(entry.savedOrder.issues) && entry.savedOrder.issues.length > 0) {
+      var savedIssue = entry.savedOrder.issues[0];
+      if (savedIssue && ISSUE_MAP[savedIssue.key]) {
+        return savedIssue.key;
+      }
+    }
+
+    return entry.issueKey;
   }
 
   function incomingTargetCount() {
@@ -2324,7 +2368,7 @@
     var hours = 0;
 
     for (var i = 0; i < state.clientQueue.length; i += 1) {
-      hours += serviceHours(state.clientQueue[i].issueKey);
+      hours += queueEntryHours(state.clientQueue[i]);
     }
 
     return hours;
@@ -2419,7 +2463,7 @@
 
   function queuedOrderFitIndex() {
     for (var i = 0; i < state.clientQueue.length; i += 1) {
-      if (serviceHours(state.clientQueue[i].issueKey) <= state.weekHoursLeft) {
+      if (queueEntryHours(state.clientQueue[i]) <= state.weekHoursLeft) {
         return i;
       }
     }
@@ -2996,12 +3040,47 @@
             ISSUE_MAP[queued.issueKey] &&
             state.clientQueue.length < QUEUE_MAX_ITEMS
           ) {
-            state.clientQueue.push({
+            var loadedEntry = {
               id: queued.id || ('Q-' + Date.now().toString(36) + '-' + queueIndex),
               client: queued.client,
               issueKey: queued.issueKey,
-              weekAdded: clamp(Number(queued.weekAdded) || state.week, 1, 999)
-            });
+              weekAdded: clamp(Number(queued.weekAdded) || state.week, 1, 999),
+              estimatedHours: Math.max(0.5, Number(queued.estimatedHours) || serviceHours(queued.issueKey))
+            };
+
+            if (
+              queued.savedOrder &&
+              typeof queued.savedOrder === 'object' &&
+              Array.isArray(queued.savedOrder.issues) &&
+              queued.savedOrder.issues.length > 0
+            ) {
+              loadedEntry.savedOrder = cloneData(queued.savedOrder);
+
+              if (
+                queued.savedStage === 'diagnosis' ||
+                queued.savedStage === 'repair' ||
+                queued.savedStage === 'finishing'
+              ) {
+                loadedEntry.savedStage = queued.savedStage;
+              } else {
+                loadedEntry.savedStage = 'diagnosis';
+              }
+
+              loadedEntry.savedDiagnosed = !!queued.savedDiagnosed;
+              loadedEntry.savedRepairIndex = Math.max(0, Math.floor(Number(queued.savedRepairIndex) || 0));
+              loadedEntry.savedSatisfaction = clamp(Number(queued.savedSatisfaction) || 5, 1, 5);
+              loadedEntry.savedOrderSecondsLeft = Math.max(
+                0,
+                Math.floor(Number(queued.savedOrderSecondsLeft) || 0)
+              );
+              loadedEntry.savedOrderSecondsTotal = Math.max(
+                1,
+                Math.floor(Number(queued.savedOrderSecondsTotal) || 1)
+              );
+              loadedEntry.savedTimerPenaltyApplied = !!queued.savedTimerPenaltyApplied;
+            }
+
+            state.clientQueue.push(loadedEntry);
           }
         }
       }
@@ -3353,10 +3432,11 @@
 
         var main = document.createElement('span');
         main.className = 'cg-queue-item-main';
+        var queueIssueKey = queueEntryServiceKey(entry);
         main.textContent = interpolate(ui.queueItemTemplate, {
           client: entry.client,
-          service: issueLabel(entry.issueKey),
-          hours: formatHours(serviceHours(entry.issueKey))
+          service: issueLabel(queueIssueKey),
+          hours: formatHours(queueEntryHours(entry))
         });
         item.appendChild(main);
 
@@ -3774,6 +3854,7 @@
     var inRepairStage = activeOrder && state.stage === 'repair' && !state.actionLock;
     elements.repairMaterial.disabled = !inRepairStage;
     elements.repairTool.disabled = !inRepairStage;
+    elements.shelveOrder.disabled = !activeOrder || state.actionLock;
     elements.waitNextDay.disabled = false;
     elements.buyMarketing.disabled = state.actionLock || state.weekSummary !== null;
   }
@@ -4392,6 +4473,21 @@
       return null;
     }
 
+    if (queueEntry.savedOrder && typeof queueEntry.savedOrder === 'object') {
+      var savedOrder = cloneData(queueEntry.savedOrder);
+      if (savedOrder && Array.isArray(savedOrder.issues) && savedOrder.issues.length > 0) {
+        if (!savedOrder.id) {
+          savedOrder.id = 'CMD-' + Date.now().toString(36).slice(-6).toUpperCase();
+        }
+        if (!savedOrder.client) {
+          savedOrder.client = queueEntry.client;
+        }
+        savedOrder.estimatedHours = Math.max(0.5, Number(savedOrder.estimatedHours) || queueEntryHours(queueEntry));
+        savedOrder.timeLimit = Math.max(45, Math.round(Number(savedOrder.timeLimit) || 90));
+        return savedOrder;
+      }
+    }
+
     var definition = serviceDefinition(queueEntry.issueKey);
 
     if (!definition) {
@@ -4411,9 +4507,115 @@
     };
   }
 
-  function startOrderTimer() {
-    stopOrderTimer();
+  function applyQueueEntryRuntime(queueEntry) {
+    if (
+      queueEntry &&
+      queueEntry.savedOrder &&
+      (
+        queueEntry.savedStage === 'diagnosis' ||
+        queueEntry.savedStage === 'repair' ||
+        queueEntry.savedStage === 'finishing'
+      )
+    ) {
+      var issueCount = state.currentOrder && Array.isArray(state.currentOrder.issues)
+        ? state.currentOrder.issues.length
+        : 1;
+      var maxRepairIndex = Math.max(0, issueCount);
+
+      state.stage = queueEntry.savedStage;
+      state.diagnosed = !!queueEntry.savedDiagnosed;
+      state.repairIndex = clamp(
+        Math.floor(Number(queueEntry.savedRepairIndex) || 0),
+        0,
+        maxRepairIndex
+      );
+      state.satisfaction = clamp(Number(queueEntry.savedSatisfaction) || 5, 1, 5);
+      state.orderSecondsTotal = Math.max(1, Math.round(Number(queueEntry.savedOrderSecondsTotal) || state.currentOrder.timeLimit));
+      state.orderSecondsLeft = clamp(
+        Math.round(Number(queueEntry.savedOrderSecondsLeft) || state.orderSecondsTotal),
+        0,
+        state.orderSecondsTotal
+      );
+      state.timerPenaltyApplied = !!queueEntry.savedTimerPenaltyApplied;
+      return true;
+    }
+
+    state.stage = 'diagnosis';
+    state.diagnosed = false;
+    state.repairIndex = 0;
+    state.satisfaction = 5;
+    state.orderSecondsTotal = state.currentOrder.timeLimit;
+    state.orderSecondsLeft = state.currentOrder.timeLimit;
     state.timerPenaltyApplied = false;
+    return false;
+  }
+
+  function shelveCurrentOrder() {
+    if (state.weekSummary) {
+      notifyActionError(langPack().logs.weekNeedsSummary);
+      showWeekPopup();
+      return;
+    }
+
+    if (!state.currentOrder || state.stage === 'done') {
+      notifyActionError(langPack().logs.noOrder);
+      return;
+    }
+
+    if (state.actionLock) {
+      notifyActionError(langPack().logs.miniLocked);
+      return;
+    }
+
+    if (state.clientQueue.length >= QUEUE_MAX_ITEMS) {
+      notifyActionError(langPack().logs.queueCapacityReached);
+      return;
+    }
+
+    var serviceKey = '';
+    if (state.currentOrder.issues && state.currentOrder.issues.length > 0) {
+      serviceKey = state.currentOrder.issues[0].key || '';
+    }
+
+    if (!serviceKey || !ISSUE_MAP[serviceKey]) {
+      notifyActionError(langPack().logs.noOrder);
+      return;
+    }
+
+    var shelvedEntry = {
+      id: 'Q-' + Date.now().toString(36).toUpperCase() + '-' + String(state.clientQueue.length + 1),
+      client: state.currentOrder.client,
+      issueKey: serviceKey,
+      weekAdded: state.week,
+      estimatedHours: Math.max(0.5, Number(state.currentOrder.estimatedHours) || serviceHours(serviceKey)),
+      savedOrder: cloneData(state.currentOrder),
+      savedStage: state.stage,
+      savedDiagnosed: !!state.diagnosed,
+      savedRepairIndex: Math.max(0, Math.floor(state.repairIndex)),
+      savedSatisfaction: clamp(Number(state.satisfaction) || 5, 1, 5),
+      savedOrderSecondsLeft: Math.max(0, Math.floor(state.orderSecondsLeft)),
+      savedOrderSecondsTotal: Math.max(1, Math.floor(state.orderSecondsTotal || state.currentOrder.timeLimit || 1)),
+      savedTimerPenaltyApplied: !!state.timerPenaltyApplied
+    };
+
+    state.clientQueue.push(shelvedEntry);
+    state.selectedQueueId = '';
+
+    addLog(interpolate(langPack().logs.orderShelved, {
+      client: shelvedEntry.client,
+      service: issueLabel(shelvedEntry.issueKey)
+    }));
+
+    closeActiveOrder();
+    saveProgress();
+    renderAll();
+  }
+
+  function startOrderTimer(preservePenaltyFlag) {
+    stopOrderTimer();
+    if (!preservePenaltyFlag) {
+      state.timerPenaltyApplied = false;
+    }
 
     state.timerIntervalId = window.setInterval(function () {
       if (!state.currentOrder || state.stage === 'done') {
@@ -4477,7 +4679,7 @@
     if (state.selectedQueueId) {
       for (var selectedIndex = 0; selectedIndex < state.clientQueue.length; selectedIndex += 1) {
         if (state.clientQueue[selectedIndex].id === state.selectedQueueId) {
-          if (serviceHours(state.clientQueue[selectedIndex].issueKey) <= state.weekHoursLeft) {
+          if (queueEntryHours(state.clientQueue[selectedIndex]) <= state.weekHoursLeft) {
             queueIndex = selectedIndex;
           }
           break;
@@ -4510,30 +4712,32 @@
       return;
     }
 
-    state.stage = 'diagnosis';
-    state.diagnosed = false;
-    state.repairIndex = 0;
-    state.satisfaction = 5;
-    state.orderSecondsTotal = state.currentOrder.timeLimit;
-    state.orderSecondsLeft = state.currentOrder.timeLimit;
+    var resumed = applyQueueEntryRuntime(queuedEntry);
 
     var issueNames = state.currentOrder.issues.map(function (issue) {
       return issueLabel(issue.key);
     }).join(', ');
 
-    addLog(interpolate(langPack().logs.queueStarted, {
-      client: queuedEntry.client,
-      service: issueLabel(queuedEntry.issueKey)
-    }));
+    if (resumed) {
+      addLog(interpolate(langPack().logs.orderResumed, {
+        client: queuedEntry.client,
+        service: issueLabel(queueEntryServiceKey(queuedEntry))
+      }));
+    } else {
+      addLog(interpolate(langPack().logs.queueStarted, {
+        client: queuedEntry.client,
+        service: issueLabel(queuedEntry.issueKey)
+      }));
 
-    addLog(interpolate(langPack().logs.newOrder, {
-      client: state.currentOrder.client,
-      issues: issueNames
-    }));
+      addLog(interpolate(langPack().logs.newOrder, {
+        client: state.currentOrder.client,
+        issues: issueNames
+      }));
+    }
 
     hideAllMiniPanels();
     saveProgress();
-    startOrderTimer();
+    startOrderTimer(resumed);
     renderAll();
   }
 
@@ -5555,6 +5759,7 @@
   elements.langToggle.addEventListener('click', switchLanguage);
 
   elements.newOrder.addEventListener('click', startNewOrder);
+  elements.shelveOrder.addEventListener('click', shelveCurrentOrder);
   elements.incomingList.addEventListener('click', handleIncomingLeadAction);
   elements.queueList.addEventListener('click', handleQueueAction);
   elements.waitNextDay.addEventListener('click', waitNextDay);

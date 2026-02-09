@@ -38,22 +38,29 @@ keywords:
     </div>
 
     <section class="cg-topbar-order" aria-live="polite">
-      <h2 data-i18n="orderTitle">Commande</h2>
-      <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
-      <p><span data-i18n="difficultyLabel">Difficulté</span>: <strong data-order-difficulty>-</strong></p>
-      <p><span data-i18n="timerLabel">Temps restant</span>: <strong data-order-timer>--:--</strong></p>
+      <div class="cg-topbar-order-grid">
+        <div class="cg-topbar-order-main">
+          <h2 data-i18n="orderTitle">Commande</h2>
+          <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
+          <p><span data-i18n="difficultyLabel">Difficulté</span>: <strong data-order-difficulty>-</strong></p>
+          <p><span data-i18n="timerLabel">Temps restant</span>: <strong data-order-timer>--:--</strong></p>
+          <button class="btn btn-outline cg-shelve-btn" type="button" data-shelve-order data-i18n="shelveOrderBtn">Mettre de cote</button>
+        </div>
 
-      <h3 data-i18n="issuesTitle">Problèmes</h3>
-      <ul class="cg-issues" data-order-issues>
-        <li data-i18n="noOrderYet">Aucune commande en cours.</li>
-      </ul>
+        <div class="cg-topbar-order-details">
+          <h3 data-i18n="issuesTitle">Problèmes</h3>
+          <ul class="cg-issues" data-order-issues>
+            <li data-i18n="noOrderYet">Aucune commande en cours.</li>
+          </ul>
 
-      <h3 data-i18n="stepsTitle">Étapes</h3>
-      <ol class="cg-steps">
-        <li data-step-item="diagnosis">Diagnostiquer</li>
-        <li data-step-item="repair">Réparer</li>
-        <li data-step-item="finish">Finition</li>
-      </ol>
+          <h3 data-i18n="stepsTitle">Étapes</h3>
+          <ol class="cg-steps">
+            <li data-step-item="diagnosis">Diagnostiquer</li>
+            <li data-step-item="repair">Réparer</li>
+            <li data-step-item="finish">Finition</li>
+          </ol>
+        </div>
+      </div>
     </section>
   </div>
 
