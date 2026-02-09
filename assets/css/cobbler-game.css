@@ -1691,7 +1691,27 @@
 }
 
 .cobbler-game .cg-workshop {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.58rem;
+  align-items: start;
   gap: 0.62rem;
+}
+
+.cobbler-game .cg-workshop > * {
+  grid-column: 1 / -1;
+}
+
+.cobbler-game .cg-workshop > h2 {
+  grid-column: 1;
+  margin: 0;
+}
+
+.cobbler-game .cg-workshop > .cg-stage-name {
+  grid-column: 2;
+  justify-self: start;
+  align-self: center;
+  margin: 0;
 }
 
 .cobbler-game .cg-mini-wrap {
@@ -1926,7 +1946,7 @@
 .cobbler-game .cg-order .cg-order-scene {
   margin: 0 auto;
   width: 100%;
-  max-width: 430px;
+  max-width: 380px;
 }
 
 .cobbler-game .cg-order .cg-order-scene img {
