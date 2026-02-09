@@ -75,6 +75,26 @@
   min-height: 44px;
 }
 
+.cg-action-error {
+  margin: -0.35rem 0 0;
+  border: 1px solid #c45a48;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fff2ee, #ffe5de);
+  box-shadow: 0 8px 18px rgba(120, 34, 26, 0.16);
+  color: #7d1f18;
+  font-weight: 700;
+  line-height: 1.35;
+  padding: 0.58rem 0.78rem;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.cg-action-error.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .cg-layout {
   display: grid;
   grid-template-columns: 1fr;

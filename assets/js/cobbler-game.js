@@ -1918,6 +1918,8 @@
       gainPerClick: 0
     }
   };
+  var actionErrorElement = null;
+  var actionErrorTimeoutId = 0;
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -2719,6 +2721,63 @@
     }
 
     elements.logList.scrollTop = elements.logList.scrollHeight;
+  }
+
+  function setupActionErrorBanner() {
+    var existing = root.querySelector('[data-action-error]');
+
+    if (existing) {
+      actionErrorElement = existing;
+      return;
+    }
+
+    var banner = document.createElement('p');
+    banner.className = 'cg-action-error';
+    banner.hidden = true;
+    banner.setAttribute('data-action-error', '');
+    banner.setAttribute('role', 'alert');
+    banner.setAttribute('aria-live', 'assertive');
+
+    var topbar = root.querySelector('.cg-topbar');
+    if (topbar && topbar.parentNode === root) {
+      topbar.insertAdjacentElement('afterend', banner);
+    } else {
+      root.insertBefore(banner, root.firstChild);
+    }
+
+    actionErrorElement = banner;
+  }
+
+  function showActionError(message) {
+    if (!actionErrorElement || !message) {
+      return;
+    }
+
+    if (actionErrorTimeoutId) {
+      window.clearTimeout(actionErrorTimeoutId);
+      actionErrorTimeoutId = 0;
+    }
+
+    actionErrorElement.textContent = message;
+    actionErrorElement.hidden = false;
+    actionErrorElement.classList.remove('is-visible');
+    void actionErrorElement.offsetWidth;
+    actionErrorElement.classList.add('is-visible');
+
+    actionErrorTimeoutId = window.setTimeout(function () {
+      if (!actionErrorElement) {
+        return;
+      }
+
+      actionErrorElement.classList.remove('is-visible');
+      actionErrorElement.hidden = true;
+      actionErrorTimeoutId = 0;
+    }, 3400);
+  }
+
+  function notifyActionError(message) {
+    addLog(message);
+    showActionError(message);
   }
 
   function clearLogs() {
@@ -3648,7 +3707,7 @@
     }
 
     if (status === 'locked') {
-      addLog(interpolate(langPack().logs.upgradeLocked, {
+      notifyActionError(interpolate(langPack().logs.upgradeLocked, {
         upgrade: upgradeText(upgrade).label
       }));
       updateWeekPopupContent();
@@ -3656,7 +3715,7 @@
     }
 
     if (status === 'needCash') {
-      addLog(interpolate(langPack().logs.upgradeNeedCash, {
+      notifyActionError(interpolate(langPack().logs.upgradeNeedCash, {
         upgrade: upgradeText(upgrade).label
       }));
       updateWeekPopupContent();
@@ -3726,6 +3785,13 @@
       addLog(message);
     }
     renderStats();
+  }
+
+  function applyPenaltyAndError(scorePenalty, starPenalty, message) {
+    applyPenalty(scorePenalty, starPenalty, message);
+    if (message) {
+      showActionError(message);
+    }
   }
 
   function applyReward(scoreGain) {
@@ -4372,7 +4438,7 @@
     state.completionSummary = null;
 
     if (state.weekSummary) {
-      addLog(langPack().logs.weekNeedsSummary);
+      notifyActionError(langPack().logs.weekNeedsSummary);
       showWeekPopup();
       return;
     }
@@ -4386,13 +4452,13 @@
     stopOrderTimer();
 
     if (isWeekendCurrentDay()) {
-      addLog(langPack().logs.weekendClosed);
+      notifyActionError(langPack().logs.weekendClosed);
       renderAll();
       return;
     }
 
     if (state.dayHoursLeft <= 0) {
-      addLog(langPack().logs.dayNoHoursLeft);
+      notifyActionError(langPack().logs.dayNoHoursLeft);
       renderAll();
       return;
     }
@@ -4402,7 +4468,7 @@
         endCurrentWeek();
         return;
       }
-      addLog(langPack().logs.noQueueOrder);
+      notifyActionError(langPack().logs.noQueueOrder);
       renderAll();
       return;
     }
@@ -4427,7 +4493,7 @@
       if (shouldEndWeek()) {
         endCurrentWeek();
       } else {
-        addLog(langPack().logs.noQueueOrder);
+        notifyActionError(langPack().logs.noQueueOrder);
         renderAll();
       }
       return;
@@ -4484,7 +4550,7 @@
     }
 
     if (missing.length > 0) {
-      applyPenalty(
+      applyPenaltyAndError(
         6,
         0,
         interpolate(langPack().logs.diagnosisMissingChoice, {
@@ -4940,7 +5006,7 @@
     }
 
     if (!issue.selectedRepairType) {
-      applyPenalty(
+      applyPenaltyAndError(
         7,
         0,
         interpolate(langPack().logs.repairTypeMissing, {
@@ -4951,14 +5017,14 @@
     }
 
     if (!issue.selectedMaterial || !issue.selectedTool) {
-      applyPenalty(7, 0, langPack().logs.repairSetupMissing);
+      applyPenaltyAndError(7, 0, langPack().logs.repairSetupMissing);
       return;
     }
 
     var typeDef = repairTypeDefinition(issue.key, issue.selectedRepairType);
 
     if (!typeDef) {
-      applyPenalty(7, 0, langPack().logs.repairSetupMissing);
+      applyPenaltyAndError(7, 0, langPack().logs.repairSetupMissing);
       return;
     }
 
@@ -4966,7 +5032,7 @@
     var missingMaterials = materialUsageMissingList(materialUsage);
 
     if (missingMaterials.length > 0) {
-      applyPenalty(6, 1, interpolate(langPack().logs.repairMissingMaterials, {
+      applyPenaltyAndError(6, 1, interpolate(langPack().logs.repairMissingMaterials, {
         materials: missingMaterials.join(', ')
       }));
       renderAll();
@@ -4983,7 +5049,7 @@
     var setupProfile = evaluateRepairSetup(issue);
 
     if (!setupProfile) {
-      applyPenalty(7, 0, langPack().logs.repairSetupMissing);
+      applyPenaltyAndError(7, 0, langPack().logs.repairSetupMissing);
       return;
     }
 
@@ -5030,18 +5096,18 @@
 
   function handleMainAction() {
     if (state.weekSummary) {
-      addLog(langPack().logs.weekNeedsSummary);
+      notifyActionError(langPack().logs.weekNeedsSummary);
       showWeekPopup();
       return;
     }
 
     if (!state.currentOrder || state.stage === 'done') {
-      addLog(langPack().logs.noOrder);
+      notifyActionError(langPack().logs.noOrder);
       return;
     }
 
     if (state.actionLock) {
-      addLog(langPack().logs.miniLocked);
+      notifyActionError(langPack().logs.miniLocked);
       return;
     }
 
@@ -5052,7 +5118,7 @@
 
     if (state.stage === 'repair') {
       if (!state.diagnosed) {
-        applyPenalty(10, 1, langPack().logs.needDiagnosis);
+        applyPenaltyAndError(10, 1, langPack().logs.needDiagnosis);
         return;
       }
       startRepairFromTool();
@@ -5061,14 +5127,14 @@
 
     if (state.stage === 'finishing') {
       if (!state.diagnosed) {
-        applyPenalty(10, 1, langPack().logs.needDiagnosis);
+        applyPenaltyAndError(10, 1, langPack().logs.needDiagnosis);
         return;
       }
       startFinishFromTool();
       return;
     }
 
-    applyPenalty(8, 1, langPack().logs.wrongDuringFinish);
+    applyPenaltyAndError(8, 1, langPack().logs.wrongDuringFinish);
   }
 
   function switchLanguage() {
@@ -5197,13 +5263,13 @@
 
   function acceptIncomingLead(leadId) {
     if (state.weekSummary) {
-      addLog(langPack().logs.weekNeedsSummary);
+      notifyActionError(langPack().logs.weekNeedsSummary);
       showWeekPopup();
       return;
     }
 
     if (state.clientQueue.length >= QUEUE_MAX_ITEMS) {
-      addLog(langPack().logs.queueCapacityReached);
+      notifyActionError(langPack().logs.queueCapacityReached);
       return;
     }
 
@@ -5325,7 +5391,7 @@
     var status = supplyPackStatus(pack);
 
     if (status === 'locked') {
-      addLog(interpolate(langPack().logs.supplyLocked, {
+      notifyActionError(interpolate(langPack().logs.supplyLocked, {
         pack: supplyPackText(pack).label
       }));
       updateSupplyPopupContent();
@@ -5333,7 +5399,7 @@
     }
 
     if (status === 'cooldown') {
-      addLog(interpolate(langPack().logs.supplyCooldown, {
+      notifyActionError(interpolate(langPack().logs.supplyCooldown, {
         hours: formatHoursRemaining(supplyHoursRemaining())
       }));
       updateSupplyPopupContent();
@@ -5353,7 +5419,7 @@
 
     var totalCost = pack.cost * qty;
     if (state.money < totalCost) {
-      addLog(interpolate(langPack().logs.supplyNeedCash, {
+      notifyActionError(interpolate(langPack().logs.supplyNeedCash, {
         pack: supplyPackText(pack).label
       }));
       updateSupplyPopupContent();
@@ -5395,7 +5461,7 @@
 
   function buyMarketingBoost() {
     if (state.money < MARKETING_COST) {
-      addLog(langPack().logs.marketingNeedCash);
+      notifyActionError(langPack().logs.marketingNeedCash);
       return;
     }
 
@@ -5512,6 +5578,7 @@
 
   document.addEventListener('keydown', handleShortcuts);
 
+  setupActionErrorBanner();
   loadProgress();
   clearMini();
   hideCompletionPopup();
