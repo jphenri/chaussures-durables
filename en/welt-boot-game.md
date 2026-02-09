@@ -25,7 +25,7 @@ keywords:
         <button class="btn cg-head-main-action" type="button" data-main-action data-i18n="mainActionIdle">Action unavailable</button>
         <button class="btn btn-primary cg-head-new-order" type="button" data-new-order data-i18n="newOrderBtn">Start order</button>
         <button class="btn btn-outline cg-head-action" type="button" data-call-clients data-i18n="callClientsBtn">Call clients</button>
-        <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
+        <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Close for the day</button>
         <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Purchases</button>
         <a class="btn btn-outline cg-exit-link" href="{{ '/en/' | relative_url }}" data-i18n="exitGameBtn">Exit game</a>
         <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
@@ -238,9 +238,17 @@ keywords:
       <div class="cg-week-metrics">
         <p><span data-i18n="weekRevenueLabel">Service revenue</span>: <strong data-week-revenue>$0</strong></p>
         <p><span data-i18n="weekBonusLabel">Excellence bonus</span>: <strong data-week-bonus>$0</strong></p>
-        <p><span data-i18n="weekRentLabel">Rent</span>: <strong data-week-rent>$0</strong></p>
-        <p><span data-i18n="weekNetLabel">Weekly net</span>: <strong data-week-net>$0</strong></p>
+        <p><span data-i18n="weekTotalRevenueLabel">Total revenue</span>: <strong data-week-total-revenue>$0</strong></p>
+        <p><span data-i18n="weekRentLabel">Weekly payroll</span>: <strong data-week-rent>$0</strong></p>
         <p><span data-i18n="weekQueuePenaltyLabel">Queue penalty</span>: <strong data-week-queue-penalty>$0</strong></p>
+        <p><span data-i18n="weekSupplyExpenseLabel">Material purchases</span>: <strong data-week-supply-expense>$0</strong></p>
+        <p><span data-i18n="weekMarketingExpenseLabel">Marketing</span>: <strong data-week-marketing-expense>$0</strong></p>
+        <p><span data-i18n="weekUpgradeExpenseLabel">Tool upgrades</span>: <strong data-week-upgrade-expense>$0</strong></p>
+        <p><span data-i18n="weekMonthlyChargesLabel">Monthly charges</span>: <strong data-week-monthly-charges>$0</strong></p>
+        <p><span data-i18n="weekTotalExpenseLabel">Total expenses</span>: <strong data-week-total-expense>$0</strong></p>
+        <p><span data-i18n="weekNetLabel">Revenue - expenses</span>: <strong data-week-net>$0</strong></p>
+        <p><span data-i18n="weekReputationLabel">Reputation</span>: <strong data-week-reputation>0</strong></p>
+        <p><span data-i18n="weekUnclaimedStockLabel">Unclaimed stock</span>: <strong data-week-unclaimed-stock>0 pair(s)</strong></p>
         <p><span data-i18n="weekCashAfterLabel">Closing cash</span>: <strong data-week-cash>$0</strong></p>
         <p><span data-i18n="weekHoursUsedLabel">Hours used</span>: <strong data-week-hours-used>0h / 40h</strong></p>
       </div>

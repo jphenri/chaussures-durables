@@ -20,7 +20,8 @@
   var MARKETING_DURATION_DAYS = 7;
   var COMPLETED_STORAGE_CAPACITY = 12;
   var CLIENT_CALL_HOURS_COST = 2;
-  var CLIENT_CALL_BATCH_MAX = 4;
+  var CLIENT_PICKUP_RANDOM_MIN = 2;
+  var CLIENT_PICKUP_RANDOM_MAX = 10;
   var START_DATE_ISO = '2026-01-05';
 
   var STARTING_STOCK = {
@@ -1092,15 +1093,24 @@
         weekPopupSummary: 'Semaine {week}: {orders} commandes traitees. Tu as utilise {hoursUsed}.',
         weekRevenueLabel: 'Revenus services',
         weekBonusLabel: 'Bonus excellence',
+        weekTotalRevenueLabel: 'Total revenus',
         weekRentLabel: 'Salaires (hebdo)',
-        weekNetLabel: 'Net de semaine',
+        weekSupplyExpenseLabel: 'Achats materiaux',
+        weekMarketingExpenseLabel: 'Marketing',
+        weekUpgradeExpenseLabel: 'Upgrades outils',
+        weekMonthlyChargesLabel: 'Charges mensuelles',
+        weekTotalExpenseLabel: 'Total depenses',
+        weekNetLabel: 'Revenus - depenses',
         weekQueuePenaltyLabel: 'Penalite file',
+        weekReputationLabel: 'Reputation',
+        weekUnclaimedStockLabel: 'Stock non ramasse',
+        weekUnclaimedStockTemplate: '{count} paire(s) en attente ({amount})',
         weekCashAfterLabel: 'Caisse finale',
         weekHoursUsedLabel: 'Heures utilisees',
         weekUpgradeTitle: 'Ameliorer les outils',
         weekNextBtn: 'Lancer la semaine suivante',
         shelveOrderBtn: 'Mettre de cote',
-        waitNextDayBtn: 'Attendre demain',
+        waitNextDayBtn: 'Fermer pour la journee',
         buyMarketingBtn: 'Lancer marketing',
         openSupplyBtn: 'Achats',
         supplyPopupTitle: 'Commander materiaux',
@@ -1330,7 +1340,7 @@
         callClientsNeedHours: 'Appeler les clients demande 2h de travail disponible.',
         callClientsDailyLimit: 'Appel clients deja effectue aujourd hui. Reessaie demain.',
         callClientsQueued: 'Clients appeles: {count} paires. Retrait prevu le {date}.',
-        pickupPaid: 'Retraits clients: {count} paires payees pour {amount}.',
+        pickupPaid: 'Ce matin: {count} client(s) ont recupere leurs chaussures. Montant recu: {amount}.',
         servicePayout: 'Facturation: {amount} pour {hours}.',
         serviceExcellentBonus: 'Service excellent: bonus client {amount}.',
         weekClosed: 'Semaine {week} terminee. Bilan: {net} (revenus {revenue}, bonus {bonus}, salaires {rent}, penalite file {queue}).',
@@ -1469,15 +1479,24 @@
         weekPopupSummary: 'Week {week}: {orders} orders completed. You used {hoursUsed}.',
         weekRevenueLabel: 'Service revenue',
         weekBonusLabel: 'Excellence bonus',
+        weekTotalRevenueLabel: 'Total revenue',
         weekRentLabel: 'Weekly payroll',
-        weekNetLabel: 'Weekly net',
+        weekSupplyExpenseLabel: 'Material purchases',
+        weekMarketingExpenseLabel: 'Marketing',
+        weekUpgradeExpenseLabel: 'Tool upgrades',
+        weekMonthlyChargesLabel: 'Monthly charges',
+        weekTotalExpenseLabel: 'Total expenses',
+        weekNetLabel: 'Revenue - expenses',
         weekQueuePenaltyLabel: 'Queue penalty',
+        weekReputationLabel: 'Reputation',
+        weekUnclaimedStockLabel: 'Unclaimed stock',
+        weekUnclaimedStockTemplate: '{count} pair(s) waiting ({amount})',
         weekCashAfterLabel: 'Closing cash',
         weekHoursUsedLabel: 'Hours used',
         weekUpgradeTitle: 'Upgrade tools',
         weekNextBtn: 'Start next week',
         shelveOrderBtn: 'Set aside',
-        waitNextDayBtn: 'Wait next day',
+        waitNextDayBtn: 'Close for the day',
         buyMarketingBtn: 'Run marketing',
         openSupplyBtn: 'Purchases',
         supplyPopupTitle: 'Order materials',
@@ -1707,7 +1726,7 @@
         callClientsNeedHours: 'Calling clients requires 2h of available work time.',
         callClientsDailyLimit: 'Clients were already called today. Try again tomorrow.',
         callClientsQueued: 'Clients called: {count} pairs. Pickup planned on {date}.',
-        pickupPaid: 'Client pickups: {count} pairs paid for {amount}.',
+        pickupPaid: 'This morning: {count} client(s) picked up shoes. Amount received: {amount}.',
         servicePayout: 'Invoice paid: {amount} for {hours}.',
         serviceExcellentBonus: 'Excellent service: client bonus {amount}.',
         weekClosed: 'Week {week} closed. Net result: {net} (revenue {revenue}, bonus {bonus}, payroll {rent}, queue penalty {queue}).',
@@ -1813,9 +1832,17 @@
     weekPopupSummary: root.querySelector('[data-week-popup-summary]'),
     weekRevenue: root.querySelector('[data-week-revenue]'),
     weekBonus: root.querySelector('[data-week-bonus]'),
+    weekTotalRevenue: root.querySelector('[data-week-total-revenue]'),
     weekRent: root.querySelector('[data-week-rent]'),
     weekNet: root.querySelector('[data-week-net]'),
     weekQueuePenalty: root.querySelector('[data-week-queue-penalty]'),
+    weekSupplyExpense: root.querySelector('[data-week-supply-expense]'),
+    weekMarketingExpense: root.querySelector('[data-week-marketing-expense]'),
+    weekUpgradeExpense: root.querySelector('[data-week-upgrade-expense]'),
+    weekMonthlyCharges: root.querySelector('[data-week-monthly-charges]'),
+    weekTotalExpense: root.querySelector('[data-week-total-expense]'),
+    weekReputation: root.querySelector('[data-week-reputation]'),
+    weekUnclaimedStock: root.querySelector('[data-week-unclaimed-stock]'),
     weekCash: root.querySelector('[data-week-cash]'),
     weekHoursUsed: root.querySelector('[data-week-hours-used]'),
     weekUpgrades: root.querySelector('[data-week-upgrades]'),
@@ -1896,9 +1923,17 @@
     !elements.weekPopupSummary ||
     !elements.weekRevenue ||
     !elements.weekBonus ||
+    !elements.weekTotalRevenue ||
     !elements.weekRent ||
     !elements.weekNet ||
     !elements.weekQueuePenalty ||
+    !elements.weekSupplyExpense ||
+    !elements.weekMarketingExpense ||
+    !elements.weekUpgradeExpense ||
+    !elements.weekMonthlyCharges ||
+    !elements.weekTotalExpense ||
+    !elements.weekReputation ||
+    !elements.weekUnclaimedStock ||
     !elements.weekCash ||
     !elements.weekHoursUsed ||
     !elements.weekUpgrades ||
@@ -1933,6 +1968,10 @@
     marketingDaysLeft: 0,
     weeklyRevenue: 0,
     weeklyExcellentBonus: 0,
+    weeklyExpenseSupplies: 0,
+    weeklyExpenseMarketing: 0,
+    weeklyExpenseUpgrades: 0,
+    weeklyExpenseMonthlyCharges: 0,
     weeklyOrders: 0,
     weekSummary: null,
     bestScore: 0,
@@ -2086,6 +2125,17 @@
     return Array.isArray(state.completedStorage) ? state.completedStorage.length : 0;
   }
 
+  function completedStoragePendingPayoutTotal() {
+    var total = 0;
+    var list = Array.isArray(state.completedStorage) ? state.completedStorage : [];
+
+    for (var i = 0; i < list.length; i += 1) {
+      total += Math.max(0, Math.round(Number(list[i].payout) || 0));
+    }
+
+    return total;
+  }
+
   function completedStorageFreeSlots() {
     return Math.max(0, COMPLETED_STORAGE_CAPACITY - completedStorageCount());
   }
@@ -2157,6 +2207,33 @@
       0,
       SUPPLY_COOLDOWN_HOURS
     );
+  }
+
+  function randomIntInclusive(min, max) {
+    var safeMin = Math.floor(Math.min(min, max));
+    var safeMax = Math.floor(Math.max(min, max));
+    return safeMin + Math.floor(Math.random() * (safeMax - safeMin + 1));
+  }
+
+  function pickupCallRangeByReputation() {
+    var rep = Math.max(0, Math.floor(Number(state.reputation) || 0));
+
+    if (rep >= 360) {
+      return { min: 5, max: CLIENT_PICKUP_RANDOM_MAX };
+    }
+    if (rep >= 180) {
+      return { min: 4, max: 9 };
+    }
+    if (rep >= 80) {
+      return { min: 3, max: 8 };
+    }
+
+    return { min: CLIENT_PICKUP_RANDOM_MIN, max: 6 };
+  }
+
+  function randomPickupCallCapacity() {
+    var range = pickupCallRangeByReputation();
+    return randomIntInclusive(range.min, range.max);
   }
 
   function supplyDeliveryEntry(packId, qty, arrivalIso) {
@@ -2281,10 +2358,12 @@
     state.completedStorage = remaining;
 
     if (pickedCount > 0) {
-      addLog(interpolate(langPack().logs.pickupPaid, {
+      var pickupMessage = interpolate(langPack().logs.pickupPaid, {
         count: String(pickedCount),
         amount: formatMoney(pickedAmount)
-      }));
+      });
+      addLog(pickupMessage);
+      showActionError(pickupMessage);
 
       if (pickedBonus > 0) {
         addLog(interpolate(langPack().logs.serviceExcellentBonus, {
@@ -2315,6 +2394,7 @@
       });
 
       state.money -= monthlyCharges;
+      state.weeklyExpenseMonthlyCharges += monthlyCharges;
       addLog(monthlyChargesMessage);
       showActionError(monthlyChargesMessage);
     }
@@ -3244,6 +3324,10 @@
       marketingDaysLeft: state.marketingDaysLeft,
       weeklyRevenue: state.weeklyRevenue,
       weeklyExcellentBonus: state.weeklyExcellentBonus,
+      weeklyExpenseSupplies: state.weeklyExpenseSupplies,
+      weeklyExpenseMarketing: state.weeklyExpenseMarketing,
+      weeklyExpenseUpgrades: state.weeklyExpenseUpgrades,
+      weeklyExpenseMonthlyCharges: state.weeklyExpenseMonthlyCharges,
       weeklyOrders: state.weeklyOrders,
       weekSummary: state.weekSummary
     };
@@ -3296,6 +3380,10 @@
       }
       state.weeklyRevenue = Math.max(0, Number(parsed.weeklyRevenue) || 0);
       state.weeklyExcellentBonus = Math.max(0, Number(parsed.weeklyExcellentBonus) || 0);
+      state.weeklyExpenseSupplies = Math.max(0, Number(parsed.weeklyExpenseSupplies) || 0);
+      state.weeklyExpenseMarketing = Math.max(0, Number(parsed.weeklyExpenseMarketing) || 0);
+      state.weeklyExpenseUpgrades = Math.max(0, Number(parsed.weeklyExpenseUpgrades) || 0);
+      state.weeklyExpenseMonthlyCharges = Math.max(0, Number(parsed.weeklyExpenseMonthlyCharges) || 0);
       state.weeklyOrders = Math.max(0, Number(parsed.weeklyOrders) || 0);
       state.marketingDaysLeft = Math.max(0, Number(parsed.marketingDaysLeft) || 0);
 
@@ -3456,15 +3544,42 @@
       }
 
       if (parsed.weekSummary && typeof parsed.weekSummary === 'object') {
+        var parsedRevenue = Number(parsed.weekSummary.revenue) || 0;
+        var parsedBonus = Number(parsed.weekSummary.bonus) || 0;
+        var parsedSalary = Number(parsed.weekSummary.rent) || 0;
+        var parsedQueuePenalty = Number(parsed.weekSummary.queuePenalty) || 0;
+        var parsedSupplyExpense = Number(parsed.weekSummary.supplyExpense) || 0;
+        var parsedMarketingExpense = Number(parsed.weekSummary.marketingExpense) || 0;
+        var parsedUpgradeExpense = Number(parsed.weekSummary.upgradeExpense) || 0;
+        var parsedMonthlyCharges = Number(parsed.weekSummary.monthlyCharges) || 0;
+        var parsedTotalRevenue = Number(parsed.weekSummary.totalRevenue);
+        if (!Number.isFinite(parsedTotalRevenue)) {
+          parsedTotalRevenue = parsedRevenue + parsedBonus;
+        }
+        var parsedTotalExpenses = Number(parsed.weekSummary.totalExpenses);
+        if (!Number.isFinite(parsedTotalExpenses)) {
+          parsedTotalExpenses =
+            parsedSalary + parsedQueuePenalty + parsedSupplyExpense +
+            parsedMarketingExpense + parsedUpgradeExpense + parsedMonthlyCharges;
+        }
         state.weekSummary = {
           week: clamp(Number(parsed.weekSummary.week) || state.week, 1, 999),
           orders: Math.max(0, Number(parsed.weekSummary.orders) || 0),
-          revenue: Number(parsed.weekSummary.revenue) || 0,
-          bonus: Number(parsed.weekSummary.bonus) || 0,
-          rent: Number(parsed.weekSummary.rent) || 0,
-          queuePenalty: Number(parsed.weekSummary.queuePenalty) || 0,
-          net: Number(parsed.weekSummary.net) || 0,
-          hoursUsed: clamp(Number(parsed.weekSummary.hoursUsed) || 0, 0, WEEK_HOURS_LIMIT)
+          revenue: parsedRevenue,
+          bonus: parsedBonus,
+          totalRevenue: parsedTotalRevenue,
+          rent: parsedSalary,
+          queuePenalty: parsedQueuePenalty,
+          supplyExpense: parsedSupplyExpense,
+          marketingExpense: parsedMarketingExpense,
+          upgradeExpense: parsedUpgradeExpense,
+          monthlyCharges: parsedMonthlyCharges,
+          totalExpenses: parsedTotalExpenses,
+          net: Number(parsed.weekSummary.net) || (parsedTotalRevenue - parsedTotalExpenses),
+          hoursUsed: clamp(Number(parsed.weekSummary.hoursUsed) || 0, 0, WEEK_HOURS_LIMIT),
+          reputation: Math.max(0, Number(parsed.weekSummary.reputation) || state.reputation),
+          unclaimedStockCount: Math.max(0, Number(parsed.weekSummary.unclaimedStockCount) || completedStorageCount()),
+          unclaimedStockValue: Math.max(0, Number(parsed.weekSummary.unclaimedStockValue) || completedStoragePendingPayoutTotal())
         };
       } else {
         state.weekSummary = null;
@@ -4007,6 +4122,13 @@
     elements.supplyClose.focus();
   }
 
+  function weekUnclaimedStockText(count, amount) {
+    return interpolate(langPack().ui.weekUnclaimedStockTemplate, {
+      count: String(Math.max(0, Math.floor(Number(count) || 0))),
+      amount: formatMoney(Math.max(0, Number(amount) || 0))
+    });
+  }
+
   function updateWeekPopupContent() {
     var ui = langPack().ui;
 
@@ -4014,9 +4136,20 @@
       elements.weekPopupSummary.textContent = ui.weekPopupDefault;
       elements.weekRevenue.textContent = formatMoney(0);
       elements.weekBonus.textContent = formatMoney(0);
+      elements.weekTotalRevenue.textContent = formatMoney(0);
       elements.weekRent.textContent = formatMoney(0);
-      elements.weekNet.textContent = formatMoney(0);
       elements.weekQueuePenalty.textContent = formatMoney(0);
+      elements.weekSupplyExpense.textContent = formatMoney(0);
+      elements.weekMarketingExpense.textContent = formatMoney(0);
+      elements.weekUpgradeExpense.textContent = formatMoney(0);
+      elements.weekMonthlyCharges.textContent = formatMoney(0);
+      elements.weekTotalExpense.textContent = formatMoney(0);
+      elements.weekNet.textContent = formatMoney(0);
+      elements.weekReputation.textContent = String(Math.round(state.reputation));
+      elements.weekUnclaimedStock.textContent = weekUnclaimedStockText(
+        completedStorageCount(),
+        completedStoragePendingPayoutTotal()
+      );
       elements.weekCash.textContent = formatMoney(state.money);
       elements.weekHoursUsed.textContent = formatHours(0) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
       renderWeekUpgrades();
@@ -4030,9 +4163,20 @@
     });
     elements.weekRevenue.textContent = formatMoney(state.weekSummary.revenue);
     elements.weekBonus.textContent = formatMoney(state.weekSummary.bonus);
+    elements.weekTotalRevenue.textContent = formatMoney(state.weekSummary.totalRevenue || 0);
     elements.weekRent.textContent = formatMoney(state.weekSummary.rent);
-    elements.weekNet.textContent = formatMoney(state.weekSummary.net);
     elements.weekQueuePenalty.textContent = formatMoney(state.weekSummary.queuePenalty || 0);
+    elements.weekSupplyExpense.textContent = formatMoney(state.weekSummary.supplyExpense || 0);
+    elements.weekMarketingExpense.textContent = formatMoney(state.weekSummary.marketingExpense || 0);
+    elements.weekUpgradeExpense.textContent = formatMoney(state.weekSummary.upgradeExpense || 0);
+    elements.weekMonthlyCharges.textContent = formatMoney(state.weekSummary.monthlyCharges || 0);
+    elements.weekTotalExpense.textContent = formatMoney(state.weekSummary.totalExpenses || 0);
+    elements.weekNet.textContent = formatMoney(state.weekSummary.net);
+    elements.weekReputation.textContent = String(Math.round(state.weekSummary.reputation || 0));
+    elements.weekUnclaimedStock.textContent = weekUnclaimedStockText(
+      state.weekSummary.unclaimedStockCount || 0,
+      state.weekSummary.unclaimedStockValue || 0
+    );
     elements.weekCash.textContent = formatMoney(state.money);
     elements.weekHoursUsed.textContent =
       formatHours(state.weekSummary.hoursUsed) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
@@ -4071,6 +4215,14 @@
     var missedQueue = state.clientQueue.slice();
     var queuePenalty = totalQueuePenalty(missedQueue);
     var salaryCost = weeklyRentAmount(state.week);
+    var supplyExpense = Math.max(0, Number(state.weeklyExpenseSupplies) || 0);
+    var marketingExpense = Math.max(0, Number(state.weeklyExpenseMarketing) || 0);
+    var upgradeExpense = Math.max(0, Number(state.weeklyExpenseUpgrades) || 0);
+    var monthlyChargesExpense = Math.max(0, Number(state.weeklyExpenseMonthlyCharges) || 0);
+    var totalRevenue = state.weeklyRevenue + state.weeklyExcellentBonus;
+    var totalExpenses = salaryCost + queuePenalty + supplyExpense + marketingExpense + upgradeExpense + monthlyChargesExpense;
+    var unclaimedStockCount = completedStorageCount();
+    var unclaimedStockValue = completedStoragePendingPayoutTotal();
     state.incomingLeads = [];
     state.selectedQueueId = '';
     state.clientQueue = [];
@@ -4081,10 +4233,19 @@
       orders: state.weeklyOrders,
       revenue: state.weeklyRevenue,
       bonus: state.weeklyExcellentBonus,
+      totalRevenue: totalRevenue,
       rent: salaryCost,
       queuePenalty: queuePenalty,
-      net: state.weeklyRevenue + state.weeklyExcellentBonus - salaryCost - queuePenalty,
-      hoursUsed: WEEK_HOURS_LIMIT - state.weekHoursLeft
+      supplyExpense: supplyExpense,
+      marketingExpense: marketingExpense,
+      upgradeExpense: upgradeExpense,
+      monthlyCharges: monthlyChargesExpense,
+      totalExpenses: totalExpenses,
+      net: totalRevenue - totalExpenses,
+      hoursUsed: WEEK_HOURS_LIMIT - state.weekHoursLeft,
+      reputation: state.reputation,
+      unclaimedStockCount: unclaimedStockCount,
+      unclaimedStockValue: unclaimedStockValue
     };
 
     if (salaryCost > 0) {
@@ -4125,6 +4286,10 @@
     state.weekHoursLeft = WEEK_HOURS_LIMIT;
     state.weeklyRevenue = 0;
     state.weeklyExcellentBonus = 0;
+    state.weeklyExpenseSupplies = 0;
+    state.weeklyExpenseMarketing = 0;
+    state.weeklyExpenseUpgrades = 0;
+    state.weeklyExpenseMonthlyCharges = 0;
     state.weeklyOrders = 0;
     state.weekSummary = null;
     state.completionSummary = null;
@@ -4183,6 +4348,7 @@
     }
 
     state.money -= upgrade.cost;
+    state.weeklyExpenseUpgrades += upgrade.cost;
     state.ownedUpgrades.push(upgrade.id);
 
     addLog(interpolate(langPack().logs.upgradeBought, {
@@ -5882,6 +6048,10 @@
     state.marketingDaysLeft = 0;
     state.weeklyRevenue = 0;
     state.weeklyExcellentBonus = 0;
+    state.weeklyExpenseSupplies = 0;
+    state.weeklyExpenseMarketing = 0;
+    state.weeklyExpenseUpgrades = 0;
+    state.weeklyExpenseMonthlyCharges = 0;
     state.weeklyOrders = 0;
     state.weekSummary = null;
     state.bestScore = 0;
@@ -6185,6 +6355,7 @@
     var arrivalIso = dateToIso(arrivalDateObj);
 
     state.money -= totalCost;
+    state.weeklyExpenseSupplies += totalCost;
     state.pendingSupplies.push(supplyDeliveryEntry(pack.id, qty, arrivalIso));
 
     state.hoursSinceSupplyOrder = 0;
@@ -6242,7 +6413,7 @@
       return;
     }
 
-    var callCount = Math.min(CLIENT_CALL_BATCH_MAX, awaiting.length);
+    var callCount = Math.min(awaiting.length, randomPickupCallCapacity());
     var pickupDateIso = nextBusinessDateIsoFrom(state.currentDate);
 
     for (var i = 0; i < callCount; i += 1) {
@@ -6287,6 +6458,7 @@
     }
 
     state.money -= MARKETING_COST;
+    state.weeklyExpenseMarketing += MARKETING_COST;
     state.marketingDaysLeft = Math.max(0, state.marketingDaysLeft) + MARKETING_DURATION_DAYS;
     refillIncomingLeads();
 
