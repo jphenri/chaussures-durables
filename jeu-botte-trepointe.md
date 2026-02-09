@@ -100,6 +100,10 @@ keywords:
         </ul>
       </section>
 
+      <div class="cg-shoe-scene cg-order-scene" aria-hidden="true">
+        <img src="{{ '/assets/img/sora/mission-premium-shine.png' | relative_url }}" alt="" loading="lazy" decoding="async" data-shoe-scene-image>
+      </div>
+
     </aside>
 
     <section class="cg-panel cg-workshop" aria-live="polite">
@@ -165,9 +169,6 @@ keywords:
         </section>
       </div>
 
-      <div class="cg-shoe-scene" aria-hidden="true">
-        <img src="{{ '/assets/img/sora/mission-premium-shine.png' | relative_url }}" alt="" loading="lazy" decoding="async" data-shoe-scene-image>
-      </div>
     </section>
   </div>
 

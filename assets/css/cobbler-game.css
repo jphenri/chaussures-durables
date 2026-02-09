@@ -1608,6 +1608,9 @@
 }
 
 .cobbler-game .cg-layout {
+  grid-template-areas:
+    "order"
+    "workshop";
   align-items: start;
   gap: 0.82rem;
 }
@@ -1616,6 +1619,14 @@
 .cobbler-game .cg-workshop,
 .cobbler-game .cg-tools {
   min-width: 0;
+}
+
+.cobbler-game .cg-order {
+  grid-area: order;
+}
+
+.cobbler-game .cg-workshop {
+  grid-area: workshop;
 }
 
 .cobbler-game .cg-panel {
@@ -1682,17 +1693,15 @@
   }
 
   .cobbler-game .cg-layout {
-    grid-template-columns: minmax(260px, 0.92fr) minmax(420px, 1.25fr);
-  }
-
-  .cobbler-game .cg-tools {
-    grid-column: 1 / -1;
+    grid-template-columns: minmax(480px, 1.38fr) minmax(300px, 0.92fr);
+    grid-template-areas: "workshop order";
   }
 }
 
 @media (min-width: 1120px) {
   .cobbler-game .cg-layout {
-    grid-template-columns: minmax(290px, 0.96fr) minmax(560px, 1.55fr);
+    grid-template-columns: minmax(620px, 1.56fr) minmax(340px, 0.9fr);
+    grid-template-areas: "workshop order";
   }
 }
 
@@ -1842,4 +1851,9 @@
   .cobbler-game .cg-topbar-order-details .cg-steps {
     grid-column: 2;
   }
+}
+
+.cobbler-game .cg-order .cg-order-scene {
+  margin: 0.5rem 0 0 auto;
+  width: min(300px, 100%);
 }
