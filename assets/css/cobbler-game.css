@@ -87,29 +87,80 @@
 
 .cg-topbar-order-grid {
   display: grid;
-  gap: 0.36rem;
+  gap: 0.28rem;
+}
+
+.cg-topbar-order-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.34rem;
+  margin-bottom: 0.24rem;
+}
+
+.cg-order-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.2rem;
+}
+
+.cg-order-meta-item {
+  display: grid;
+  gap: 0.08rem;
+  margin: 0;
+  border: 1px solid #e6cab7;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.22rem 0.34rem;
+}
+
+.cg-order-meta-item span {
+  font-size: 0.66rem;
+  line-height: 1.1;
+  color: #795443;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.cg-order-meta-item strong {
+  font-size: 0.82rem;
+  line-height: 1.15;
+  color: #4a2c22;
 }
 
 .cg-topbar-order h2,
 .cg-topbar-order h3 {
-  margin: 0 0 0.38rem;
+  margin: 0 0 0.24rem;
   color: #5b3327;
 }
 
 .cg-topbar-order p {
-  margin: 0 0 0.28rem;
+  margin: 0 0 0.2rem;
   color: #5a433b;
 }
 
 .cg-topbar-order .cg-issues,
 .cg-topbar-order .cg-steps {
-  margin-top: 0.2rem;
+  margin-top: 0.14rem;
+  gap: 0.18rem;
+}
+
+.cg-topbar-order .cg-issues li,
+.cg-topbar-order .cg-steps li {
+  font-size: 0.82rem;
+  line-height: 1.22;
+}
+
+.cg-topbar-order .cg-issue-solution {
+  margin-top: 0.06rem;
+  font-size: 0.76rem;
 }
 
 .cg-shelve-btn {
-  min-height: 38px;
-  padding: 0.28rem 0.5rem;
-  font-size: 0.82rem;
+  min-height: 30px;
+  padding: 0.18rem 0.42rem;
+  font-size: 0.74rem;
+  white-space: nowrap;
 }
 
 .cg-action-error {
@@ -1315,6 +1366,10 @@
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     column-gap: 0.62rem;
     align-items: start;
+  }
+
+  .cg-order-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

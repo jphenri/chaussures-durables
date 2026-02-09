@@ -40,11 +40,24 @@ keywords:
     <section class="cg-topbar-order" aria-live="polite">
       <div class="cg-topbar-order-grid">
         <div class="cg-topbar-order-main">
-          <h2 data-i18n="orderTitle">Order</h2>
-          <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
-          <p><span data-i18n="difficultyLabel">Difficulty</span>: <strong data-order-difficulty>-</strong></p>
-          <p><span data-i18n="timerLabel">Time left</span>: <strong data-order-timer>--:--</strong></p>
-          <button class="btn btn-outline cg-shelve-btn" type="button" data-shelve-order data-i18n="shelveOrderBtn">Set aside</button>
+          <div class="cg-topbar-order-head">
+            <h2 data-i18n="orderTitle">Order</h2>
+            <button class="btn btn-outline cg-shelve-btn" type="button" data-shelve-order data-i18n="shelveOrderBtn">Set aside</button>
+          </div>
+          <div class="cg-order-meta">
+            <p class="cg-order-meta-item">
+              <span data-i18n="clientLabel">Client</span>
+              <strong data-order-client>-</strong>
+            </p>
+            <p class="cg-order-meta-item">
+              <span data-i18n="difficultyLabel">Difficulty</span>
+              <strong data-order-difficulty>-</strong>
+            </p>
+            <p class="cg-order-meta-item">
+              <span data-i18n="timerLabel">Time left</span>
+              <strong data-order-timer>--:--</strong>
+            </p>
+          </div>
         </div>
 
         <div class="cg-topbar-order-details">
