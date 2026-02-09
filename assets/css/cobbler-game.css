@@ -1695,3 +1695,46 @@
     grid-template-columns: minmax(290px, 0.96fr) minmax(560px, 1.55fr);
   }
 }
+
+/* Stats row stability hotfix */
+.cobbler-game .cg-topbar .cg-stats {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  overflow-x: auto !important;
+  overscroll-behavior-x: contain;
+  gap: 0.4rem !important;
+  padding: 0.12rem 0.04rem 0.14rem !important;
+}
+
+.cobbler-game .cg-topbar .cg-stats p {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.14rem;
+  flex: 0 0 172px !important;
+  min-width: 172px;
+  max-width: 172px;
+  margin: 0;
+}
+
+.cobbler-game .cg-topbar .cg-stars {
+  flex: 0 0 132px !important;
+  min-width: 132px;
+  max-width: 132px;
+}
+
+@media (max-width: 640px) {
+  .cobbler-game .cg-topbar .cg-stats p {
+    flex: 0 0 154px !important;
+    min-width: 154px;
+    max-width: 154px;
+  }
+
+  .cobbler-game .cg-topbar .cg-stars {
+    flex: 0 0 120px !important;
+    min-width: 120px;
+    max-width: 120px;
+  }
+}
