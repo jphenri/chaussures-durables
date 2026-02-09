@@ -5357,6 +5357,18 @@
     renderAll();
   }
 
+  function scrollViewportToTop() {
+    if (typeof window === 'undefined' || typeof window.scrollTo !== 'function') {
+      return;
+    }
+
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      window.scrollTo(0, 0);
+    }
+  }
+
   function resetProgress() {
     if (!window.confirm(langPack().prompts.reset)) {
       return;
@@ -5776,11 +5788,20 @@
   elements.openSupply.addEventListener('click', handleSupplyOpen);
   elements.supplyClose.addEventListener('click', handleSupplyClose);
   elements.resetSave.addEventListener('click', resetProgress);
-  elements.mainAction.addEventListener('click', handleMainAction);
+  elements.mainAction.addEventListener('click', function () {
+    handleMainAction();
+    scrollViewportToTop();
+  });
   if (elements.mainActionHeader) {
-    elements.mainActionHeader.addEventListener('click', handleMainAction);
+    elements.mainActionHeader.addEventListener('click', function () {
+      handleMainAction();
+      scrollViewportToTop();
+    });
   }
-  elements.completionNewOrder.addEventListener('click', startNewOrder);
+  elements.completionNewOrder.addEventListener('click', function () {
+    startNewOrder();
+    scrollViewportToTop();
+  });
   elements.weekNext.addEventListener('click', startNextWeek);
 
   elements.actionTiming.addEventListener('click', handleTimingHit);
