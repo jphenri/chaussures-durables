@@ -1883,3 +1883,43 @@
   aspect-ratio: 16 / 10;
   object-fit: cover;
 }
+
+/* Inventory compaction in journal */
+.cobbler-game .cg-log .cg-inventory-list {
+  max-height: none;
+  overflow: visible;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.28rem;
+}
+
+.cobbler-game .cg-log .cg-inventory-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.36rem;
+  padding: 0.24rem 0.42rem;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.cobbler-game .cg-log .cg-inventory-name {
+  min-width: 0;
+}
+
+@media (min-width: 760px) {
+  .cobbler-game .cg-log .cg-inventory-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1080px) {
+  .cobbler-game .cg-log .cg-inventory-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1460px) {
+  .cobbler-game .cg-log .cg-inventory-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
