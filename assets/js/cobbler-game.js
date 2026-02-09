@@ -6224,10 +6224,13 @@
     state.lastClientCallDate = state.currentDate;
     addCooldownHours(CLIENT_CALL_HOURS_COST);
 
-    addLog(interpolate(langPack().logs.callClientsQueued, {
+    var callQueuedMessage = interpolate(langPack().logs.callClientsQueued, {
       count: String(callCount),
       date: formatCalendarDate(pickupDateIso)
-    }));
+    });
+
+    addLog(callQueuedMessage);
+    showActionError(callQueuedMessage);
 
     saveProgress();
     renderAll();
