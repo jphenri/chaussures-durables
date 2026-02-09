@@ -5,6 +5,7 @@ description: "Simulation jouable de cordonnerie: diagnostic, réparation, finiti
 lang: fr
 lang_ref: boot-game
 permalink: /jeu-botte-trepointe/
+hide_site_header: true
 extra_css:
   - /assets/css/cobbler-game.css
 extra_js:
@@ -20,7 +21,10 @@ keywords:
 <div class="cobbler-game" data-cobbler-game data-lang="fr" data-issue="none" data-scene-base="{{ '/assets/img/sora/' | relative_url }}">
   <div class="cg-topbar">
     <p class="cg-intro" data-i18n="introText">Gère ton atelier: diagnostique, répare, finalise, puis fais grimper ta réputation.</p>
-    <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Passer en anglais">EN</button>
+    <div class="cg-topbar-actions">
+      <a class="btn btn-outline cg-exit-link" href="{{ '/' | relative_url }}" data-i18n="exitGameBtn">Quitter le jeu</a>
+      <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Passer en anglais">EN</button>
+    </div>
     <div class="cg-stats">
       <p><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
       <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>

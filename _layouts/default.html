@@ -9,7 +9,9 @@
       {% if current_lang == "en" %}Skip to content{% else %}Aller au contenu{% endif %}
     </a>
     <div class="site">
-      {% include header.html %}
+      {% unless page.hide_site_header %}
+        {% include header.html %}
+      {% endunless %}
       <main class="site-main" id="main-content">
         {{ content }}
       </main>

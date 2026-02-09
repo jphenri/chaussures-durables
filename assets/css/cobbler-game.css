@@ -34,14 +34,29 @@
   min-width: 0;
 }
 
-.cg-lang-toggle {
+.cg-topbar-actions {
   grid-area: lang;
   justify-self: end;
   align-self: start;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.cg-lang-toggle {
   color: #7a1d18;
   border-color: rgba(122, 29, 24, 0.45);
   background: rgba(255, 250, 246, 0.9);
   min-width: 68px;
+}
+
+.cg-exit-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 128px;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .cg-topbar .cg-stats {
@@ -1350,6 +1365,16 @@
 
   .cg-topbar {
     grid-template-columns: 1fr auto;
+  }
+
+  .cg-topbar-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    row-gap: 0.35rem;
+  }
+
+  .cg-exit-link {
+    min-width: 0;
   }
 }
 
