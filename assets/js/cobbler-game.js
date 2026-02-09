@@ -1052,8 +1052,8 @@
         repairHintDefault: 'Le bon combo materiel + outil facilite le mini-jeu.',
         repairExpectedSetup: 'Setup recommande: {material} + {tool}.',
         repairExpectedResult: 'Resultat attendu: {result}.',
-        materialFeedbackDefault: 'Choisis un materiel pour voir pourquoi ce choix est adapte (ou non).',
-        toolFeedbackDefault: 'Choisis un outil pour voir pourquoi ce choix est adapte (ou non).',
+        materialFeedbackDefault: 'Choisis un ou plusieurs materiaux pour voir pourquoi ce choix est adapte (ou non).',
+        toolFeedbackDefault: 'Choisis un ou plusieurs outils pour voir pourquoi ce choix est adapte (ou non).',
         materialFeedbackBest: 'Excellent choix materiel: {selected} est ideal pour {repair}.',
         materialFeedbackOk: 'Choix materiel correct: {selected} fonctionne, mais {best} est plus adapte pour {repair}.',
         materialFeedbackBad: 'Mauvais choix materiel: {selected} est mal adapte a {repair}. Utilise {best}.',
@@ -1292,7 +1292,7 @@
         wrongDuringRepair: 'Mauvaise action: termine les reparations avant finition.',
         wrongDuringFinish: 'Mauvaise action pour l\'etape actuelle.',
         repairTypeMissing: 'Type de reparation manquant pour {issue}.',
-        repairSetupMissing: 'Choisis le materiel et l\'outil avant la reparation.',
+        repairSetupMissing: 'Choisis un ou plusieurs materiaux et outils avant la reparation.',
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
         repairSetupPenalty: 'Setup fragile: la reparation sera plus difficile.',
         repairExpected: 'Reference {issue}: materiel {material}, outil {tool}, resultat attendu {result}.',
@@ -1416,8 +1416,8 @@
         repairHintDefault: 'The right material + tool combo makes the mini-game easier.',
         repairExpectedSetup: 'Recommended setup: {material} + {tool}.',
         repairExpectedResult: 'Expected result: {result}.',
-        materialFeedbackDefault: 'Select a material to see why this choice fits (or not).',
-        toolFeedbackDefault: 'Select a tool to see why this choice fits (or not).',
+        materialFeedbackDefault: 'Select one or more materials to see why this choice fits (or not).',
+        toolFeedbackDefault: 'Select one or more tools to see why this choice fits (or not).',
         materialFeedbackBest: 'Great material choice: {selected} is ideal for {repair}.',
         materialFeedbackOk: 'Acceptable material: {selected} can work, but {best} is better for {repair}.',
         materialFeedbackBad: 'Wrong material: {selected} does not fit {repair}. Use {best}.',
@@ -1656,7 +1656,7 @@
         wrongDuringRepair: 'Wrong action: finish repairs before finishing stage.',
         wrongDuringFinish: 'Wrong action for the current stage.',
         repairTypeMissing: 'Missing repair type for {issue}.',
-        repairSetupMissing: 'Choose material and tool before launching repair.',
+        repairSetupMissing: 'Choose one or more materials and tools before launching repair.',
         repairSetupLog: 'Setup {issue}: {material} + {tool} ({rating}).',
         repairSetupPenalty: 'Weak setup: repair mini-game is harder.',
         repairExpected: 'Reference {issue}: material {material}, tool {tool}, expected result {result}.',
@@ -1729,8 +1729,8 @@
     repairPlan: root.querySelector('[data-repair-plan]'),
     repairIssue: root.querySelector('[data-repair-issue]'),
     repairType: root.querySelector('[data-repair-type]'),
-    repairMaterial: root.querySelector('[data-repair-material]'),
-    repairTool: root.querySelector('[data-repair-tool]'),
+    repairMaterialList: root.querySelector('[data-repair-material-list]'),
+    repairToolList: root.querySelector('[data-repair-tool-list]'),
     materialFeedback: root.querySelector('[data-material-feedback]'),
     toolFeedback: root.querySelector('[data-tool-feedback]'),
     repairHint: root.querySelector('[data-repair-hint]'),
@@ -1814,8 +1814,8 @@
     !elements.repairPlan ||
     !elements.repairIssue ||
     !elements.repairType ||
-    !elements.repairMaterial ||
-    !elements.repairTool ||
+    !elements.repairMaterialList ||
+    !elements.repairToolList ||
     !elements.materialFeedback ||
     !elements.toolFeedback ||
     !elements.repairHint ||
@@ -2289,7 +2289,7 @@
     return Math.max(0, Number(state.stock[materialKey]) || 0);
   }
 
-  function materialWearForIssue(issueKey, selectedMaterial) {
+  function materialWearForIssue(issueKey, selectedMaterials) {
     var base = SERVICE_MATERIAL_WEAR[issueKey] || {};
     var usage = {};
     var keys = Object.keys(base);
@@ -2300,8 +2300,16 @@
       }
     }
 
-    if (selectedMaterial && langPack().materials[selectedMaterial]) {
-      usage[selectedMaterial] = (usage[selectedMaterial] || 0) + 1;
+    var selected = selectedMaterials;
+    if (!Array.isArray(selected) && selectedMaterials) {
+      selected = [selectedMaterials];
+    }
+    selected = uniqueStringList(selected);
+
+    for (var j = 0; j < selected.length; j += 1) {
+      if (langPack().materials[selected[j]]) {
+        usage[selected[j]] = (usage[selected[j]] || 0) + 1;
+      }
     }
 
     return usage;
@@ -2626,17 +2634,113 @@
     return null;
   }
 
-  function choiceRating(selectedKey, bestKey, okKeys) {
-    if (!selectedKey) {
+  function uniqueStringList(values) {
+    if (!Array.isArray(values)) {
+      return [];
+    }
+
+    var output = [];
+    for (var i = 0; i < values.length; i += 1) {
+      var value = values[i];
+      if (typeof value !== 'string' || !value) {
+        continue;
+      }
+      if (output.indexOf(value) === -1) {
+        output.push(value);
+      }
+    }
+    return output;
+  }
+
+  function normalizeSelectedKeys(selectedKeys, allowedKeys) {
+    var selected = uniqueStringList(selectedKeys);
+    if (!Array.isArray(allowedKeys) || allowedKeys.length === 0) {
+      return selected;
+    }
+
+    var filtered = [];
+    for (var i = 0; i < selected.length; i += 1) {
+      if (allowedKeys.indexOf(selected[i]) !== -1) {
+        filtered.push(selected[i]);
+      }
+    }
+    return filtered;
+  }
+
+  function issueSelectedMaterials(issue) {
+    if (!issue) {
+      return [];
+    }
+    var selected = issue.selectedMaterials;
+    if (!Array.isArray(selected) && issue.selectedMaterial) {
+      selected = [issue.selectedMaterial];
+    }
+    return uniqueStringList(selected);
+  }
+
+  function issueSelectedTools(issue) {
+    if (!issue) {
+      return [];
+    }
+    var selected = issue.selectedTools;
+    if (!Array.isArray(selected) && issue.selectedTool) {
+      selected = [issue.selectedTool];
+    }
+    return uniqueStringList(selected);
+  }
+
+  function setIssueSelectedMaterials(issue, selectedKeys) {
+    var normalized = uniqueStringList(selectedKeys);
+    issue.selectedMaterials = normalized;
+    issue.selectedMaterial = normalized[0] || '';
+  }
+
+  function setIssueSelectedTools(issue, selectedKeys) {
+    var normalized = uniqueStringList(selectedKeys);
+    issue.selectedTools = normalized;
+    issue.selectedTool = normalized[0] || '';
+  }
+
+  function choiceRatingMulti(selectedKeys, bestKey, okKeys) {
+    var selected = uniqueStringList(selectedKeys);
+    if (selected.length === 0) {
       return 'missing';
     }
-    if (selectedKey === bestKey) {
+
+    var safeOk = Array.isArray(okKeys) ? okKeys : [];
+    var total = 0;
+
+    for (var i = 0; i < selected.length; i += 1) {
+      if (selected[i] === bestKey) {
+        total += 2;
+      } else if (safeOk.indexOf(selected[i]) !== -1) {
+        total += 1;
+      } else {
+        total -= 2;
+      }
+    }
+
+    var average = total / selected.length;
+    if (selected.indexOf(bestKey) !== -1 && average >= 1.2) {
       return 'best';
     }
-    if (okKeys && okKeys.indexOf(selectedKey) !== -1) {
+    if (average >= 0.2) {
       return 'ok';
     }
     return 'bad';
+  }
+
+  function formatChoiceSummary(selectedKeys, labelFn) {
+    var selected = uniqueStringList(selectedKeys);
+    if (selected.length === 0) {
+      return '';
+    }
+
+    var labels = [];
+    for (var i = 0; i < selected.length; i += 1) {
+      labels.push(labelFn(selected[i]));
+    }
+    return labels.join(', ');
   }
 
   function choiceScore(choice) {
@@ -2669,9 +2773,10 @@
 
   function explainMaterialChoice(issue, typeDef) {
     var ui = langPack().ui;
-    var selected = issue.selectedMaterial || '';
+    var selectedList = issueSelectedMaterials(issue);
+    var selectedText = formatChoiceSummary(selectedList, materialLabel);
     var best = typeDef.best.material;
-    var rating = choiceRating(selected, best, typeDef.okMaterials || []);
+    var rating = choiceRatingMulti(selectedList, best, typeDef.okMaterials || []);
 
     if (rating === 'missing') {
       return {
@@ -2684,7 +2789,7 @@
       return {
         rating: rating,
         text: interpolate(ui.materialFeedbackBest, {
-          selected: materialLabel(selected),
+          selected: selectedText,
           repair: repairTypeLabel(issue.selectedRepairType),
           best: materialLabel(best)
         })
@@ -2695,7 +2800,7 @@
       return {
         rating: rating,
         text: interpolate(ui.materialFeedbackOk, {
-          selected: materialLabel(selected),
+          selected: selectedText,
           repair: repairTypeLabel(issue.selectedRepairType),
           best: materialLabel(best)
         })
@@ -2705,7 +2810,7 @@
     return {
       rating: rating,
       text: interpolate(ui.materialFeedbackBad, {
-        selected: materialLabel(selected),
+        selected: selectedText,
         repair: repairTypeLabel(issue.selectedRepairType),
         best: materialLabel(best)
       })
@@ -2714,9 +2819,10 @@
 
   function explainToolChoice(issue, typeDef) {
     var ui = langPack().ui;
-    var selected = issue.selectedTool || '';
+    var selectedList = issueSelectedTools(issue);
+    var selectedText = formatChoiceSummary(selectedList, toolLabel);
     var best = typeDef.best.tool;
-    var rating = choiceRating(selected, best, typeDef.okTools || []);
+    var rating = choiceRatingMulti(selectedList, best, typeDef.okTools || []);
 
     if (rating === 'missing') {
       return {
@@ -2729,7 +2835,7 @@
       return {
         rating: rating,
         text: interpolate(ui.toolFeedbackBest, {
-          selected: toolLabel(selected),
+          selected: selectedText,
           repair: repairTypeLabel(issue.selectedRepairType),
           best: toolLabel(best)
         })
@@ -2740,7 +2846,7 @@
       return {
         rating: rating,
         text: interpolate(ui.toolFeedbackOk, {
-          selected: toolLabel(selected),
+          selected: selectedText,
           repair: repairTypeLabel(issue.selectedRepairType),
           best: toolLabel(best)
         })
@@ -2750,7 +2856,7 @@
     return {
       rating: rating,
       text: interpolate(ui.toolFeedbackBad, {
-        selected: toolLabel(selected),
+        selected: selectedText,
         repair: repairTypeLabel(issue.selectedRepairType),
         best: toolLabel(best)
       })
@@ -3902,6 +4008,24 @@
     return ui.mainActionIdle;
   }
 
+  function setRepairChoiceDisabled(listElement, kind, disabled) {
+    var selector = 'input[type="checkbox"][data-repair-choice="' + kind + '"]';
+    var inputs = listElement.querySelectorAll(selector);
+
+    for (var i = 0; i < inputs.length; i += 1) {
+      inputs[i].disabled = !!disabled;
+      var row = inputs[i].closest('.cg-choice-option');
+      if (!row) {
+        continue;
+      }
+      if (disabled) {
+        row.classList.add('is-disabled');
+      } else {
+        row.classList.remove('is-disabled');
+      }
+    }
+  }
+
   function updateButtons() {
     var activeOrder = !!state.currentOrder && state.stage !== 'done';
     var isMainActionDisabled = !activeOrder || state.actionLock;
@@ -3919,8 +4043,8 @@
     elements.actionFinish.disabled = !(state.mini.type === 'timing' && state.mini.context === 'finish');
 
     var inRepairStage = activeOrder && state.stage === 'repair' && !state.actionLock;
-    elements.repairMaterial.disabled = !inRepairStage;
-    elements.repairTool.disabled = !inRepairStage;
+    setRepairChoiceDisabled(elements.repairMaterialList, 'material', !inRepairStage);
+    setRepairChoiceDisabled(elements.repairToolList, 'tool', !inRepairStage);
     elements.shelveOrder.disabled = !activeOrder || state.actionLock;
     elements.waitNextDay.disabled = false;
   }
@@ -4218,26 +4342,42 @@
     }
   }
 
-  function clearSelect(element, placeholderText) {
+  function clearChoiceList(element) {
     element.innerHTML = '';
-    var placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = placeholderText;
-    element.appendChild(placeholder);
   }
 
-  function populateSelect(element, keys, placeholderText, selectedKey, labelFn) {
-    clearSelect(element, placeholderText);
+  function renderChoiceList(element, keys, selectedKeys, kind, labelFn, isDisabled) {
+    clearChoiceList(element);
+
+    var selected = uniqueStringList(selectedKeys);
 
     for (var i = 0; i < keys.length; i += 1) {
-      var option = document.createElement('option');
-      option.value = keys[i];
-      option.textContent = labelFn(keys[i]);
-      element.appendChild(option);
-    }
+      var key = keys[i];
+      var inputId = 'repair-' + kind + '-' + String(i) + '-' + key;
+      var label = document.createElement('label');
+      label.className = 'cg-choice-option';
+      if (selected.indexOf(key) !== -1) {
+        label.classList.add('is-selected');
+      }
+      if (isDisabled) {
+        label.classList.add('is-disabled');
+      }
+      label.setAttribute('for', inputId);
 
-    if (selectedKey) {
-      element.value = selectedKey;
+      var checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = inputId;
+      checkbox.value = key;
+      checkbox.checked = selected.indexOf(key) !== -1;
+      checkbox.disabled = !!isDisabled;
+      checkbox.setAttribute('data-repair-choice', kind);
+      label.appendChild(checkbox);
+
+      var text = document.createElement('span');
+      text.textContent = labelFn(key);
+      label.appendChild(text);
+
+      element.appendChild(label);
     }
   }
 
@@ -4314,8 +4454,8 @@
   function renderRepairPlan() {
     if (!state.currentOrder || state.stage !== 'repair') {
       elements.repairPlan.hidden = true;
-      clearSelect(elements.repairMaterial, langPack().ui.chooseMaterialPlaceholder);
-      clearSelect(elements.repairTool, langPack().ui.chooseToolPlaceholder);
+      clearChoiceList(elements.repairMaterialList);
+      clearChoiceList(elements.repairToolList);
       elements.repairIssue.textContent = '-';
       elements.repairType.textContent = '-';
       setFeedbackText(elements.materialFeedback, langPack().ui.materialFeedbackDefault, 'missing');
@@ -4336,8 +4476,8 @@
 
     if (!issue.selectedRepairType) {
       elements.repairType.textContent = langPack().ui.noRepairType;
-      clearSelect(elements.repairMaterial, langPack().ui.chooseMaterialPlaceholder);
-      clearSelect(elements.repairTool, langPack().ui.chooseToolPlaceholder);
+      clearChoiceList(elements.repairMaterialList);
+      clearChoiceList(elements.repairToolList);
       setFeedbackText(elements.materialFeedback, langPack().ui.materialFeedbackDefault, 'missing');
       setFeedbackText(elements.toolFeedback, langPack().ui.toolFeedbackDefault, 'missing');
       elements.repairHint.textContent = langPack().ui.repairHintDefault;
@@ -4348,30 +4488,39 @@
     elements.repairType.textContent = repairTypeLabel(issue.selectedRepairType);
 
     if (!typeDef) {
-      clearSelect(elements.repairMaterial, langPack().ui.chooseMaterialPlaceholder);
-      clearSelect(elements.repairTool, langPack().ui.chooseToolPlaceholder);
+      clearChoiceList(elements.repairMaterialList);
+      clearChoiceList(elements.repairToolList);
       setFeedbackText(elements.materialFeedback, langPack().ui.materialFeedbackDefault, 'missing');
       setFeedbackText(elements.toolFeedback, langPack().ui.toolFeedbackDefault, 'missing');
       elements.repairHint.textContent = langPack().ui.repairHintDefault;
       return;
     }
 
-    populateSelect(
-      elements.repairMaterial,
+    var selectedMaterials = normalizeSelectedKeys(issueSelectedMaterials(issue), typeDef.materialOptions);
+    var selectedTools = normalizeSelectedKeys(issueSelectedTools(issue), typeDef.toolOptions);
+    setIssueSelectedMaterials(issue, selectedMaterials);
+    setIssueSelectedTools(issue, selectedTools);
+
+    var isDisabled = state.actionLock;
+
+    renderChoiceList(
+      elements.repairMaterialList,
       typeDef.materialOptions,
-      langPack().ui.chooseMaterialPlaceholder,
-      issue.selectedMaterial,
+      selectedMaterials,
+      'material',
       function (materialKey) {
         return materialLabel(materialKey) + ' (' + formatStockCount(materialStock(materialKey)) + ')';
-      }
+      },
+      isDisabled
     );
 
-    populateSelect(
-      elements.repairTool,
+    renderChoiceList(
+      elements.repairToolList,
       typeDef.toolOptions,
-      langPack().ui.chooseToolPlaceholder,
-      issue.selectedTool,
-      toolLabel
+      selectedTools,
+      'tool',
+      toolLabel,
+      isDisabled
     );
 
     var materialFeedback = explainMaterialChoice(issue, typeDef);
@@ -4498,6 +4647,8 @@
       serviceHours: economy.hours,
       serviceExcellenceBonus: economy.excellenceBonus,
       selectedRepairType: '',
+      selectedMaterials: [],
+      selectedTools: [],
       selectedMaterial: '',
       selectedTool: ''
     };
@@ -4848,8 +4999,10 @@
 
   function evaluateRepairSetup(issue) {
     var typeDef = repairTypeDefinition(issue.key, issue.selectedRepairType);
+    var selectedMaterials = issueSelectedMaterials(issue);
+    var selectedTools = issueSelectedTools(issue);
 
-    if (!typeDef || !issue.selectedMaterial || !issue.selectedTool) {
+    if (!typeDef || selectedMaterials.length === 0 || selectedTools.length === 0) {
       return null;
     }
 
@@ -5286,7 +5439,10 @@
       return;
     }
 
-    if (!issue.selectedMaterial || !issue.selectedTool) {
+    var selectedMaterials = issueSelectedMaterials(issue);
+    var selectedTools = issueSelectedTools(issue);
+
+    if (selectedMaterials.length === 0 || selectedTools.length === 0) {
       applyPenaltyAndError(7, 0, langPack().logs.repairSetupMissing);
       return;
     }
@@ -5298,7 +5454,7 @@
       return;
     }
 
-    var materialUsage = materialWearForIssue(issue.key, issue.selectedMaterial);
+    var materialUsage = materialWearForIssue(issue.key, selectedMaterials);
     var missingMaterials = materialUsageMissingList(materialUsage);
 
     if (missingMaterials.length > 0) {
@@ -5325,8 +5481,8 @@
 
     addLog(interpolate(langPack().logs.repairSetupLog, {
       issue: issueLabel(issue.key),
-      material: materialLabel(issue.selectedMaterial),
-      tool: toolLabel(issue.selectedTool),
+      material: formatChoiceSummary(selectedMaterials, materialLabel),
+      tool: formatChoiceSummary(selectedTools, toolLabel),
       rating: setupRatingLabel(setupProfile.ratingKey)
     }));
 
@@ -5504,32 +5660,72 @@
     }
 
     issue.selectedRepairType = target.value || '';
-    issue.selectedMaterial = '';
-    issue.selectedTool = '';
+    setIssueSelectedMaterials(issue, []);
+    setIssueSelectedTools(issue, []);
 
     renderWorkshopPanels();
     renderIssues();
   }
 
-  function handleRepairMaterialChange() {
+  function readSelectedRepairChoices(container, kind, allowedKeys) {
+    var selector = 'input[type="checkbox"][data-repair-choice="' + kind + '"]';
+    var inputs = container.querySelectorAll(selector);
+    var selected = [];
+
+    for (var i = 0; i < inputs.length; i += 1) {
+      if (inputs[i].checked) {
+        selected.push(inputs[i].value);
+      }
+    }
+
+    return normalizeSelectedKeys(selected, allowedKeys);
+  }
+
+  function handleRepairMaterialChange(event) {
+    var target = event && event.target;
+    if (!target || !target.matches('input[type="checkbox"][data-repair-choice="material"]')) {
+      return;
+    }
+
     var issue = getCurrentIssue();
 
     if (!issue || state.stage !== 'repair') {
       return;
     }
 
-    issue.selectedMaterial = elements.repairMaterial.value || '';
+    var typeDef = repairTypeDefinition(issue.key, issue.selectedRepairType);
+    if (!typeDef) {
+      return;
+    }
+
+    setIssueSelectedMaterials(
+      issue,
+      readSelectedRepairChoices(elements.repairMaterialList, 'material', typeDef.materialOptions)
+    );
     renderRepairPlan();
   }
 
-  function handleRepairToolChange() {
+  function handleRepairToolChange(event) {
+    var target = event && event.target;
+    if (!target || !target.matches('input[type="checkbox"][data-repair-choice="tool"]')) {
+      return;
+    }
+
     var issue = getCurrentIssue();
 
     if (!issue || state.stage !== 'repair') {
       return;
     }
 
-    issue.selectedTool = elements.repairTool.value || '';
+    var typeDef = repairTypeDefinition(issue.key, issue.selectedRepairType);
+    if (!typeDef) {
+      return;
+    }
+
+    setIssueSelectedTools(
+      issue,
+      readSelectedRepairChoices(elements.repairToolList, 'tool', typeDef.toolOptions)
+    );
     renderRepairPlan();
   }
 
@@ -5872,8 +6068,8 @@
   elements.actionFinish.addEventListener('click', handleTimingHit);
 
   elements.diagnosisList.addEventListener('change', handleDiagnosisSelectionChange);
-  elements.repairMaterial.addEventListener('change', handleRepairMaterialChange);
-  elements.repairTool.addEventListener('change', handleRepairToolChange);
+  elements.repairMaterialList.addEventListener('change', handleRepairMaterialChange);
+  elements.repairToolList.addEventListener('change', handleRepairToolChange);
   elements.weekUpgrades.addEventListener('click', handleWeekUpgradeClick);
   elements.supplyList.addEventListener('click', handleSupplyBuyClick);
 

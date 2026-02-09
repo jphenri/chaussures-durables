@@ -127,17 +127,19 @@ keywords:
         <p class="cg-repair-line"><span data-i18n="repairIssueLabel">Target issue</span>: <strong data-repair-issue>-</strong></p>
         <p class="cg-repair-line"><span data-i18n="repairTypeLabel">Chosen type</span>: <strong data-repair-type>-</strong></p>
 
-        <label class="cg-field-label" for="repair-material-en" data-i18n="repairMaterialLabel">Material</label>
-        <select id="repair-material-en" data-repair-material>
-          <option value="">Choose a material</option>
-        </select>
-        <p class="cg-repair-feedback is-empty" data-material-feedback>Select a material to see why this is a good or bad choice.</p>
+        <div class="cg-repair-choices-grid">
+          <section class="cg-repair-choice-block">
+            <p class="cg-field-label" data-i18n="repairMaterialLabel">Material</p>
+            <div class="cg-choice-list" data-repair-material-list aria-live="polite"></div>
+            <p class="cg-repair-feedback is-empty" data-material-feedback>Select one or more materials to see why this choice fits (or not).</p>
+          </section>
 
-        <label class="cg-field-label" for="repair-tool-en" data-i18n="repairToolLabel">Tool</label>
-        <select id="repair-tool-en" data-repair-tool>
-          <option value="">Choose a tool</option>
-        </select>
-        <p class="cg-repair-feedback is-empty" data-tool-feedback>Select a tool to see why this is a good or bad choice.</p>
+          <section class="cg-repair-choice-block">
+            <p class="cg-field-label" data-i18n="repairToolLabel">Tool</p>
+            <div class="cg-choice-list" data-repair-tool-list aria-live="polite"></div>
+            <p class="cg-repair-feedback is-empty" data-tool-feedback>Select one or more tools to see why this choice fits (or not).</p>
+          </section>
+        </div>
 
         <p class="cg-repair-hint" data-repair-hint>The right material + tool combo makes the repair mini-game easier.</p>
       </section>

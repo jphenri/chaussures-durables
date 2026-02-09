@@ -127,17 +127,19 @@ keywords:
         <p class="cg-repair-line"><span data-i18n="repairIssueLabel">Problème ciblé</span>: <strong data-repair-issue>-</strong></p>
         <p class="cg-repair-line"><span data-i18n="repairTypeLabel">Type choisi</span>: <strong data-repair-type>-</strong></p>
 
-        <label class="cg-field-label" for="repair-material" data-i18n="repairMaterialLabel">Matériel</label>
-        <select id="repair-material" data-repair-material>
-          <option value="">Choisir un matériel</option>
-        </select>
-        <p class="cg-repair-feedback is-empty" data-material-feedback>Choisis un matériel pour voir pourquoi c'est un bon ou mauvais choix.</p>
+        <div class="cg-repair-choices-grid">
+          <section class="cg-repair-choice-block">
+            <p class="cg-field-label" data-i18n="repairMaterialLabel">Matériel</p>
+            <div class="cg-choice-list" data-repair-material-list aria-live="polite"></div>
+            <p class="cg-repair-feedback is-empty" data-material-feedback>Choisis un ou plusieurs matériaux pour voir pourquoi ce choix est adapté (ou non).</p>
+          </section>
 
-        <label class="cg-field-label" for="repair-tool" data-i18n="repairToolLabel">Outil</label>
-        <select id="repair-tool" data-repair-tool>
-          <option value="">Choisir un outil</option>
-        </select>
-        <p class="cg-repair-feedback is-empty" data-tool-feedback>Choisis un outil pour voir pourquoi c'est un bon ou mauvais choix.</p>
+          <section class="cg-repair-choice-block">
+            <p class="cg-field-label" data-i18n="repairToolLabel">Outil</p>
+            <div class="cg-choice-list" data-repair-tool-list aria-live="polite"></div>
+            <p class="cg-repair-feedback is-empty" data-tool-feedback>Choisis un ou plusieurs outils pour voir pourquoi ce choix est adapté (ou non).</p>
+          </section>
+        </div>
 
         <p class="cg-repair-hint" data-repair-hint>Le bon combo matériel + outil facilite le mini-jeu de réparation.</p>
       </section>
