@@ -22,6 +22,9 @@ keywords:
   <div class="cg-topbar">
     <div class="cg-topbar-actions">
       <a class="btn btn-outline cg-exit-link" href="{{ '/en/' | relative_url }}" data-i18n="exitGameBtn">Exit game</a>
+      <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
+      <button class="btn btn-outline cg-head-action" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Run marketing</button>
+      <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
       <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
     </div>
     <div class="cg-stats">
@@ -173,12 +176,6 @@ keywords:
       <h2 data-i18n="toolsTitle">Action</h2>
       <div class="cg-tools-grid">
         <button class="btn cg-tool-btn" type="button" data-main-action>Confirm diagnosis</button>
-      </div>
-
-      <div class="cg-actions">
-        <button class="btn" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
-        <button class="btn" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Run marketing</button>
-        <button class="btn" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
       </div>
 
       <section class="cg-inventory">

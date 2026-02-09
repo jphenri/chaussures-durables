@@ -1439,52 +1439,103 @@
   top: var(--cg-sticky-offset);
   z-index: 30;
   border-radius: 16px;
-  border: 1px solid rgba(171, 103, 73, 0.46);
+  border: 1px solid rgba(97, 17, 17, 0.72);
   box-shadow:
-    0 14px 28px rgba(100, 44, 21, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    0 16px 30px rgba(57, 9, 9, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
   backdrop-filter: blur(10px);
   background:
-    linear-gradient(180deg, rgba(255, 247, 238, 0.94), rgba(255, 236, 221, 0.9));
+    linear-gradient(180deg, rgba(160, 33, 33, 0.96), rgba(123, 20, 20, 0.95));
 }
 
 .cobbler-game .cg-topbar-actions {
   width: 100%;
   justify-content: flex-end;
-  gap: 0.4rem;
+  gap: 0.34rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 0.08rem;
+}
+
+.cobbler-game .cg-topbar-actions .btn,
+.cobbler-game .cg-topbar-actions .cg-exit-link {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0.3rem 0.52rem;
+  font-size: 0.76rem;
+  line-height: 1.08;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff8f2;
+}
+
+.cobbler-game .cg-topbar-actions .btn:hover:not([disabled]),
+.cobbler-game .cg-topbar-actions .cg-exit-link:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.cobbler-game .cg-topbar-actions .cg-exit-link {
+  min-width: 114px;
+  font-weight: 800;
 }
 
 .cobbler-game .cg-exit-link,
 .cobbler-game .cg-lang-toggle {
-  min-height: 38px;
+  min-height: 34px;
 }
 
 .cobbler-game .cg-topbar .cg-stats {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(156px, 1fr);
+  grid-auto-columns: minmax(112px, 1fr);
   align-items: stretch;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-gutter: stable both-edges;
-  gap: 0.38rem;
-  padding-bottom: 0.16rem;
+  gap: 0.28rem;
+  padding-bottom: 0.1rem;
 }
 
 .cobbler-game .cg-topbar .cg-stats p,
 .cobbler-game .cg-topbar .cg-stars {
-  min-height: 40px;
+  min-height: 35px;
 }
 
 .cobbler-game .cg-topbar .cg-stats p {
-  flex: none;
-  font-size: 0.84rem;
-  line-height: 1.2;
-  padding: 0.34rem 0.48rem;
+  flex: 0 0 120px;
+  margin: 0;
+  gap: 0.3rem;
+  padding: 0.24rem 0.34rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff4ec;
+  font-size: 0.73rem;
+  line-height: 1.08;
+}
+
+.cobbler-game .cg-topbar .cg-stats p span {
+  display: inline-block;
+  max-width: 64px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.9;
 }
 
 .cobbler-game .cg-topbar .cg-stats p strong {
-  font-size: 0.92rem;
+  font-size: 0.85rem;
+  color: #fffdf8;
+  font-weight: 800;
+}
+
+.cobbler-game .cg-topbar .cg-stars {
+  flex: 0 0 106px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffd26a;
+  font-size: 1rem;
 }
 
 .cobbler-game .cg-topbar-order {
@@ -1563,26 +1614,23 @@
     padding-right: 0.42rem;
   }
 
-  .cobbler-game .cg-intro {
-    font-size: 0.82rem;
-  }
-
   .cobbler-game .cg-topbar {
     padding: 0.7rem 0.76rem;
   }
 
   .cobbler-game .cg-topbar-actions {
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
   }
 
-  .cobbler-game .cg-exit-link {
-    min-width: 112px;
-    font-size: 0.83rem;
+  .cobbler-game .cg-topbar-actions .btn,
+  .cobbler-game .cg-topbar-actions .cg-exit-link {
+    font-size: 0.7rem;
+    padding: 0.26rem 0.42rem;
   }
 
   .cobbler-game .cg-topbar .cg-stats {
-    grid-auto-columns: minmax(142px, 1fr);
+    grid-auto-columns: minmax(104px, 1fr);
   }
 }
 
