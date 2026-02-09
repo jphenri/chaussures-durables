@@ -24,7 +24,6 @@ keywords:
       <button class="btn cg-head-main-action" type="button" data-main-action data-i18n="mainActionIdle">Action indisponible</button>
       <button class="btn btn-primary cg-head-new-order" type="button" data-new-order data-i18n="newOrderBtn">Demarrer une commande</button>
       <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Attendre demain</button>
-      <button class="btn btn-outline cg-head-action" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Lancer marketing</button>
       <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Commander materiaux</button>
       <a class="btn btn-outline cg-exit-link" href="{{ '/' | relative_url }}" data-i18n="exitGameBtn">Quitter le jeu</a>
       <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Passer en anglais">EN</button>

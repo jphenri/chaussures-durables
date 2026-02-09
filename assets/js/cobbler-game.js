@@ -1098,6 +1098,9 @@
         supplyIncomingLabel: 'Livraisons en attente',
         closeSupplyBtn: 'Fermer',
         supplyBuyBtn: 'Commander',
+        supplyMarketingLabel: 'Campagne marketing',
+        supplyMarketingDesc: 'Booste les demandes entrantes pendant 7 jours.',
+        supplyMarketingMetaTemplate: '{cost} | +{days} jours de demande',
         supplyOwnedStockLabel: 'Stock',
         supplyMetaTemplate: '{cost} | +{items}',
         supplyNeedCashStatus: 'Fonds insuffisants',
@@ -1459,6 +1462,9 @@
         supplyIncomingLabel: 'Pending deliveries',
         closeSupplyBtn: 'Close',
         supplyBuyBtn: 'Order',
+        supplyMarketingLabel: 'Marketing campaign',
+        supplyMarketingDesc: 'Boost incoming requests for 7 days.',
+        supplyMarketingMetaTemplate: '{cost} | +{days} days of demand',
         supplyOwnedStockLabel: 'Stock',
         supplyMetaTemplate: '{cost} | +{items}',
         supplyNeedCashStatus: 'Not enough cash',
@@ -1781,7 +1787,6 @@
     weekUpgrades: root.querySelector('[data-week-upgrades]'),
     weekNext: root.querySelector('[data-week-next]'),
     waitNextDay: root.querySelector('[data-wait-next-day]'),
-    buyMarketing: root.querySelector('[data-buy-marketing]'),
     openSupply: root.querySelector('[data-open-supply]'),
     supplyPopup: root.querySelector('[data-supply-popup]'),
     supplyPopupSummary: root.querySelector('[data-supply-popup-summary]'),
@@ -1864,7 +1869,6 @@
     !elements.weekUpgrades ||
     !elements.weekNext ||
     !elements.waitNextDay ||
-    !elements.buyMarketing ||
     !elements.openSupply ||
     !elements.supplyPopup ||
     !elements.supplyPopupSummary ||
@@ -3590,6 +3594,60 @@
       item.appendChild(row);
       elements.supplyList.appendChild(item);
     }
+
+    var marketingItem = document.createElement('li');
+    marketingItem.className = 'cg-week-upgrade';
+
+    var marketingTitle = document.createElement('h4');
+    marketingTitle.textContent = ui.supplyMarketingLabel;
+    marketingItem.appendChild(marketingTitle);
+
+    var marketingDesc = document.createElement('p');
+    marketingDesc.textContent = ui.supplyMarketingDesc;
+    marketingItem.appendChild(marketingDesc);
+
+    var marketingMeta = document.createElement('p');
+    marketingMeta.className = 'cg-upgrade-meta';
+    marketingMeta.textContent = interpolate(ui.supplyMarketingMetaTemplate, {
+      cost: formatMoney(MARKETING_COST),
+      days: String(MARKETING_DURATION_DAYS)
+    });
+    marketingItem.appendChild(marketingMeta);
+
+    var marketingState = document.createElement('p');
+    marketingState.className = 'cg-upgrade-meta';
+    marketingState.textContent = ui.marketingLabel + ': ' + (
+      state.marketingDaysLeft > 0
+        ? interpolate(ui.marketingActive, { days: String(state.marketingDaysLeft) })
+        : ui.marketingNone
+    );
+    marketingItem.appendChild(marketingState);
+
+    var marketingRow = document.createElement('div');
+    marketingRow.className = 'cg-upgrade-row';
+
+    var canBuyMarketing = state.money >= MARKETING_COST;
+    var marketingStatus = document.createElement('span');
+    marketingStatus.className = 'cg-upgrade-status';
+    if (canBuyMarketing) {
+      marketingStatus.classList.add('is-owned');
+      marketingStatus.textContent = ui.supplyReadyStatus;
+    } else {
+      marketingStatus.classList.add('is-blocked');
+      marketingStatus.textContent = ui.supplyNeedCashStatus;
+    }
+    marketingRow.appendChild(marketingStatus);
+
+    var marketingBtn = document.createElement('button');
+    marketingBtn.type = 'button';
+    marketingBtn.className = 'btn cg-upgrade-buy';
+    marketingBtn.textContent = ui.buyMarketingBtn;
+    marketingBtn.setAttribute('data-supply-marketing', '1');
+    marketingBtn.disabled = !canBuyMarketing;
+    marketingRow.appendChild(marketingBtn);
+
+    marketingItem.appendChild(marketingRow);
+    elements.supplyList.appendChild(marketingItem);
   }
 
   function updateSupplyPopupContent() {
@@ -3865,7 +3923,6 @@
     elements.repairTool.disabled = !inRepairStage;
     elements.shelveOrder.disabled = !activeOrder || state.actionLock;
     elements.waitNextDay.disabled = false;
-    elements.buyMarketing.disabled = state.actionLock || state.weekSummary !== null;
   }
 
   function applyPenalty(scorePenalty, starPenalty, message) {
@@ -5714,11 +5771,18 @@
   function handleSupplyBuyClick(event) {
     var target = event.target;
 
-    if (!target || !target.hasAttribute('data-supply-buy')) {
+    if (!target) {
       return;
     }
 
-    placeSupplyOrder(target.getAttribute('data-supply-buy'));
+    if (target.hasAttribute('data-supply-marketing')) {
+      buyMarketingBoost();
+      return;
+    }
+
+    if (target.hasAttribute('data-supply-buy')) {
+      placeSupplyOrder(target.getAttribute('data-supply-buy'));
+    }
   }
 
   function handleShortcuts(event) {
@@ -5784,7 +5848,6 @@
   elements.incomingList.addEventListener('click', handleIncomingLeadAction);
   elements.queueList.addEventListener('click', handleQueueAction);
   elements.waitNextDay.addEventListener('click', waitNextDay);
-  elements.buyMarketing.addEventListener('click', buyMarketingBoost);
   elements.openSupply.addEventListener('click', handleSupplyOpen);
   elements.supplyClose.addEventListener('click', handleSupplyClose);
   elements.resetSave.addEventListener('click', resetProgress);
