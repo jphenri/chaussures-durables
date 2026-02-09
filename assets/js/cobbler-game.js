@@ -13,7 +13,9 @@
   var SUPPLY_COOLDOWN_HOURS = 8;
   var QUEUE_WEEK_PENALTY_RATE = 0.3;
   var QUEUE_MAX_ITEMS = 12;
-  var MONTHLY_RENT = 700;
+  var WEEKLY_SALARY_COST = 500;
+  var MONTHLY_RENT = 1000;
+  var MONTHLY_ELECTRICITY_COST = 200;
   var MARKETING_COST = 180;
   var MARKETING_DURATION_DAYS = 7;
   var COMPLETED_STORAGE_CAPACITY = 12;
@@ -1090,7 +1092,7 @@
         weekPopupSummary: 'Semaine {week}: {orders} commandes traitees. Tu as utilise {hoursUsed}.',
         weekRevenueLabel: 'Revenus services',
         weekBonusLabel: 'Bonus excellence',
-        weekRentLabel: 'Loyer atelier',
+        weekRentLabel: 'Salaires (hebdo)',
         weekNetLabel: 'Net de semaine',
         weekQueuePenaltyLabel: 'Penalite file',
         weekCashAfterLabel: 'Caisse finale',
@@ -1331,15 +1333,15 @@
         pickupPaid: 'Retraits clients: {count} paires payees pour {amount}.',
         servicePayout: 'Facturation: {amount} pour {hours}.',
         serviceExcellentBonus: 'Service excellent: bonus client {amount}.',
-        weekClosed: 'Semaine {week} terminee. Bilan: {net} (revenus {revenue}, bonus {bonus}, loyer {rent}, penalite file {queue}).',
-        weekRentPaid: 'Loyer paye: {rent}.',
+        weekClosed: 'Semaine {week} terminee. Bilan: {net} (revenus {revenue}, bonus {bonus}, salaires {rent}, penalite file {queue}).',
+        weekSalaryPaid: 'Salaires hebdomadaires payes: {amount}.',
         weekNoRentDue: 'Pas de loyer cette semaine (paiement toutes les 4 semaines).',
         weekQueuePenalty: 'Commandes non terminees en file: {count}. Penalite: {penalty}.',
         weekStarted: 'Semaine {week} demarree. Capacite: {hours}.',
-        weekNeedsSummary: 'Semaine terminee: consulte le resume pour payer le loyer et upgrader.',
+        weekNeedsSummary: 'Semaine terminee: consulte le resume pour cloturer les frais et upgrader.',
         dayAdvanced: 'Jour suivant: {date}.',
         waitBlockedActiveOrder: 'Termine la commande en cours avant d attendre le lendemain.',
-        monthRentPaid: 'Loyer mensuel paye: {amount}.',
+        monthChargesPaid: 'Charges mensuelles: loyer {rent} + electricite {electricity} (total {amount}).',
         supplyBought: 'Commande materiaux: {pack} pour {cost}.',
         supplyOrderedDelivery: 'Commande planifiee: {pack} x{qty}, livraison le {date}.',
         supplyDelivered: 'Livraison recue: {pack} x{qty}.',
@@ -1467,7 +1469,7 @@
         weekPopupSummary: 'Week {week}: {orders} orders completed. You used {hoursUsed}.',
         weekRevenueLabel: 'Service revenue',
         weekBonusLabel: 'Excellence bonus',
-        weekRentLabel: 'Workshop rent',
+        weekRentLabel: 'Weekly payroll',
         weekNetLabel: 'Weekly net',
         weekQueuePenaltyLabel: 'Queue penalty',
         weekCashAfterLabel: 'Closing cash',
@@ -1708,15 +1710,15 @@
         pickupPaid: 'Client pickups: {count} pairs paid for {amount}.',
         servicePayout: 'Invoice paid: {amount} for {hours}.',
         serviceExcellentBonus: 'Excellent service: client bonus {amount}.',
-        weekClosed: 'Week {week} closed. Net result: {net} (revenue {revenue}, bonus {bonus}, rent {rent}, queue penalty {queue}).',
-        weekRentPaid: 'Rent paid: {rent}.',
+        weekClosed: 'Week {week} closed. Net result: {net} (revenue {revenue}, bonus {bonus}, payroll {rent}, queue penalty {queue}).',
+        weekSalaryPaid: 'Weekly payroll paid: {amount}.',
         weekNoRentDue: 'No rent due this week (rent is charged every 4 weeks).',
         weekQueuePenalty: 'Queued orders missed: {count}. Penalty: {penalty}.',
         weekStarted: 'Week {week} started. Capacity: {hours}.',
-        weekNeedsSummary: 'Week completed: open summary to pay rent and upgrade.',
+        weekNeedsSummary: 'Week completed: open summary to settle costs and upgrade.',
         dayAdvanced: 'Next day: {date}.',
         waitBlockedActiveOrder: 'Finish the current order before waiting for tomorrow.',
-        monthRentPaid: 'Monthly rent paid: {amount}.',
+        monthChargesPaid: 'Monthly charges: rent {rent} + electricity {electricity} (total {amount}).',
         supplyBought: 'Supply order placed: {pack} for {cost}.',
         supplyOrderedDelivery: 'Supply ordered: {pack} x{qty}, delivery on {date}.',
         supplyDelivered: 'Delivery received: {pack} x{qty}.',
@@ -1869,7 +1871,6 @@
     !elements.sceneImage ||
     !elements.mainAction ||
     !elements.shelveOrder ||
-    !elements.date ||
     !elements.score ||
     !elements.money ||
     !elements.week ||
@@ -2306,10 +2307,16 @@
     }
 
     if (previousMonthKey !== nextMonthKey) {
-      state.money -= MONTHLY_RENT;
-      addLog(interpolate(langPack().logs.monthRentPaid, {
-        amount: formatMoney(MONTHLY_RENT)
-      }));
+      var monthlyCharges = MONTHLY_RENT + MONTHLY_ELECTRICITY_COST;
+      var monthlyChargesMessage = interpolate(langPack().logs.monthChargesPaid, {
+        rent: formatMoney(MONTHLY_RENT),
+        electricity: formatMoney(MONTHLY_ELECTRICITY_COST),
+        amount: formatMoney(monthlyCharges)
+      });
+
+      state.money -= monthlyCharges;
+      addLog(monthlyChargesMessage);
+      showActionError(monthlyChargesMessage);
     }
 
     setCurrentDateFromObj(nextDateObj);
@@ -2624,7 +2631,7 @@
 
   function weeklyRentAmount(weekNumber) {
     void weekNumber;
-    return 0;
+    return WEEKLY_SALARY_COST;
   }
 
   function upgradeText(upgrade) {
@@ -4063,27 +4070,29 @@
 
     var missedQueue = state.clientQueue.slice();
     var queuePenalty = totalQueuePenalty(missedQueue);
-    var rent = weeklyRentAmount(state.week);
+    var salaryCost = weeklyRentAmount(state.week);
     state.incomingLeads = [];
     state.selectedQueueId = '';
     state.clientQueue = [];
-    state.money -= (rent + queuePenalty);
+    state.money -= (salaryCost + queuePenalty);
 
     state.weekSummary = {
       week: state.week,
       orders: state.weeklyOrders,
       revenue: state.weeklyRevenue,
       bonus: state.weeklyExcellentBonus,
-      rent: rent,
+      rent: salaryCost,
       queuePenalty: queuePenalty,
-      net: state.weeklyRevenue + state.weeklyExcellentBonus - rent - queuePenalty,
+      net: state.weeklyRevenue + state.weeklyExcellentBonus - salaryCost - queuePenalty,
       hoursUsed: WEEK_HOURS_LIMIT - state.weekHoursLeft
     };
 
-    if (rent > 0) {
-      addLog(interpolate(langPack().logs.weekRentPaid, {
-        rent: formatMoney(rent)
-      }));
+    if (salaryCost > 0) {
+      var weeklySalaryMessage = interpolate(langPack().logs.weekSalaryPaid, {
+        amount: formatMoney(salaryCost)
+      });
+      addLog(weeklySalaryMessage);
+      showActionError(weeklySalaryMessage);
     }
 
     if (queuePenalty > 0) {
@@ -4508,7 +4517,9 @@
   }
 
   function renderStats() {
-    elements.date.textContent = formatCalendarDate(state.currentDate);
+    if (elements.date) {
+      elements.date.textContent = formatCalendarDate(state.currentDate);
+    }
     elements.score.textContent = String(Math.round(state.score));
     elements.money.textContent = formatMoney(state.money);
     elements.week.textContent = cycleProgressText();
