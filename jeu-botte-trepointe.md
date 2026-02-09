@@ -1,12 +1,11 @@
 ---
-layout: page
+layout: default
 title: "Jeu cordonnier : atelier de réparation"
 description: "Simulation jouable de cordonnerie: diagnostic, réparation, finition, réputation et clients satisfaits."
 lang: fr
 lang_ref: boot-game
 permalink: /jeu-botte-trepointe/
 hide_site_header: true
-hide_page_header: true
 extra_css:
   - /assets/css/cobbler-game.css
 extra_js:

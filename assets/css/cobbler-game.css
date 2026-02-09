@@ -1418,3 +1418,198 @@
     padding-bottom: 0;
   }
 }
+
+/* Layout and visual cleanup pass */
+.cobbler-game {
+  --cg-sticky-offset: 0.55rem;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 0.45rem clamp(0.55rem, 1.55vw, 1.2rem) 1.35rem;
+  gap: 0.78rem;
+}
+
+.cobbler-game .cg-topbar {
+  position: sticky;
+  top: var(--cg-sticky-offset);
+  z-index: 30;
+  border-radius: 16px;
+  border: 1px solid rgba(171, 103, 73, 0.46);
+  box-shadow:
+    0 14px 28px rgba(100, 44, 21, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  background:
+    linear-gradient(180deg, rgba(255, 247, 238, 0.94), rgba(255, 236, 221, 0.9));
+}
+
+.cobbler-game .cg-intro {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.28;
+  color: #543a31;
+}
+
+.cobbler-game .cg-topbar-actions {
+  gap: 0.4rem;
+}
+
+.cobbler-game .cg-exit-link,
+.cobbler-game .cg-lang-toggle {
+  min-height: 38px;
+}
+
+.cobbler-game .cg-topbar .cg-stats {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(156px, 1fr);
+  align-items: stretch;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-gutter: stable both-edges;
+  gap: 0.38rem;
+  padding-bottom: 0.16rem;
+}
+
+.cobbler-game .cg-topbar .cg-stats p,
+.cobbler-game .cg-topbar .cg-stars {
+  min-height: 40px;
+}
+
+.cobbler-game .cg-topbar .cg-stats p {
+  flex: none;
+  font-size: 0.84rem;
+  line-height: 1.2;
+  padding: 0.34rem 0.48rem;
+}
+
+.cobbler-game .cg-topbar .cg-stats p strong {
+  font-size: 0.92rem;
+}
+
+.cobbler-game .cg-topbar-order {
+  margin-top: 0;
+  border-radius: 14px;
+  padding: 0.58rem 0.7rem;
+}
+
+.cobbler-game .cg-topbar-order-grid {
+  grid-template-columns: 1fr;
+  gap: 0.52rem;
+}
+
+.cobbler-game .cg-order-meta {
+  gap: 0.24rem;
+}
+
+.cobbler-game .cg-order-meta-item {
+  padding: 0.26rem 0.4rem;
+}
+
+.cobbler-game .cg-topbar-order h2 {
+  font-size: 1rem;
+}
+
+.cobbler-game .cg-topbar-order h3 {
+  font-size: 0.88rem;
+}
+
+.cobbler-game .cg-topbar-order .cg-issues li,
+.cobbler-game .cg-topbar-order .cg-steps li {
+  font-size: 0.8rem;
+}
+
+.cobbler-game .cg-layout {
+  align-items: start;
+  gap: 0.82rem;
+}
+
+.cobbler-game .cg-order,
+.cobbler-game .cg-workshop,
+.cobbler-game .cg-tools {
+  min-width: 0;
+}
+
+.cobbler-game .cg-panel {
+  border-radius: 15px;
+  padding: 0.86rem;
+}
+
+.cobbler-game .cg-panel h2 {
+  font-size: 1.14rem;
+  margin-bottom: 0.6rem;
+}
+
+.cobbler-game .cg-workshop {
+  gap: 0.62rem;
+}
+
+.cobbler-game .cg-mini-wrap {
+  gap: 0.62rem;
+}
+
+.cobbler-game .cg-mini {
+  padding: 0.66rem;
+}
+
+.cobbler-game .cg-shoe-scene {
+  width: min(520px, 100%);
+}
+
+@media (max-width: 640px) {
+  .cobbler-game {
+    --cg-sticky-offset: 0.35rem;
+    padding-left: 0.42rem;
+    padding-right: 0.42rem;
+  }
+
+  .cobbler-game .cg-intro {
+    font-size: 0.82rem;
+  }
+
+  .cobbler-game .cg-topbar {
+    padding: 0.7rem 0.76rem;
+  }
+
+  .cobbler-game .cg-topbar-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .cobbler-game .cg-exit-link {
+    min-width: 112px;
+    font-size: 0.83rem;
+  }
+
+  .cobbler-game .cg-topbar .cg-stats {
+    grid-auto-columns: minmax(142px, 1fr);
+  }
+}
+
+@media (min-width: 780px) {
+  .cobbler-game .cg-topbar-order-grid {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    column-gap: 0.7rem;
+  }
+
+  .cobbler-game .cg-order-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cobbler-game .cg-layout {
+    grid-template-columns: minmax(260px, 0.92fr) minmax(420px, 1.25fr);
+  }
+
+  .cobbler-game .cg-tools {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1120px) {
+  .cobbler-game .cg-layout {
+    grid-template-columns: minmax(255px, 0.86fr) minmax(460px, 1.42fr) minmax(265px, 0.98fr);
+  }
+
+  .cobbler-game .cg-tools {
+    grid-column: auto;
+  }
+}

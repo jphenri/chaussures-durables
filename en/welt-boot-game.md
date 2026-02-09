@@ -1,12 +1,11 @@
 ---
-layout: page
+layout: default
 title: "Cobbler game: repair workshop simulator"
 description: "Playable cobbler simulation: diagnose, repair, finish jobs, and build your workshop reputation."
 lang: en
 lang_ref: boot-game
 permalink: /en/welt-boot-game/
 hide_site_header: true
-hide_page_header: true
 extra_css:
   - /assets/css/cobbler-game.css
 extra_js:
