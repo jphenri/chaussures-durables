@@ -70,17 +70,21 @@ keywords:
       </div>
 
       <div class="cg-topbar-order-details">
-        <h3 data-i18n="issuesTitle">Problèmes</h3>
-        <ul class="cg-issues" data-order-issues>
-          <li data-i18n="noOrderYet">Aucune commande en cours.</li>
-        </ul>
+        <section class="cg-order-detail-block cg-order-issues-block">
+          <h3 data-i18n="issuesTitle">Problèmes</h3>
+          <ul class="cg-issues" data-order-issues>
+            <li data-i18n="noOrderYet">Aucune commande en cours.</li>
+          </ul>
+        </section>
 
-        <h3 data-i18n="stepsTitle">Étapes</h3>
-        <ol class="cg-steps">
-          <li data-step-item="diagnosis">Diagnostiquer</li>
-          <li data-step-item="repair">Réparer</li>
-          <li data-step-item="finish">Finition</li>
-        </ol>
+        <section class="cg-order-detail-block cg-order-steps-block">
+          <h3 data-i18n="stepsTitle">Étapes</h3>
+          <ol class="cg-steps">
+            <li data-step-item="diagnosis">Diagnostiquer</li>
+            <li data-step-item="repair">Réparer</li>
+            <li data-step-item="finish">Finition</li>
+          </ol>
+        </section>
       </div>
     </div>
   </section>

@@ -1817,6 +1817,29 @@
   line-height: 1.1;
 }
 
+.cobbler-game .cg-topbar-order-details {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.cobbler-game .cg-order-detail-block {
+  min-width: 0;
+  align-self: start;
+}
+
+.cobbler-game .cg-order-detail-block h3 {
+  margin: 0 0 0.1rem;
+}
+
+.cobbler-game .cg-order-detail-block .cg-issues,
+.cobbler-game .cg-order-detail-block .cg-steps {
+  margin-top: 0;
+}
+
+.cobbler-game .cg-order-steps-block .cg-steps {
+  align-content: start;
+}
+
 @media (min-width: 980px) {
   .cobbler-game .cg-topbar-order-grid {
     grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
@@ -1825,30 +1848,18 @@
   }
 
   .cobbler-game .cg-topbar-order-details {
-    display: grid;
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     column-gap: 0.5rem;
-    row-gap: 0.06rem;
+    row-gap: 0.16rem;
     align-content: start;
+    align-items: start;
   }
 
-  .cobbler-game .cg-topbar-order-details h3 {
-    margin: 0;
-  }
-
-  .cobbler-game .cg-topbar-order-details h3:nth-of-type(1) {
+  .cobbler-game .cg-order-issues-block {
     grid-column: 1;
   }
 
-  .cobbler-game .cg-topbar-order-details h3:nth-of-type(2) {
-    grid-column: 2;
-  }
-
-  .cobbler-game .cg-topbar-order-details .cg-issues {
-    grid-column: 1;
-  }
-
-  .cobbler-game .cg-topbar-order-details .cg-steps {
+  .cobbler-game .cg-order-steps-block {
     grid-column: 2;
   }
 }
