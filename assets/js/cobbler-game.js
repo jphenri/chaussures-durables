@@ -1081,6 +1081,7 @@
         completionPopupSummary: 'Commande livree: {stars}/5 etoiles, {fixed}/{total} reparations solides. Pret pour un nouveau client ?',
         cashLabel: 'Caisse',
         weekLabel: 'Semaine',
+        cycleLabel: 'Cycle',
         hoursLeftLabel: 'Heures restantes',
         servicesUnlockedLabel: 'Services debloques',
         storageLabel: 'Stock termine',
@@ -1122,6 +1123,7 @@
         upgradeLockedStatus: 'Prerequis manquant',
         noUpgradeLeft: 'Tous les outils disponibles sont deja installes.',
         serviceMetaTemplate: '{stars} | {hours} | {price} | {risk}',
+        cycleProgressTemplate: 'Jour {day}/5 | Semaine {week}/4 | Mois {month}/12',
         sceneAltIdle: 'Illustration atelier de cordonnerie.',
         sceneAltIssue: 'Illustration mission: {issue}.',
         sceneAltFinishing: 'Illustration botte en finition.',
@@ -1456,6 +1458,7 @@
         completionPopupSummary: 'Order delivered: {stars}/5 stars, {fixed}/{total} strong repairs. Ready for a new client?',
         cashLabel: 'Cash',
         weekLabel: 'Week',
+        cycleLabel: 'Cycle',
         hoursLeftLabel: 'Hours left',
         servicesUnlockedLabel: 'Unlocked services',
         storageLabel: 'Finished stock',
@@ -1497,6 +1500,7 @@
         upgradeLockedStatus: 'Missing prerequisite',
         noUpgradeLeft: 'All available tools are already installed.',
         serviceMetaTemplate: '{stars} | {hours} | {price} | {risk}',
+        cycleProgressTemplate: 'Day {day}/5 | Week {week}/4 | Month {month}/12',
         sceneAltIdle: 'Cobbler workshop illustration.',
         sceneAltIssue: 'Mission illustration: {issue}.',
         sceneAltFinishing: 'Boot finishing illustration.',
@@ -2129,6 +2133,21 @@
       year: 'numeric',
       timeZone: 'UTC'
     }).format(dateObj);
+  }
+
+  function cycleProgressText() {
+    var dateObj = currentDateObj();
+    var weekday = dateObj.getUTCDay();
+    var dayInWorkWeek = clamp(weekday >= 1 && weekday <= 5 ? weekday : 5, 1, 5);
+    var safeWeek = Math.max(1, Math.floor(state.week) || 1);
+    var weekInMonth = ((safeWeek - 1) % 4) + 1;
+    var monthInYear = (Math.floor((safeWeek - 1) / 4) % 12) + 1;
+
+    return interpolate(langPack().ui.cycleProgressTemplate, {
+      day: String(dayInWorkWeek),
+      week: String(weekInMonth),
+      month: String(monthInYear)
+    });
   }
 
   function addCooldownHours(hours) {
@@ -4492,7 +4511,7 @@
     elements.date.textContent = formatCalendarDate(state.currentDate);
     elements.score.textContent = String(Math.round(state.score));
     elements.money.textContent = formatMoney(state.money);
-    elements.week.textContent = String(state.week);
+    elements.week.textContent = cycleProgressText();
     elements.hoursLeft.textContent = formatHours(state.weekHoursLeft) + ' / ' + formatHours(WEEK_HOURS_LIMIT);
     elements.marketing.textContent = state.marketingDaysLeft > 0
       ? interpolate(langPack().ui.marketingActive, { days: String(state.marketingDaysLeft) })

@@ -32,7 +32,7 @@ keywords:
       </div>
       <div class="cg-topbar-quick-stats">
         <p class="cg-quick-stat"><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
-        <p class="cg-quick-stat"><span data-i18n="weekLabel">Semaine</span>: <strong data-stat-week>1</strong></p>
+        <p class="cg-quick-stat"><span data-i18n="cycleLabel">Cycle</span>: <strong data-stat-week>Jour 1/5 | Semaine 1/4 | Mois 1/12</strong></p>
         <p class="cg-quick-stat"><span data-i18n="hoursLeftLabel">Heures restantes</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
       </div>
     </div>
