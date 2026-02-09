@@ -87,6 +87,12 @@ keywords:
 
   <div class="cg-layout">
     <aside class="cg-panel cg-order" aria-live="polite">
+      <div class="cg-order-media" aria-hidden="true">
+        <div class="cg-shoe-scene cg-order-scene">
+          <img src="{{ '/assets/img/sora/mission-premium-shine.png' | relative_url }}" alt="" loading="lazy" decoding="async" data-shoe-scene-image>
+        </div>
+      </div>
+
       <section class="cg-queue-builder">
         <h3 data-i18n="incomingTitle">Incoming requests</h3>
         <p class="cg-queue-summary" data-incoming-summary data-i18n="incomingSummaryDefault">New requests waiting for your decision.</p>
@@ -99,10 +105,6 @@ keywords:
           <li data-i18n="queueEmpty">No queued client.</li>
         </ul>
       </section>
-
-      <div class="cg-shoe-scene cg-order-scene" aria-hidden="true">
-        <img src="{{ '/assets/img/sora/mission-premium-shine.png' | relative_url }}" alt="" loading="lazy" decoding="async" data-shoe-scene-image>
-      </div>
 
     </aside>
 

@@ -1853,7 +1853,22 @@
   }
 }
 
+.cobbler-game .cg-order .cg-order-media {
+  margin-bottom: 0.62rem;
+  border: 1px solid #d7b8a5;
+  border-radius: 12px;
+  background: #fff7f1;
+  padding: 0.36rem;
+}
+
 .cobbler-game .cg-order .cg-order-scene {
-  margin: 0.5rem 0 0 auto;
-  width: min(300px, 100%);
+  margin: 0;
+  width: 100%;
+  max-width: none;
+}
+
+.cobbler-game .cg-order .cg-order-scene img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
 }
