@@ -21,20 +21,24 @@ keywords:
 <div class="cobbler-game" data-cobbler-game data-lang="en" data-issue="none" data-scene-base="{{ '/assets/img/sora/' | relative_url }}">
   <div class="cg-topbar">
     <div class="cg-topbar-actions">
-      <button class="btn cg-head-main-action" type="button" data-main-action data-i18n="mainActionIdle">Action unavailable</button>
-      <button class="btn btn-primary cg-head-new-order" type="button" data-new-order data-i18n="newOrderBtn">Start order</button>
-      <button class="btn btn-outline cg-head-action" type="button" data-call-clients data-i18n="callClientsBtn">Call clients</button>
-      <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
-      <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
-      <a class="btn btn-outline cg-exit-link" href="{{ '/en/' | relative_url }}" data-i18n="exitGameBtn">Exit game</a>
-      <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
+      <div class="cg-topbar-actions-main">
+        <button class="btn cg-head-main-action" type="button" data-main-action data-i18n="mainActionIdle">Action unavailable</button>
+        <button class="btn btn-primary cg-head-new-order" type="button" data-new-order data-i18n="newOrderBtn">Start order</button>
+        <button class="btn btn-outline cg-head-action" type="button" data-call-clients data-i18n="callClientsBtn">Call clients</button>
+        <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
+        <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
+        <a class="btn btn-outline cg-exit-link" href="{{ '/en/' | relative_url }}" data-i18n="exitGameBtn">Exit game</a>
+        <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
+      </div>
+      <div class="cg-topbar-quick-stats">
+        <p class="cg-quick-stat"><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
+        <p class="cg-quick-stat"><span data-i18n="weekLabel">Week</span>: <strong data-stat-week>1</strong></p>
+        <p class="cg-quick-stat"><span data-i18n="hoursLeftLabel">Hours left</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
+      </div>
     </div>
     <div class="cg-stats">
-      <p><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
       <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
       <p><span data-i18n="cashLabel">Cash</span>: <strong data-stat-money>$0</strong></p>
-      <p><span data-i18n="weekLabel">Week</span>: <strong data-stat-week>1</strong></p>
-      <p><span data-i18n="hoursLeftLabel">Hours left</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
       <p><span data-i18n="marketingLabel">Marketing</span>: <strong data-stat-marketing>None</strong></p>
       <p><span data-i18n="servicesUnlockedLabel">Unlocked services</span>: <strong data-stat-services>2</strong></p>
       <p><span data-i18n="storageLabel">Finished stock</span>: <strong data-stat-storage>0/12</strong></p>
