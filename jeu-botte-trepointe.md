@@ -26,7 +26,7 @@ keywords:
         <button class="btn btn-primary cg-head-new-order" type="button" data-new-order data-i18n="newOrderBtn">Demarrer une commande</button>
         <button class="btn btn-outline cg-head-action" type="button" data-call-clients data-i18n="callClientsBtn">Appeler clients</button>
         <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Attendre demain</button>
-        <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Commander materiaux</button>
+        <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Achats</button>
         <a class="btn btn-outline cg-exit-link" href="{{ '/' | relative_url }}" data-i18n="exitGameBtn">Quitter le jeu</a>
         <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Passer en anglais">EN</button>
       </div>
