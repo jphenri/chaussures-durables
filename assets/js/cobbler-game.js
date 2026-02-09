@@ -182,8 +182,9 @@
   ];
 
   var SERVICE_MATERIAL_WEAR = {
-    premiumShine: { polishCream: 1, conditioningCream: 1 },
-    deepCleaning: { leatherCleaner: 1, saddleSoap: 1 },
+    // Starter services consume only the selected setup material(s).
+    premiumShine: {},
+    deepCleaning: {},
     leatherHydration: { nourishingOil: 1, conditioningCream: 1 },
     replaceTopLiftMission: { rubberTopLift: 1, heelNails: 2, contactGlue: 1 },
     halfSoleMission: { halfSolePiece: 1, contactGlue: 1, solePrimer: 1 },
