@@ -18,7 +18,7 @@
   var MARKETING_DURATION_DAYS = 7;
   var COMPLETED_STORAGE_CAPACITY = 12;
   var CLIENT_CALL_HOURS_COST = 2;
-  var CLIENT_CALL_BATCH_MAX = 8;
+  var CLIENT_CALL_BATCH_MAX = 4;
   var START_DATE_ISO = '2026-01-05';
 
   var STARTING_STOCK = {
@@ -1324,6 +1324,7 @@
         storageFull: 'Stock termine plein ({used}/{capacity}). Appelle les clients avant une nouvelle livraison.',
         callClientsNone: 'Aucune paire terminee a appeler.',
         callClientsNeedHours: 'Appeler les clients demande 2h de travail disponible.',
+        callClientsDailyLimit: 'Appel clients deja effectue aujourd hui. Reessaie demain.',
         callClientsQueued: 'Clients appeles: {count} paires. Retrait prevu le {date}.',
         pickupPaid: 'Retraits clients: {count} paires payees pour {amount}.',
         servicePayout: 'Facturation: {amount} pour {hours}.',
@@ -1698,6 +1699,7 @@
         storageFull: 'Finished storage is full ({used}/{capacity}). Call clients before finishing another order.',
         callClientsNone: 'No completed pairs ready to call.',
         callClientsNeedHours: 'Calling clients requires 2h of available work time.',
+        callClientsDailyLimit: 'Clients were already called today. Try again tomorrow.',
         callClientsQueued: 'Clients called: {count} pairs. Pickup planned on {date}.',
         pickupPaid: 'Client pickups: {count} pairs paid for {amount}.',
         servicePayout: 'Invoice paid: {amount} for {hours}.',
@@ -1914,6 +1916,7 @@
     weekHoursLeft: WEEK_HOURS_LIMIT,
     dayHoursLeft: DAY_HOURS_LIMIT,
     currentDate: START_DATE_ISO,
+    lastClientCallDate: '',
     ownedUpgrades: [],
     incomingLeads: [],
     selectedQueueId: '',
@@ -2097,6 +2100,10 @@
 
   function storageAwaitingCallCount() {
     return storageAwaitingCallEntries().length;
+  }
+
+  function hasCalledClientsToday() {
+    return state.lastClientCallDate === state.currentDate;
   }
 
   function nextBusinessDateIsoFrom(dateIso) {
@@ -3199,6 +3206,7 @@
       weekHoursLeft: state.weekHoursLeft,
       dayHoursLeft: state.dayHoursLeft,
       currentDate: state.currentDate,
+      lastClientCallDate: state.lastClientCallDate,
       ownedUpgrades: state.ownedUpgrades,
       incomingLeads: state.incomingLeads,
       selectedQueueId: state.selectedQueueId,
@@ -3254,6 +3262,11 @@
         state.currentDate = parsed.currentDate;
       } else {
         state.currentDate = START_DATE_ISO;
+      }
+      if (typeof parsed.lastClientCallDate === 'string') {
+        state.lastClientCallDate = parsed.lastClientCallDate;
+      } else {
+        state.lastClientCallDate = '';
       }
       state.weeklyRevenue = Math.max(0, Number(parsed.weeklyRevenue) || 0);
       state.weeklyExcellentBonus = Math.max(0, Number(parsed.weeklyExcellentBonus) || 0);
@@ -4205,6 +4218,7 @@
     var hasHoursForCalls =
       state.dayHoursLeft >= CLIENT_CALL_HOURS_COST &&
       state.weekHoursLeft >= CLIENT_CALL_HOURS_COST;
+    var canCallToday = !hasCalledClientsToday();
     var actionLabel = mainActionLabel();
     setMiniVisual(state.mini.type !== 'none');
     elements.mainAction.disabled = isMainActionDisabled;
@@ -4227,6 +4241,7 @@
       !!state.weekSummary ||
       hasOpenOrder ||
       isWeekendCurrentDay() ||
+      !canCallToday ||
       !hasHoursForCalls ||
       storageAwaitingCallCount() <= 0;
     elements.waitNextDay.disabled = false;
@@ -5825,6 +5840,7 @@
     state.weekHoursLeft = WEEK_HOURS_LIMIT;
     state.dayHoursLeft = DAY_HOURS_LIMIT;
     state.currentDate = START_DATE_ISO;
+    state.lastClientCallDate = '';
     state.ownedUpgrades = [];
     state.incomingLeads = [];
     state.selectedQueueId = '';
@@ -6177,6 +6193,11 @@
       return;
     }
 
+    if (hasCalledClientsToday()) {
+      notifyActionError(langPack().logs.callClientsDailyLimit);
+      return;
+    }
+
     if (
       state.dayHoursLeft < CLIENT_CALL_HOURS_COST ||
       state.weekHoursLeft < CLIENT_CALL_HOURS_COST
@@ -6200,6 +6221,7 @@
 
     state.dayHoursLeft = Math.max(0, state.dayHoursLeft - CLIENT_CALL_HOURS_COST);
     state.weekHoursLeft = clamp(state.weekHoursLeft - CLIENT_CALL_HOURS_COST, 0, WEEK_HOURS_LIMIT);
+    state.lastClientCallDate = state.currentDate;
     addCooldownHours(CLIENT_CALL_HOURS_COST);
 
     addLog(interpolate(langPack().logs.callClientsQueued, {
