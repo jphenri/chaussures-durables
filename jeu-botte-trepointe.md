@@ -36,6 +36,25 @@ keywords:
       <p><span data-i18n="satisfactionLabel">Satisfaction client</span>: <strong data-stat-satisfaction>5/5</strong></p>
       <p class="cg-stars" data-satisfaction-stars aria-live="polite">★★★★★</p>
     </div>
+
+    <section class="cg-topbar-order" aria-live="polite">
+      <h2 data-i18n="orderTitle">Commande</h2>
+      <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
+      <p><span data-i18n="difficultyLabel">Difficulté</span>: <strong data-order-difficulty>-</strong></p>
+      <p><span data-i18n="timerLabel">Temps restant</span>: <strong data-order-timer>--:--</strong></p>
+
+      <h3 data-i18n="issuesTitle">Problèmes</h3>
+      <ul class="cg-issues" data-order-issues>
+        <li data-i18n="noOrderYet">Aucune commande en cours.</li>
+      </ul>
+
+      <h3 data-i18n="stepsTitle">Étapes</h3>
+      <ol class="cg-steps">
+        <li data-step-item="diagnosis">Diagnostiquer</li>
+        <li data-step-item="repair">Réparer</li>
+        <li data-step-item="finish">Finition</li>
+      </ol>
+    </section>
   </div>
 
   <div class="cg-layout">
@@ -57,22 +76,6 @@ keywords:
         </ul>
       </section>
 
-      <h2 data-i18n="orderTitle">Commande</h2>
-      <p><span data-i18n="clientLabel">Client</span>: <strong data-order-client>-</strong></p>
-      <p><span data-i18n="difficultyLabel">Difficulté</span>: <strong data-order-difficulty>-</strong></p>
-      <p><span data-i18n="timerLabel">Temps restant</span>: <strong data-order-timer>--:--</strong></p>
-
-      <h3 data-i18n="issuesTitle">Problèmes</h3>
-      <ul class="cg-issues" data-order-issues>
-        <li data-i18n="noOrderYet">Aucune commande en cours.</li>
-      </ul>
-
-      <h3 data-i18n="stepsTitle">Étapes</h3>
-      <ol class="cg-steps">
-        <li data-step-item="diagnosis">Diagnostiquer</li>
-        <li data-step-item="repair">Réparer</li>
-        <li data-step-item="finish">Finition</li>
-      </ol>
     </aside>
 
     <section class="cg-panel cg-workshop" aria-live="polite">
@@ -149,6 +152,12 @@ keywords:
         <button class="btn cg-tool-btn" type="button" data-main-action>Valider diagnostic</button>
       </div>
 
+      <div class="cg-actions">
+        <button class="btn" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Attendre demain</button>
+        <button class="btn" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Lancer marketing</button>
+        <button class="btn" type="button" data-open-supply data-i18n="openSupplyBtn">Commander materiaux</button>
+      </div>
+
       <section class="cg-inventory">
         <h3 data-i18n="inventoryTitle">Inventaire</h3>
         <ul class="cg-inventory-list" data-inventory-list>
@@ -157,9 +166,6 @@ keywords:
       </section>
 
       <div class="cg-actions">
-        <button class="btn" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Attendre demain</button>
-        <button class="btn" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Lancer marketing</button>
-        <button class="btn" type="button" data-open-supply data-i18n="openSupplyBtn">Commander materiaux</button>
         <button class="btn btn-outline" type="button" data-reset-save data-i18n="resetProgressBtn">Réinitialiser progression</button>
       </div>
 

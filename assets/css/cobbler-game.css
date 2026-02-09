@@ -14,7 +14,8 @@
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
     "intro lang"
-    "stats stats";
+    "stats stats"
+    "order order";
   align-items: start;
   column-gap: 0.7rem;
   row-gap: 0.55rem;
@@ -73,6 +74,31 @@
   background: rgba(255, 255, 255, 0.66);
   padding: 0.4rem 0.52rem;
   min-height: 44px;
+}
+
+.cg-topbar-order {
+  grid-area: order;
+  width: 100%;
+  border: 1px solid #d8b49b;
+  border-radius: 12px;
+  background: rgba(255, 251, 247, 0.9);
+  padding: 0.62rem 0.72rem;
+}
+
+.cg-topbar-order h2,
+.cg-topbar-order h3 {
+  margin: 0 0 0.38rem;
+  color: #5b3327;
+}
+
+.cg-topbar-order p {
+  margin: 0 0 0.28rem;
+  color: #5a433b;
+}
+
+.cg-topbar-order .cg-issues,
+.cg-topbar-order .cg-steps {
+  margin-top: 0.2rem;
 }
 
 .cg-action-error {
