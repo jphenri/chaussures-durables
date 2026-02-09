@@ -12,7 +12,7 @@
 .cg-topbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.7rem;
   padding: 0.85rem 1rem;
@@ -25,6 +25,7 @@
   margin: 0;
   color: #5a433b;
   max-width: 65ch;
+  flex: 1 1 320px;
 }
 
 .cg-lang-toggle {
@@ -32,6 +33,33 @@
   border-color: rgba(122, 29, 24, 0.45);
   background: rgba(255, 250, 246, 0.9);
   min-width: 68px;
+}
+
+.cg-topbar .cg-stats {
+  flex: 1 1 100%;
+  width: 100%;
+  margin-top: 0.1rem;
+  display: flex;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cg-topbar .cg-stats p {
+  flex: 0 0 185px;
+}
+
+.cg-topbar .cg-stars {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 150px;
+  border: 1px solid #e7c8ac;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.66);
+  padding: 0.4rem 0.52rem;
 }
 
 .cg-layout {

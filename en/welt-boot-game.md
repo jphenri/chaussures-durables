@@ -21,6 +21,21 @@ keywords:
   <div class="cg-topbar">
     <p class="cg-intro" data-i18n="introText">Run your workshop: diagnose, repair, finish, and grow your reputation.</p>
     <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
+    <div class="cg-stats">
+      <p><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
+      <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
+      <p><span data-i18n="cashLabel">Cash</span>: <strong data-stat-money>$0</strong></p>
+      <p><span data-i18n="weekLabel">Week</span>: <strong data-stat-week>1</strong></p>
+      <p><span data-i18n="hoursLeftLabel">Hours left</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
+      <p><span data-i18n="marketingLabel">Marketing</span>: <strong data-stat-marketing>None</strong></p>
+      <p><span data-i18n="servicesUnlockedLabel">Unlocked services</span>: <strong data-stat-services>2</strong></p>
+      <p><span data-i18n="bestScoreLabel">Best score</span>: <strong data-stat-best>0</strong></p>
+      <p><span data-i18n="completedLabel">Completed orders</span>: <strong data-stat-completed>0</strong></p>
+      <p><span data-i18n="reputationLabel">Reputation</span>: <strong data-stat-reputation>0</strong></p>
+      <p><span data-i18n="levelLabel">Level</span>: <strong data-stat-level>1</strong></p>
+      <p><span data-i18n="satisfactionLabel">Client satisfaction</span>: <strong data-stat-satisfaction>5/5</strong></p>
+      <p class="cg-stars" data-satisfaction-stars aria-live="polite">★★★★★</p>
+    </div>
   </div>
 
   <div class="cg-layout">
@@ -132,22 +147,6 @@ keywords:
       <h2 data-i18n="toolsTitle">Action</h2>
       <div class="cg-tools-grid">
         <button class="btn cg-tool-btn" type="button" data-main-action>Confirm diagnosis</button>
-      </div>
-
-      <div class="cg-stats">
-        <p><span data-i18n="dateLabel">Date</span>: <strong data-stat-date>2026-01-05</strong></p>
-        <p><span data-i18n="scoreLabel">Score</span>: <strong data-stat-score>0</strong></p>
-        <p><span data-i18n="cashLabel">Cash</span>: <strong data-stat-money>$0</strong></p>
-        <p><span data-i18n="weekLabel">Week</span>: <strong data-stat-week>1</strong></p>
-        <p><span data-i18n="hoursLeftLabel">Hours left</span>: <strong data-stat-hours-left>40h / 40h</strong></p>
-        <p><span data-i18n="marketingLabel">Marketing</span>: <strong data-stat-marketing>None</strong></p>
-        <p><span data-i18n="servicesUnlockedLabel">Unlocked services</span>: <strong data-stat-services>2</strong></p>
-        <p><span data-i18n="bestScoreLabel">Best score</span>: <strong data-stat-best>0</strong></p>
-        <p><span data-i18n="completedLabel">Completed orders</span>: <strong data-stat-completed>0</strong></p>
-        <p><span data-i18n="reputationLabel">Reputation</span>: <strong data-stat-reputation>0</strong></p>
-        <p><span data-i18n="levelLabel">Level</span>: <strong data-stat-level>1</strong></p>
-        <p><span data-i18n="satisfactionLabel">Client satisfaction</span>: <strong data-stat-satisfaction>5/5</strong></p>
-        <p class="cg-stars" data-satisfaction-stars aria-live="polite">★★★★★</p>
       </div>
 
       <section class="cg-inventory">
