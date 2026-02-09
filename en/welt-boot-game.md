@@ -21,10 +21,11 @@ keywords:
 <div class="cobbler-game" data-cobbler-game data-lang="en" data-issue="none" data-scene-base="{{ '/assets/img/sora/' | relative_url }}">
   <div class="cg-topbar">
     <div class="cg-topbar-actions">
-      <a class="btn btn-outline cg-exit-link" href="{{ '/en/' | relative_url }}" data-i18n="exitGameBtn">Exit game</a>
       <button class="btn btn-outline cg-head-action" type="button" data-wait-next-day data-i18n="waitNextDayBtn">Wait next day</button>
       <button class="btn btn-outline cg-head-action" type="button" data-buy-marketing data-i18n="buyMarketingBtn">Run marketing</button>
       <button class="btn btn-outline cg-head-action" type="button" data-open-supply data-i18n="openSupplyBtn">Order materials</button>
+      <button class="btn cg-head-main-action" type="button" data-main-action-header data-i18n="mainActionDiagnosis">Confirm diagnosis</button>
+      <a class="btn btn-outline cg-exit-link" href="{{ '/en/' | relative_url }}" data-i18n="exitGameBtn">Exit game</a>
       <button class="btn cg-lang-toggle" type="button" data-lang-toggle aria-label="Switch to French">FR</button>
     </div>
     <div class="cg-stats">

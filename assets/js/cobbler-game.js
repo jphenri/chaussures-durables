@@ -1747,6 +1747,7 @@
     actionFinish: root.querySelector('[data-action-finish]'),
     sceneImage: root.querySelector('[data-shoe-scene-image]'),
     mainAction: root.querySelector('[data-main-action]'),
+    mainActionHeader: root.querySelector('[data-main-action-header]'),
     shelveOrder: root.querySelector('[data-shelve-order]'),
     date: root.querySelector('[data-stat-date]'),
     score: root.querySelector('[data-stat-score]'),
@@ -3845,9 +3846,15 @@
 
   function updateButtons() {
     var activeOrder = !!state.currentOrder && state.stage !== 'done';
+    var isMainActionDisabled = !activeOrder || state.actionLock;
+    var actionLabel = mainActionLabel();
     setMiniVisual(state.mini.type !== 'none');
-    elements.mainAction.disabled = !activeOrder || state.actionLock;
-    elements.mainAction.textContent = mainActionLabel();
+    elements.mainAction.disabled = isMainActionDisabled;
+    elements.mainAction.textContent = actionLabel;
+    if (elements.mainActionHeader) {
+      elements.mainActionHeader.disabled = isMainActionDisabled;
+      elements.mainActionHeader.textContent = actionLabel;
+    }
 
     elements.actionTiming.disabled = !(state.mini.type === 'timing' && state.mini.context === 'repair');
     elements.actionClicks.disabled = !(state.mini.type === 'clicks');
@@ -5770,6 +5777,9 @@
   elements.supplyClose.addEventListener('click', handleSupplyClose);
   elements.resetSave.addEventListener('click', resetProgress);
   elements.mainAction.addEventListener('click', handleMainAction);
+  if (elements.mainActionHeader) {
+    elements.mainActionHeader.addEventListener('click', handleMainAction);
+  }
   elements.completionNewOrder.addEventListener('click', startNewOrder);
   elements.weekNext.addEventListener('click', startNextWeek);
 
