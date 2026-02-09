@@ -1924,14 +1924,14 @@
 }
 
 .cobbler-game .cg-order .cg-order-scene {
-  margin: 0;
+  margin: 0 auto;
   width: 100%;
-  max-width: none;
+  max-width: 430px;
 }
 
 .cobbler-game .cg-order .cg-order-scene img {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
 }
 
