@@ -259,6 +259,22 @@
   color: #6b4e43;
 }
 
+.cg-queue-summaries {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.38rem;
+  align-items: stretch;
+}
+
+.cg-queue-summaries .cg-queue-summary {
+  border: 1px solid #e1c0ad;
+  border-radius: 10px;
+  background: #fff9f5;
+  padding: 0.32rem 0.46rem;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
 .cg-queue-list {
   list-style: none;
   margin: 0;
@@ -274,6 +290,12 @@
   padding: 0.36rem 0.48rem;
   color: #5d443a;
   font-size: 0.86rem;
+}
+
+@media (max-width: 520px) {
+  .cg-queue-summaries {
+    grid-template-columns: 1fr;
+  }
 }
 
 .cg-queue-item {

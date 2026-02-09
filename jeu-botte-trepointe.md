@@ -104,12 +104,14 @@ keywords:
 
       <section class="cg-queue-builder">
         <h3 data-i18n="incomingTitle">Demandes entrantes</h3>
-        <p class="cg-queue-summary" data-incoming-summary data-i18n="incomingSummaryDefault">Nouvelles demandes en attente.</p>
+        <div class="cg-queue-summaries">
+          <p class="cg-queue-summary" data-incoming-summary data-i18n="incomingSummaryDefault">Nouvelles demandes en attente.</p>
+          <p class="cg-queue-summary" data-queue-summary data-i18n="queueSummaryDefault">Aucun client en file.</p>
+        </div>
         <ul class="cg-queue-list" data-incoming-list>
           <li data-i18n="incomingEmpty">Aucune demande entrante.</li>
         </ul>
         <h3 data-i18n="queueTitle">File clients</h3>
-        <p class="cg-queue-summary" data-queue-summary data-i18n="queueSummaryDefault">Aucun client en file.</p>
         <ul class="cg-queue-list" data-queue-list>
           <li data-i18n="queueEmpty">Aucun client en file.</li>
         </ul>
