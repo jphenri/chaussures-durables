@@ -5381,6 +5381,13 @@
 
   function waitNextDay() {
     hideSupplyPopup();
+
+    if (!isWeekendCurrentDay() && state.dayHoursLeft > 0) {
+      var burnedHours = Math.min(state.dayHoursLeft, state.weekHoursLeft);
+      state.weekHoursLeft = clamp(state.weekHoursLeft - burnedHours, 0, WEEK_HOURS_LIMIT);
+      state.dayHoursLeft = 0;
+    }
+
     advanceOneDay({ log: true, addCooldown: true });
     saveProgress();
     renderAll();
