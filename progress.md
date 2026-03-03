@@ -159,3 +159,13 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - `node --check simulation-cordonnerie/js/game.js` OK.
   - Selecteurs/IDs requis toujours presents.
 - Limite de test: Playwright indisponible localement (package `playwright` absent).
+
+## 2026-03-03 - Ajustement geometrique SVG botte
+- Refonte geometrique du SVG inline dans `simulation-cordonnerie/index.html` pour supprimer la distorsion visuelle.
+- Contraintes appliquees:
+  - semelle avec base horizontale (meme Y aux extremites),
+  - talon aligne sur l'extremite arriere de la semelle,
+  - empeigne positionnee au-dessus de la semelle sans chevauchement incoherent,
+  - coutures tracees en paths fins et alignes au-dessus de l'empeigne.
+- Zones interactives `semelle`, `talon`, `couture`, `empeigne` conservees avec `data-part`.
+- CSS SVG mis a jour (classes `upper-main`, `sole-base`, `heel-block`, `stitch-line`, `part-shape-line`).

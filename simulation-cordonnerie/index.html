@@ -48,7 +48,7 @@
             <svg
               id="shoe-svg"
               class="shoe-svg"
-              viewBox="0 0 188.76117 127.00133"
+              viewBox="0 0 760 360"
               role="img"
               aria-labelledby="shoe-svg-title shoe-svg-desc"
             >
@@ -58,24 +58,58 @@
               </desc>
 
               <defs>
+                <linearGradient id="upperLeatherGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#8c2f0f" />
+                  <stop offset="100%" stop-color="#a43d13" />
+                </linearGradient>
+                <linearGradient id="soleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#6a574a" />
+                  <stop offset="100%" stop-color="#4f3f35" />
+                </linearGradient>
                 <filter id="part-glow" x="-20%" y="-20%" width="140%" height="140%">
                   <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#c6a45a" flood-opacity="0.55" />
                 </filter>
               </defs>
 
-              <rect x="0" y="0" width="188.76117" height="127.00133" class="svg-bg" />
-              <image
-                href="../assets/img/sora/Chaussure_icone.svg"
-                x="0"
-                y="0"
-                width="188.76117"
-                height="127.00133"
-                preserveAspectRatio="xMidYMid meet"
-                pointer-events="none"
-                class="shoe-illustration"
+              <rect x="0" y="0" width="760" height="360" class="svg-bg" />
+              <ellipse cx="384" cy="324" rx="306" ry="18" class="boot-shadow" />
+
+              <!-- Geometrie principale de la botte -->
+              <path
+                class="upper-main"
+                d="M142 260 C220 208 334 182 500 186 C550 188 593 202 618 226 L618 292 L176 292 C161 292 150 280 142 260 Z"
+              />
+              <path
+                class="shaft-main"
+                d="M458 116 L604 112 C617 112 626 121 626 134 L626 230 C626 246 620 258 610 268 L552 268 L458 262 Z"
+              />
+              <path
+                class="toe-cap"
+                d="M108 270 C130 238 170 222 220 218 C242 216 256 226 260 246 C263 261 262 274 258 286 C216 294 165 288 124 274 C114 271 109 275 108 270 Z"
               />
 
-              <!-- Hitboxes de diagnostic au-dessus de l'icone SVG source. -->
+              <!-- Semelle avec base horizontale parfaite -->
+              <path
+                class="sole-base"
+                d="M94 292 C210 286 460 286 670 292 L670 314 C472 322 224 322 94 314 Z"
+              />
+
+              <!-- Talon aligne sur l'extremite arriere de la semelle -->
+              <path
+                class="heel-block"
+                d="M598 258 L670 258 L670 314 L592 314 Z"
+              />
+
+              <!-- Coutures fines et alignees au-dessus de l'empeigne -->
+              <path class="stitch-line" d="M186 252 C292 214 434 200 584 212" />
+              <path class="stitch-line" d="M194 262 C304 224 444 212 590 224" />
+              <path class="stitch-line" d="M470 156 C532 150 575 150 606 156" />
+              <circle cx="445" cy="148" r="8" class="eyelet" />
+              <circle cx="438" cy="182" r="9" class="eyelet" />
+              <circle cx="430" cy="218" r="10" class="eyelet" />
+              <circle cx="390" cy="242" r="11" class="eyelet" />
+
+              <!-- Zones interactives -->
 
               <g
                 class="shoe-part"
@@ -86,7 +120,7 @@
               >
                 <title>Semelle</title>
                 <path
-                  d="M8 109 C34 107 94 106 144 106 C161 106 174 105 186 104 L186 118 L8 118 Z"
+                  d="M94 288 C210 284 462 284 670 290 L670 316 C470 324 222 324 94 316 Z"
                   class="part-shape"
                 />
               </g>
@@ -100,7 +134,7 @@
               >
                 <title>Talon</title>
                 <path
-                  d="M128 80 L168 80 L164 113 L126 113 Z"
+                  d="M596 254 L670 254 L670 316 L590 316 Z"
                   class="part-shape"
                 />
               </g>
@@ -114,8 +148,8 @@
               >
                 <title>Couture</title>
                 <path
-                  d="M67 83 C83 74 106 69 130 69 C145 69 155 71 163 75 L162 80 C148 76 129 75 109 78 C95 80 80 84 69 89 Z"
-                  class="part-shape"
+                  d="M190 258 C304 218 446 206 588 220"
+                  class="part-shape part-shape-line"
                 />
               </g>
 
@@ -128,7 +162,7 @@
               >
                 <title>Empeigne</title>
                 <path
-                  d="M54 73 C71 56 97 47 129 45 C145 44 156 47 162 53 C164 58 165 66 164 77 C146 72 124 72 105 75 C84 79 67 86 55 95 C53 87 52 79 54 73 Z"
+                  d="M136 258 C220 204 336 178 504 182 C556 184 598 202 624 228 L624 270 C624 280 620 286 612 292 L178 292 C160 292 148 282 136 258 Z"
                   class="part-shape"
                 />
               </g>

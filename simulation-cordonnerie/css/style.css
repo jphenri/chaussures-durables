@@ -148,13 +148,42 @@ body {
 }
 
 .svg-bg {
-  fill: #1d1612;
+  fill: #1a120f;
 }
 
-.shoe-illustration {
-  pointer-events: none;
-  opacity: 0.95;
-  filter: saturate(0.92) contrast(1.04);
+.boot-shadow {
+  fill: rgba(0, 0, 0, 0.34);
+}
+
+.upper-main,
+.shaft-main,
+.toe-cap {
+  fill: url(#upperLeatherGradient);
+  stroke: rgba(17, 10, 7, 0.48);
+  stroke-width: 1.8;
+}
+
+.sole-base {
+  fill: url(#soleGradient);
+  stroke: rgba(20, 14, 11, 0.54);
+  stroke-width: 1.6;
+}
+
+.heel-block {
+  fill: #715d4f;
+  stroke: rgba(20, 14, 11, 0.56);
+  stroke-width: 1.6;
+}
+
+.stitch-line {
+  fill: none;
+  stroke: rgba(198, 164, 90, 0.86);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+}
+
+.eyelet {
+  fill: #080706;
 }
 
 .shoe-part {
@@ -162,21 +191,36 @@ body {
 }
 
 .part-shape {
-  fill: rgba(198, 164, 90, 0.07);
-  stroke: rgba(198, 164, 90, 0.46);
-  stroke-width: 0.8;
+  fill: rgba(198, 164, 90, 0.04);
+  stroke: rgba(198, 164, 90, 0.32);
+  stroke-width: 1.1;
   transition: transform var(--trans), fill var(--trans), stroke var(--trans), filter var(--trans);
   transform-origin: center;
+}
+
+.part-shape-line {
+  fill: none;
+  stroke-width: 24;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: stroke;
 }
 
 .shoe-part:hover .part-shape,
 .shoe-part:focus-visible .part-shape,
 .shoe-part.is-active .part-shape {
   cursor: pointer;
-  fill: rgba(198, 164, 90, 0.25);
+  fill: rgba(198, 164, 90, 0.18);
   stroke: rgba(198, 164, 90, 0.9);
   filter: url(#part-glow);
   transform: translateY(-0.5px);
+}
+
+.shoe-part:hover .part-shape-line,
+.shoe-part:focus-visible .part-shape-line,
+.shoe-part.is-active .part-shape-line {
+  fill: none;
+  stroke: rgba(198, 164, 90, 0.68);
 }
 
 .shoe-part:focus-visible .part-shape {
