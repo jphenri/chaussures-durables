@@ -1,0 +1,58 @@
+{
+  "clients": [
+    {
+      "id": "claire-duval",
+      "name": "Claire Duval",
+      "profile": "Professeure qui marche beaucoup entre deux etablissements.",
+      "shoeType": "Derbies cuir",
+      "urgency": "Moyenne",
+      "quote": "La semelle claque au sol, je dois assurer mes cours demain.",
+      "problemPool": ["sole_loose", "stitch_open"]
+    },
+    {
+      "id": "moussa-kone",
+      "name": "Moussa Kone",
+      "profile": "Livreur a velo, usage intensif quotidien.",
+      "shoeType": "Bottines de travail",
+      "urgency": "Elevee",
+      "quote": "Mon talon glisse sur les trottoirs mouilles.",
+      "problemPool": ["heel_worn", "sole_loose", "liner_wet"]
+    },
+    {
+      "id": "ines-laurent",
+      "name": "Ines Laurent",
+      "profile": "Etudiante en design, tres attentive au style.",
+      "shoeType": "Sneakers vintage",
+      "urgency": "Faible",
+      "quote": "Je veux garder la forme d'origine sans deformer la chaussure.",
+      "problemPool": ["stitch_open", "eyelet_broken"]
+    },
+    {
+      "id": "jean-moreau",
+      "name": "Jean Moreau",
+      "profile": "Retraite, prefere entretenir plutot que remplacer.",
+      "shoeType": "Richelieus anciens",
+      "urgency": "Moyenne",
+      "quote": "La chaussure craque quand je plie le pied.",
+      "problemPool": ["sole_loose", "leather_dry", "stitch_open"]
+    },
+    {
+      "id": "amelie-rossi",
+      "name": "Amelie Rossi",
+      "profile": "Serveuse, debout toute la journee.",
+      "shoeType": "Mocassins souples",
+      "urgency": "Elevee",
+      "quote": "L'interieur est humide et l'odeur devient forte.",
+      "problemPool": ["liner_wet", "heel_worn"]
+    },
+    {
+      "id": "nathan-giraud",
+      "name": "Nathan Giraud",
+      "profile": "Musicien de rue qui joue en exterieur.",
+      "shoeType": "Bottes artisanales",
+      "urgency": "Moyenne",
+      "quote": "Un oeillet a lache et le lacage tient mal.",
+      "problemPool": ["eyelet_broken", "stitch_open"]
+    }
+  ]
+}

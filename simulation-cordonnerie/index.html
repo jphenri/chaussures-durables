@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulation de Cordonnerie</title>
+    <meta
+      name="description"
+      content="Jeu educatif de gestion de cordonnerie en JavaScript vanilla."
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar card">
+        <div>
+          <p class="eyebrow">Simulation de Cordonnerie</p>
+          <h1>Atelier Saint-Crepin</h1>
+        </div>
+        <div class="hud">
+          <div class="hud-item">
+            <span>Jour</span>
+            <strong id="day-value">1</strong>
+          </div>
+          <div class="hud-item">
+            <span>Score</span>
+            <strong id="score-value">0</strong>
+          </div>
+          <div class="hud-item">
+            <span>Reputation</span>
+            <strong id="reputation-value">50</strong>
+          </div>
+          <div class="hud-item">
+            <span>Serie</span>
+            <strong id="streak-value">0</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout-grid">
+        <section class="panel card canvas-panel" aria-label="Ambiance atelier">
+          <canvas id="atelier-canvas" width="880" height="220"></canvas>
+          <p class="canvas-caption">
+            Vue simplifiee de l'atelier. Le sabot clignote quand un client attend.
+          </p>
+        </section>
+
+        <section class="panel card" aria-live="polite">
+          <div class="panel-heading">
+            <h2>Client entrant</h2>
+            <span id="queue-value" class="badge">File: 0</span>
+          </div>
+          <article id="client-card" class="client-card empty-state">
+            <p>Cliquez sur "Demarrer la journee" pour accueillir le premier client.</p>
+          </article>
+          <button id="start-day-btn" class="btn btn-primary" type="button">
+            Demarrer la journee
+          </button>
+        </section>
+
+        <section class="panel card" aria-label="Diagnostic interactif">
+          <div class="panel-heading">
+            <h2>Diagnostic interactif</h2>
+            <span id="diagnostic-progress" class="badge">Indices: 0 / 2</span>
+          </div>
+          <p class="support-text">
+            Posez des questions pour identifier la bonne reparation avant d'agir.
+          </p>
+          <div id="diagnostic-questions" class="button-grid"></div>
+          <div id="diagnostic-feedback" class="feedback-box" role="status"></div>
+          <button
+            id="to-repair-btn"
+            class="btn"
+            type="button"
+            disabled
+          >
+            Passer a la reparation
+          </button>
+        </section>
+
+        <section class="panel card" aria-label="Zone de reparation">
+          <div class="panel-heading">
+            <h2>Reparation</h2>
+            <span id="timer-value" class="badge">Temps: 0s</span>
+          </div>
+          <p class="support-text">
+            Choisissez l'intervention la plus adaptee a la panne detectee.
+          </p>
+          <div id="repair-options" class="button-grid"></div>
+          <button
+            id="validate-repair-btn"
+            class="btn btn-primary"
+            type="button"
+            disabled
+          >
+            Valider la reparation
+          </button>
+          <div id="result-box" class="result-box" aria-live="polite"></div>
+          <button id="next-client-btn" class="btn" type="button" disabled>
+            Client suivant
+          </button>
+        </section>
+
+        <section class="panel card" aria-label="Journal atelier">
+          <div class="panel-heading">
+            <h2>Journal atelier</h2>
+            <span class="badge">Educatif</span>
+          </div>
+          <ul id="event-log" class="log-list"></ul>
+        </section>
+      </main>
+    </div>
+
+    <noscript>Cette simulation necessite JavaScript.</noscript>
+
+    <script type="module" src="./js/game.js"></script>
+  </body>
+</html>
