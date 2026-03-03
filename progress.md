@@ -141,3 +141,21 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - `node --check simulation-cordonnerie/js/game.js` OK.
   - Presence des zones/chemin SVG confirmee dans `index.html`.
 - Test Playwright du skill re-tente mais bloque: package `playwright` absent (`ERR_MODULE_NOT_FOUND`).
+
+## 2026-03-03 - Correction mecanique apres integration Chaussure_icone.svg
+- `simulation-cordonnerie/js/game.js` remplace par une orchestration gameplay reconnectee aux modules metier existants:
+  - imports `levels.js` (`createDayQueue`, `resolveZoneInspection`, `getLevelByXp`, `REPAIR_OPTIONS`).
+  - import `Player` depuis `score.js`.
+  - gestion client courant, file d'attente par jour, progression niveau/XP, timer, inventaire, score/reputation.
+- Regles metier restaurees:
+  - mauvais diagnostic => penalite reputation via `applyWrongDiagnostic` (>= -10).
+  - reparation validee => score/XP/reputation via `applySuccessfulRepair`.
+  - stock insuffisant => blocage reparation + penalite inventaire.
+- UI premium conservee (SVG interactif 4 zones) + actions/historique fonctionnels.
+- Ajustements robustesse UI:
+  - `diagnostic-text` passe en `white-space: pre-line`.
+  - `<image>` SVG avec `pointer-events="none"` pour ne pas bloquer les clics des hitboxes.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
+  - Selecteurs/IDs requis toujours presents.
+- Limite de test: Playwright indisponible localement (package `playwright` absent).
