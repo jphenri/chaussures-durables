@@ -245,6 +245,15 @@ body {
   pointer-events: stroke;
 }
 
+.part-hitline {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 44;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: stroke;
+}
+
 .shoe-part:hover .part-shape,
 .shoe-part:focus-visible .part-shape,
 .shoe-part.is-active .part-shape {

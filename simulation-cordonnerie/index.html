@@ -174,20 +174,6 @@
 
               <g
                 class="shoe-part"
-                data-part="couture"
-                role="button"
-                tabindex="0"
-                aria-label="Zone couture"
-              >
-                <title>Couture</title>
-                <path
-                  d="M190 258 C304 218 446 206 588 220"
-                  class="part-shape part-shape-line"
-                />
-              </g>
-
-              <g
-                class="shoe-part"
                 data-part="empeigne"
                 role="button"
                 tabindex="0"
@@ -197,6 +183,25 @@
                 <path
                   d="M136 258 C220 204 336 178 504 182 C556 184 598 202 624 228 L624 270 C624 280 620 286 612 292 L178 292 C160 292 148 282 136 258 Z"
                   class="part-shape"
+                />
+              </g>
+
+              <g
+                class="shoe-part"
+                data-part="couture"
+                role="button"
+                tabindex="0"
+                aria-label="Zone couture"
+              >
+                <title>Couture</title>
+                <!-- Hitbox elargie pour clic confortable -->
+                <path
+                  d="M190 258 C304 218 446 206 588 220"
+                  class="part-hitline"
+                />
+                <path
+                  d="M190 258 C304 218 446 206 588 220"
+                  class="part-shape part-shape-line"
                 />
               </g>
             </svg>
