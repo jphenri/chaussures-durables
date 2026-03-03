@@ -1,58 +1,104 @@
 {
   "clients": [
     {
-      "id": "claire-duval",
-      "name": "Claire Duval",
-      "profile": "Professeure qui marche beaucoup entre deux etablissements.",
-      "shoeType": "Derbies cuir",
-      "urgency": "Moyenne",
-      "quote": "La semelle claque au sol, je dois assurer mes cours demain.",
+      "id": "leonie-bernard",
+      "name": "Leonie Bernard",
+      "shoeType": "Richelieu en cuir pleine fleur",
+      "exigence": "moyenne",
+      "story": "Institurice de quartier, elle marche chaque matin pour ouvrir sa classe a l'heure.",
+      "dialogueBeforeRepair": "Je veux une reparation fiable, pas seulement rapide, mes eleves m'attendent demain.",
+      "reputationImpact": { "success": 5, "failure": -7 },
       "problemPool": ["sole_loose", "stitch_open"]
     },
     {
-      "id": "moussa-kone",
-      "name": "Moussa Kone",
-      "profile": "Livreur a velo, usage intensif quotidien.",
-      "shoeType": "Bottines de travail",
-      "urgency": "Elevee",
-      "quote": "Mon talon glisse sur les trottoirs mouilles.",
+      "id": "karim-bensaid",
+      "name": "Karim Bensaid",
+      "shoeType": "Bottes de livreur",
+      "exigence": "elevee",
+      "story": "Coursier urbain, il enchaine les livraisons sous la pluie et use ses talons tres vite.",
+      "dialogueBeforeRepair": "Chaque minute compte. Si ca glisse encore, je perds ma tournee.",
+      "reputationImpact": { "success": 8, "failure": -12 },
       "problemPool": ["heel_worn", "sole_loose", "liner_wet"]
     },
     {
-      "id": "ines-laurent",
-      "name": "Ines Laurent",
-      "profile": "Etudiante en design, tres attentive au style.",
+      "id": "alice-vernet",
+      "name": "Alice Vernet",
       "shoeType": "Sneakers vintage",
-      "urgency": "Faible",
-      "quote": "Je veux garder la forme d'origine sans deformer la chaussure.",
-      "problemPool": ["stitch_open", "eyelet_broken"]
+      "exigence": "moyenne",
+      "story": "Collectionneuse, elle restaure ses paires rares et refuse toute deformation visible.",
+      "dialogueBeforeRepair": "Je tiens a la silhouette d'origine, surtout au niveau des coutures.",
+      "reputationImpact": { "success": 6, "failure": -9 },
+      "problemPool": ["stitch_open", "eyelet_broken", "leather_dry"]
     },
     {
-      "id": "jean-moreau",
-      "name": "Jean Moreau",
-      "profile": "Retraite, prefere entretenir plutot que remplacer.",
-      "shoeType": "Richelieus anciens",
-      "urgency": "Moyenne",
-      "quote": "La chaussure craque quand je plie le pied.",
-      "problemPool": ["sole_loose", "leather_dry", "stitch_open"]
+      "id": "gaston-perrin",
+      "name": "Gaston Perrin",
+      "shoeType": "Derbies de ceremonie",
+      "exigence": "faible",
+      "story": "Ancien menuisier, il repare toujours avant de remplacer et privilegie la durabilite.",
+      "dialogueBeforeRepair": "Prenez votre temps, je prefere un travail propre a une solution temporaire.",
+      "reputationImpact": { "success": 4, "failure": -5 },
+      "problemPool": ["sole_loose", "leather_dry"]
     },
     {
-      "id": "amelie-rossi",
-      "name": "Amelie Rossi",
-      "profile": "Serveuse, debout toute la journee.",
-      "shoeType": "Mocassins souples",
-      "urgency": "Elevee",
-      "quote": "L'interieur est humide et l'odeur devient forte.",
-      "problemPool": ["liner_wet", "heel_worn"]
+      "id": "mael-costa",
+      "name": "Mael Costa",
+      "shoeType": "Mocassins de scene",
+      "exigence": "elevee",
+      "story": "Musicien, il monte sur scene ce soir et veut un confort parfait sous les projecteurs.",
+      "dialogueBeforeRepair": "Je joue dans trois heures. Si la chaussure lache, mon concert est foutu.",
+      "reputationImpact": { "success": 9, "failure": -13 },
+      "problemPool": ["stitch_open", "eyelet_broken", "heel_worn"]
     },
     {
-      "id": "nathan-giraud",
-      "name": "Nathan Giraud",
-      "profile": "Musicien de rue qui joue en exterieur.",
+      "id": "nora-diallo",
+      "name": "Nora Diallo",
+      "shoeType": "Baskets de running",
+      "exigence": "moyenne",
+      "story": "Coach sportive, elle teste ses chaussures tous les jours sur piste et en salle.",
+      "dialogueBeforeRepair": "J'ai besoin d'un maintien net au talon, sinon je reporte mes cours.",
+      "reputationImpact": { "success": 6, "failure": -8 },
+      "problemPool": ["heel_worn", "eyelet_broken"]
+    },
+    {
+      "id": "hugo-martin",
+      "name": "Hugo Martin",
+      "shoeType": "Bottines en nubuck",
+      "exigence": "faible",
+      "story": "Etudiant en histoire, il chine en friperie et entretient ses trouvailles a petit budget.",
+      "dialogueBeforeRepair": "Je veux surtout eviter que la semelle se decolle encore cette semaine.",
+      "reputationImpact": { "success": 4, "failure": -6 },
+      "problemPool": ["sole_loose", "liner_wet"]
+    },
+    {
+      "id": "sarah-giordano",
+      "name": "Sarah Giordano",
+      "shoeType": "Escarpins cuir italien",
+      "exigence": "elevee",
+      "story": "Avocate, elle enchaine les audiences et exige un rendu impeccable, sans trace de reprise.",
+      "dialogueBeforeRepair": "Le moindre defaut se voit en salle d'audience. Je veux un fini irreprochable.",
+      "reputationImpact": { "success": 10, "failure": -14 },
+      "problemPool": ["heel_worn", "stitch_open", "leather_dry"]
+    },
+    {
+      "id": "youssef-haddad",
+      "name": "Youssef Haddad",
+      "shoeType": "Chaussures de service",
+      "exigence": "moyenne",
+      "story": "Serveur en brasserie, il passe des heures debout et cherche une paire stable et saine.",
+      "dialogueBeforeRepair": "L'interieur reste humide apres le service. Vous pouvez assainir sans raidir le cuir ?",
+      "reputationImpact": { "success": 7, "failure": -9 },
+      "problemPool": ["liner_wet", "leather_dry", "sole_loose"]
+    },
+    {
+      "id": "camille-roche",
+      "name": "Camille Roche",
       "shoeType": "Bottes artisanales",
-      "urgency": "Moyenne",
-      "quote": "Un oeillet a lache et le lacage tient mal.",
-      "problemPool": ["eyelet_broken", "stitch_open"]
+      "exigence": "elevee",
+      "story": "Guide de montagne, elle prepare une sortie longue et demande une tenue parfaite sur terrain humide.",
+      "dialogueBeforeRepair": "Je pars ce weekend en altitude. Si le montage cede, je prends un risque reel.",
+      "reputationImpact": { "success": 9, "failure": -13 },
+      "problemPool": ["sole_loose", "heel_worn", "stitch_open", "leather_dry"]
     }
   ]
 }

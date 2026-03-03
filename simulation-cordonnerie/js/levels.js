@@ -368,6 +368,39 @@ export function getDiagnosticZoneById(zoneId) {
   return DIAGNOSTIC_ZONES.find((zone) => zone.id === zoneId) || null;
 }
 
+export function getClientPersonalityImpact(client) {
+  const exigence = String(client?.exigence || "moyenne").toLowerCase();
+  const reputationImpact = client?.reputationImpact || {};
+
+  if (exigence === "elevee") {
+    return {
+      exigenceLabel: "Elevee",
+      scoreMultiplierOnSuccess: 1.22,
+      scorePenaltyMultiplierOnFailure: 1.18,
+      reputationSuccessDelta: Number(reputationImpact.success ?? 8),
+      reputationFailureDelta: Number(reputationImpact.failure ?? -12),
+    };
+  }
+
+  if (exigence === "faible") {
+    return {
+      exigenceLabel: "Faible",
+      scoreMultiplierOnSuccess: 0.94,
+      scorePenaltyMultiplierOnFailure: 0.9,
+      reputationSuccessDelta: Number(reputationImpact.success ?? 4),
+      reputationFailureDelta: Number(reputationImpact.failure ?? -5),
+    };
+  }
+
+  return {
+    exigenceLabel: "Moyenne",
+    scoreMultiplierOnSuccess: 1.06,
+    scorePenaltyMultiplierOnFailure: 1.02,
+    reputationSuccessDelta: Number(reputationImpact.success ?? 6),
+    reputationFailureDelta: Number(reputationImpact.failure ?? -8),
+  };
+}
+
 export function buildClientScenario(baseClient, day, level, randomFn = Math.random) {
   const candidateCodes = (baseClient.problemPool || []).filter((code) => {
     const problem = getProblem(code);
@@ -383,7 +416,11 @@ export function buildClientScenario(baseClient, day, level, randomFn = Math.rand
   }
 
   const timeLimit = level.computeTimeLimit(problem);
-  const demanding = level.demandingClients || randomFn() > 0.7;
+  const personality = getClientPersonalityImpact(baseClient);
+  const demanding =
+    level.demandingClients ||
+    personality.exigenceLabel === "Elevee" ||
+    randomFn() > 0.78;
 
   return {
     id: `${baseClient.id}-${problemCode}-${day}-${Math.round(randomFn() * 10000)}`,
@@ -392,6 +429,7 @@ export function buildClientScenario(baseClient, day, level, randomFn = Math.rand
     problem,
     timeLimit,
     demanding,
+    personality,
     inspectedZoneIds: [],
     discoveredClues: [],
     selectedZoneId: null,

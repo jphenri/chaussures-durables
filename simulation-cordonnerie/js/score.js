@@ -22,6 +22,8 @@ export class Player {
     cluesRequired,
     perfectRepair,
     demandingClient,
+    scoreMultiplier = 1,
+    reputationSuccessDelta = 6,
   }) {
     const safeBase = Number.isFinite(baseScore) ? baseScore : 100;
     const safeTimeLimit = Math.max(1, Number.isFinite(timeLimit) ? timeLimit : 60);
@@ -43,8 +45,9 @@ export class Player {
     this.streak += 1;
     const streakBonus = this.streak * 5;
 
-    const deltaScore =
+    const rawScore =
       safeBase + speedBonus + diagnosticBonus + demandingBonus + perfectBonus + streakBonus;
+    const deltaScore = Math.round(rawScore * Math.max(0.75, scoreMultiplier));
 
     this.score = Math.max(0, this.score + deltaScore);
 
@@ -55,7 +58,9 @@ export class Player {
       (perfectRepair ? 10 : 0);
 
     this.xp += xpGained;
-    this.reputation = clamp(this.reputation + (perfectRepair ? 8 : 6), 0, 100);
+    const reputationDelta =
+      Math.round(reputationSuccessDelta) + (perfectRepair ? 1 : 0);
+    this.reputation = clamp(this.reputation + reputationDelta, 0, 100);
     this.resolvedClients += 1;
 
     return {
@@ -67,6 +72,7 @@ export class Player {
       demandingBonus,
       perfectBonus,
       streakBonus,
+      reputationDelta,
       score: this.score,
       reputation: this.reputation,
       xp: this.xp,
@@ -75,17 +81,24 @@ export class Player {
     };
   }
 
-  applyWrongDiagnostic({ baseScore, penaltyMultiplier = 1 }) {
+  applyWrongDiagnostic({
+    baseScore,
+    penaltyMultiplier = 1,
+    scorePenaltyMultiplier = 1,
+    reputationFailureDelta = -10,
+  }) {
     const safeBase = Number.isFinite(baseScore) ? baseScore : 100;
 
     this.streak = 0;
     this.failedClients += 1;
 
-    const deltaScore = -Math.round(safeBase * 0.35);
+    const safeScorePenaltyMultiplier = Math.max(0.8, scorePenaltyMultiplier);
+    const deltaScore = -Math.round(safeBase * 0.35 * safeScorePenaltyMultiplier);
     this.score = Math.max(0, this.score + deltaScore);
 
-    // Explicit rule: wrong diagnostic = -10 reputation, scaled by level multiplier.
-    const reputationPenalty = -Math.round(10 * penaltyMultiplier);
+    // Explicit rule preserved: wrong diagnostic is at least -10 reputation.
+    const basePenalty = Math.max(10, Math.abs(Math.round(reputationFailureDelta)));
+    const reputationPenalty = -Math.round(basePenalty * penaltyMultiplier);
     this.reputation = clamp(this.reputation + reputationPenalty, 0, 100);
 
     return {

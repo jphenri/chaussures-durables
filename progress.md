@@ -76,3 +76,21 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 
 ## TODO / Suite
 - Executer validation Playwright si `playwright` devient disponible dans l'environnement.
+
+## 2026-03-03 - Immersion clients
+- `data/clients.json` remplace par 10 clients avec mini-histoires, exigence, dialogue pre-mission et impact reputation.
+- Ajout UI de briefing mission:
+  - `mission-dialogue-box`
+  - `mission-dialogue-text`
+  - `accept-mission-btn`
+- Flux gameplay mis a jour:
+  - Nouveau phase `briefing` avant diagnostic.
+  - Demarrage diagnostic uniquement apres `Accepter la mission`.
+- Generation aleatoire client conservee et journalisee au lancement de jour.
+- Impact personnalite sur score/reputation:
+  - `levels.js`: helper `getClientPersonalityImpact`.
+  - `score.js`: multiplicateur score succes/echec + delta reputation par personnalite.
+  - Regle metier preservee: mauvais diagnostic = au moins -10 reputation.
+- Validation:
+  - `node --check` OK (`levels.js`, `score.js`, `game.js`).
+  - Smoke test HTTP local OK.

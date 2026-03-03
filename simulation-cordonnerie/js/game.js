@@ -28,6 +28,9 @@ const ui = {
   xpNextLabel: document.getElementById("xp-next-label"),
   queueValue: document.getElementById("queue-value"),
   activeClients: document.getElementById("active-clients"),
+  missionDialogueBox: document.getElementById("mission-dialogue-box"),
+  missionDialogueText: document.getElementById("mission-dialogue-text"),
+  acceptMissionBtn: document.getElementById("accept-mission-btn"),
   clientCard: document.getElementById("client-card"),
   startDayBtn: document.getElementById("start-day-btn"),
   resetGameBtn: document.getElementById("reset-game-btn"),
@@ -542,7 +545,7 @@ class Game {
   }
 
   initScenarioForPlay(scenario) {
-    scenario.phase = "diagnostic";
+    scenario.phase = "briefing";
     scenario.finished = false;
     scenario.inspectedZoneIds = [];
     scenario.discoveredClues = [];
@@ -605,7 +608,21 @@ class Game {
     this.pushLog(
       `${this.level.name}: ${this.level.maxConcurrentClients} client(s) simultane(s).`
     );
+    this.pushLog("Generation aleatoire des clients du jour effectuee.");
 
+    this.renderAll();
+  }
+
+  acceptMission() {
+    const scenario = this.getSelectedScenario();
+    if (!scenario || scenario.phase !== "briefing") {
+      return;
+    }
+
+    scenario.phase = "diagnostic";
+    this.ui.diagnosticFeedback.textContent =
+      "Mission acceptee. Demarrez le diagnostic en cliquant les zones.";
+    this.pushLog(`Mission acceptee pour ${scenario.client.name}.`);
     this.renderAll();
   }
 
@@ -766,18 +783,22 @@ class Game {
         cluesRequired: scenario.problem.requiredClues,
         perfectRepair,
         demandingClient: scenario.demanding,
+        scoreMultiplier: scenario.personality?.scoreMultiplierOnSuccess ?? 1,
+        reputationSuccessDelta: scenario.personality?.reputationSuccessDelta ?? 6,
       });
 
       scenario.resultTone = "success";
-      scenario.resultText = `Succes. +${outcome.deltaScore} points, +${outcome.xpGained} XP.${outcome.perfectBonus ? " Reparation parfaite." : ""} Conseil: ${scenario.problem.tip}`;
+      scenario.resultText = `Succes. +${outcome.deltaScore} points, +${outcome.xpGained} XP.${outcome.perfectBonus ? " Reparation parfaite." : ""} Client ${scenario.personality?.exigenceLabel || "Moyen"}: reputation ${outcome.reputationDelta >= 0 ? "+" : ""}${outcome.reputationDelta}. Conseil: ${scenario.problem.tip}`;
     } else {
       outcome = this.player.applyWrongDiagnostic({
         baseScore: scenario.problem.baseScore,
         penaltyMultiplier: this.level.reputationPenaltyMultiplier,
+        scorePenaltyMultiplier: scenario.personality?.scorePenaltyMultiplierOnFailure ?? 1,
+        reputationFailureDelta: scenario.personality?.reputationFailureDelta ?? -10,
       });
 
       scenario.resultTone = "fail";
-      scenario.resultText = `Mauvais diagnostic. ${outcome.deltaScore} points, reputation ${outcome.reputationDelta}. Regle appliquee: -10 (multipliee au niveau 3).`;
+      scenario.resultText = `Mauvais diagnostic. ${outcome.deltaScore} points, reputation ${outcome.reputationDelta}. Regle appliquee: minimum -10, ajustee selon personnalite client.`;
     }
 
     scenario.outcome = outcome;
@@ -1013,6 +1034,8 @@ class Game {
       const stateLabel =
         scenario.phase === "result"
           ? "pret"
+          : scenario.phase === "briefing"
+            ? "briefing"
           : scenario.phase === "repair"
             ? "reparation"
             : scenario.phase === "stitching"
@@ -1048,9 +1071,9 @@ class Game {
     this.ui.clientCard.classList.remove("empty-state");
     this.ui.clientCard.innerHTML = `
       <h3>${safeText(scenario.client.name)} - ${safeText(scenario.client.shoeType)}</h3>
-      <p><strong>Profil:</strong> ${safeText(scenario.client.profile)}</p>
-      <p><strong>Urgence:</strong> ${safeText(scenario.client.urgency)}</p>
-      <p><strong>Demande:</strong> ${safeText(scenario.client.quote)}</p>
+      <p><strong>Histoire:</strong> ${safeText(scenario.client.story || scenario.client.profile || "Client habitue de l'atelier.")}</p>
+      <p><strong>Exigence:</strong> ${safeText(scenario.personality?.exigenceLabel || scenario.client.exigence || "Moyenne")}</p>
+      <p><strong>Impact reputation:</strong> ${safeText(String(scenario.personality?.reputationSuccessDelta ?? scenario.client.reputationImpact?.success ?? 0))} / ${safeText(String(scenario.personality?.reputationFailureDelta ?? scenario.client.reputationImpact?.failure ?? 0))}</p>
       <p><strong>Symptome:</strong> ${safeText(scenario.problem.symptom)}</p>
       <p><strong>Zone suspecte:</strong> ${safeText(selectedZoneLabel)}</p>
       <p><strong>Niveau client:</strong> ${scenario.demanding ? "Exigeant" : "Standard"}</p>
@@ -1082,7 +1105,35 @@ class Game {
       return;
     }
 
+    if (scenario.phase === "briefing") {
+      this.ui.tutorialBox.textContent =
+        "Tutoriel: lisez le dialogue client puis cliquez sur Accepter la mission.";
+      return;
+    }
+
     this.ui.tutorialBox.textContent = this.level.getTutorialText(scenario);
+  }
+
+  renderMissionDialogue() {
+    const scenario = this.getSelectedScenario();
+
+    if (!scenario) {
+      this.ui.missionDialogueText.textContent =
+        "Le dialogue client apparaitra ici avant le debut de la mission.";
+      this.ui.acceptMissionBtn.disabled = true;
+      return;
+    }
+
+    const intro = scenario.client.dialogueBeforeRepair
+      || "Pouvez-vous regarder ma paire avant la prochaine sortie ?";
+    const reputationHint = scenario.client.reputationImpact
+      ? `Impact reputation: +${scenario.client.reputationImpact.success} / ${scenario.client.reputationImpact.failure}`
+      : "Impact reputation standard";
+
+    this.ui.missionDialogueText.textContent =
+      `${intro} (${reputationHint})`;
+
+    this.ui.acceptMissionBtn.disabled = scenario.phase !== "briefing";
   }
 
   renderZoneLegend() {
@@ -1264,6 +1315,7 @@ class Game {
     this.renderProgress();
     this.renderQueue();
     this.renderActiveClients();
+    this.renderMissionDialogue();
     this.renderClientCard();
     this.renderDiagnosticProgress();
     this.renderTutorial();
@@ -1375,7 +1427,9 @@ class Game {
         return;
       }
 
-      if (this.level.timerEnabled) {
+      const missionActivePhases = ["diagnostic", "repair", "stitching"];
+
+      if (this.level.timerEnabled && missionActivePhases.includes(scenario.phase)) {
         scenario.elapsedMs += deltaMs;
 
         if (scenario.elapsedMs >= scenario.timeLimit * 1000) {
@@ -1411,6 +1465,7 @@ class Game {
   bindEvents() {
     this.ui.startDayBtn.addEventListener("click", () => this.startDay());
     this.ui.resetGameBtn.addEventListener("click", () => this.reset());
+    this.ui.acceptMissionBtn.addEventListener("click", () => this.acceptMission());
     this.ui.toRepairBtn.addEventListener("click", () => this.moveToRepair());
     this.ui.validateRepairBtn.addEventListener("click", () => this.validateRepair());
     this.ui.nextClientBtn.addEventListener("click", () => this.nextClient());
@@ -1521,6 +1576,7 @@ class Game {
               inspectedZoneIds: [...selected.inspectedZoneIds],
               selectedZoneId: selected.selectedZoneId,
               selectedRepairId: selected.selectedRepairId,
+              personality: selected.personality,
               finished: selected.finished,
             }
           : null,

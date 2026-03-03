@@ -113,6 +113,20 @@ body {
   margin-bottom: 0.6rem;
 }
 
+.dialogue-box {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f4efe6;
+  padding: 0.65rem;
+  margin-bottom: 0.7rem;
+}
+
+.dialogue-text {
+  margin: 0 0 0.55rem;
+  color: #3f3125;
+  font-size: 0.9rem;
+}
+
 .client-tab {
   border: 1px solid var(--line);
   border-radius: 999px;
