@@ -22,6 +22,8 @@ const ui = {
   dayValue: document.getElementById("day-value"),
   scoreValue: document.getElementById("score-value"),
   reputationValue: document.getElementById("reputation-value"),
+  reputationMeter: document.getElementById("reputation-meter"),
+  reputationMeterFill: document.getElementById("reputation-meter-fill"),
   streakValue: document.getElementById("streak-value"),
   xpValue: document.getElementById("xp-value"),
   xpFill: document.getElementById("xp-fill"),
@@ -992,6 +994,18 @@ class Game {
     this.ui.scoreValue.textContent = String(playerState.score);
     this.ui.reputationValue.textContent = String(playerState.reputation);
     this.ui.streakValue.textContent = String(playerState.streak);
+
+    if (this.ui.reputationMeterFill) {
+      this.ui.reputationMeterFill.style.width = `${clamp(playerState.reputation, 0, 100)}%`;
+    }
+
+    if (this.ui.reputationMeter) {
+      this.ui.reputationMeter.setAttribute("aria-valuenow", String(playerState.reputation));
+      this.ui.reputationMeter.setAttribute(
+        "aria-valuetext",
+        `${playerState.reputation} sur 100`
+      );
+    }
   }
 
   renderProgress() {

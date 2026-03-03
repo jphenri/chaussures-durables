@@ -13,9 +13,26 @@
   <body>
     <div class="app-shell">
       <header class="topbar card">
-        <div>
+        <div class="atelier-brand">
           <p class="eyebrow">Simulation de Cordonnerie</p>
           <h1>Atelier Saint-Crepin</h1>
+          <div class="reputation-rail">
+            <div class="reputation-head">
+              <span>Reputation atelier</span>
+              <strong id="reputation-value">50</strong>
+            </div>
+            <div
+              id="reputation-meter"
+              class="reputation-meter"
+              role="progressbar"
+              aria-label="Niveau de reputation"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="50"
+            >
+              <div id="reputation-meter-fill" class="reputation-meter-fill"></div>
+            </div>
+          </div>
         </div>
         <div class="hud">
           <div class="hud-item">
@@ -31,15 +48,22 @@
             <strong id="score-value">0</strong>
           </div>
           <div class="hud-item">
-            <span>Reputation</span>
-            <strong id="reputation-value">50</strong>
-          </div>
-          <div class="hud-item">
             <span>Serie</span>
             <strong id="streak-value">0</strong>
           </div>
         </div>
-        <button id="reset-game-btn" class="btn" type="button">Reset progression</button>
+        <div class="toolbar-actions">
+          <label class="contrast-switch" for="contrast-toggle">
+            <input
+              id="contrast-toggle"
+              type="checkbox"
+              role="switch"
+              aria-label="Activer le mode contraste eleve"
+            />
+            <span>Contraste eleve</span>
+          </label>
+          <button id="reset-game-btn" class="btn" type="button">Reset progression</button>
+        </div>
       </header>
       <section class="card progression-panel" aria-label="Progression joueur">
         <div class="panel-heading">
@@ -62,7 +86,17 @@
 
         <section class="panel card" aria-live="polite">
           <div class="panel-heading">
-            <h2>Client entrant</h2>
+            <div class="heading-title">
+              <h2>Client entrant</h2>
+              <button
+                class="edu-tip"
+                type="button"
+                aria-label="Conseil client"
+                data-tip="Lisez toujours le dialogue avant mission: il indique le niveau d'exigence et l'impact reputation."
+              >
+                ?
+              </button>
+            </div>
             <span id="queue-value" class="badge">En attente: 0</span>
           </div>
           <div id="active-clients" class="active-clients"></div>
@@ -84,7 +118,17 @@
 
         <section class="panel card" aria-label="Diagnostic interactif">
           <div class="panel-heading">
-            <h2>Diagnostic interactif</h2>
+            <div class="heading-title">
+              <h2>Diagnostic interactif</h2>
+              <button
+                class="edu-tip"
+                type="button"
+                aria-label="Conseil diagnostic"
+                data-tip="Cliquez 3 a 4 zones cles: un diagnostic complet reduit les erreurs et augmente le score final."
+              >
+                ?
+              </button>
+            </div>
             <span id="diagnostic-progress" class="badge">Indices: 0 / 2</span>
           </div>
           <p class="support-text">
@@ -108,8 +152,18 @@
 
         <section class="panel card" aria-label="Zone de reparation">
           <div class="panel-heading">
-            <h2>Reparation</h2>
-            <span id="timer-value" class="badge">Temps: 0s</span>
+            <div class="heading-title">
+              <h2>Reparation</h2>
+              <button
+                class="edu-tip"
+                type="button"
+                aria-label="Conseil reparation"
+                data-tip="Stock vide = mission bloquee. Surveillez l'inventaire avant de valider une intervention."
+              >
+                ?
+              </button>
+            </div>
+            <span id="timer-value" class="badge timer-badge" role="status" aria-live="polite">Temps: 0s</span>
           </div>
           <p class="support-text">
             Choisissez l'intervention la plus adaptee a la panne detectee.
@@ -151,7 +205,17 @@
 
         <section class="panel card" aria-label="Journal atelier">
           <div class="panel-heading">
-            <h2>Journal atelier</h2>
+            <div class="heading-title">
+              <h2>Journal atelier</h2>
+              <button
+                class="edu-tip"
+                type="button"
+                aria-label="Conseil journal"
+                data-tip="Le journal vous aide a analyser vos decisions pour mieux gerer la reputation et l'XP."
+              >
+                ?
+              </button>
+            </div>
             <span class="badge">Educatif</span>
           </div>
           <ul id="event-log" class="log-list"></ul>

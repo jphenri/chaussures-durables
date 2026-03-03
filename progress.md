@@ -94,3 +94,23 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 - Validation:
   - `node --check` OK (`levels.js`, `score.js`, `game.js`).
   - Smoke test HTTP local OK.
+
+## 2026-03-03 - Refonte design immersive atelier
+- Refonte HTML du haut de page:
+  - Barre de reputation visuelle (`reputation-meter`) avec ARIA `progressbar`.
+  - Switch CSS mode contraste eleve (`contrast-toggle`).
+  - Tooltips educatifs sur sections (`.edu-tip`, attribut `data-tip`).
+- Refonte CSS complete (`simulation-cordonnerie/css/style.css`):
+  - Palette atelier demandee: brun cuir, beige, vert durable, rouge alerte.
+  - Timer renforce visuellement (`timer-badge`).
+  - Inventaire plus lisible (etats low/empty visibles).
+  - Animations legeres reparation: success/fail + alert pulse.
+  - Responsive mobile/tablette/desktop.
+  - Mode contraste eleve via CSS pur (`body:has(#contrast-toggle:checked)`).
+- Accessibilite:
+  - ARIA progressbar reputation et `aria-valuetext` mises a jour en JS.
+  - Timer en `role=status` + `aria-live=polite`.
+  - Tooltips clavier/souris (buttons focusables).
+- Verification:
+  - `node --check` OK sur `js/game.js`.
+  - Smoke test HTTP local OK (`index.html`, `style.css`, `game.js`).
