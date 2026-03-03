@@ -179,6 +179,13 @@ body {
   fill: #000000;
 }
 
+.src-stitch {
+  fill: none;
+  stroke: rgba(198, 164, 90, 0.82);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
 .shoe-part {
   outline: none;
 }
@@ -193,7 +200,7 @@ body {
 
 .part-shape-line {
   fill: none;
-  stroke-width: 5.2;
+  stroke-width: 3.8;
   stroke-linecap: round;
   stroke-linejoin: round;
   pointer-events: stroke;
@@ -202,7 +209,7 @@ body {
 .part-hitline {
   fill: none;
   stroke: transparent;
-  stroke-width: 11;
+  stroke-width: 8;
   stroke-linecap: round;
   stroke-linejoin: round;
   pointer-events: stroke;
