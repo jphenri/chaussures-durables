@@ -201,7 +201,7 @@ body {
 
 .part-shape-line {
   fill: none;
-  stroke-width: 3.4;
+  stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
   pointer-events: stroke;
@@ -210,7 +210,7 @@ body {
 .part-hitline {
   fill: none;
   stroke: transparent;
-  stroke-width: 7;
+  stroke-width: 6;
   stroke-linecap: round;
   stroke-linejoin: round;
   pointer-events: stroke;
