@@ -152,86 +152,31 @@ body {
 }
 
 .boot-shadow {
-  fill: rgba(0, 0, 0, 0.26);
+  fill: rgba(0, 0, 0, 0.3);
 }
 
-.tech-drawing {
+.icon-boot {
   opacity: 0.98;
 }
 
-.boot-upper,
-.boot-quarter,
-.boot-toecap {
-  fill: rgba(151, 58, 22, 0.22);
-  stroke: rgba(237, 226, 210, 0.76);
-  stroke-width: 2;
-  stroke-linejoin: round;
+.src-outline {
+  fill: #000000;
 }
 
-.boot-shaft {
-  fill: rgba(138, 52, 20, 0.24);
-  stroke: rgba(237, 226, 210, 0.76);
-  stroke-width: 2;
-  stroke-linejoin: round;
+.src-sole {
+  fill: #694d42;
 }
 
-.tech-detail {
-  fill: none;
-  stroke: rgba(214, 179, 106, 0.78);
-  stroke-width: 2.4;
-  stroke-linecap: round;
+.src-toe {
+  fill: #8c300c;
 }
 
-.eyelet {
-  fill: #080706;
+.src-upper {
+  fill: #9e360e;
 }
 
-.sole-base {
-  fill: url(#soleGradient);
-  stroke: rgba(20, 14, 11, 0.54);
-  stroke-width: 1.6;
-}
-
-.heel-cap {
-  fill: rgba(147, 127, 112, 0.58);
-  stroke: rgba(238, 226, 210, 0.56);
-  stroke-width: 1.4;
-}
-
-.heel-block {
-  fill: #715d4f;
-  stroke: rgba(20, 14, 11, 0.56);
-  stroke-width: 1.6;
-}
-
-.sole-tread {
-  stroke: rgba(42, 34, 28, 0.62);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-}
-
-.stitch-line {
-  fill: none;
-  stroke: rgba(198, 164, 90, 0.86);
-  stroke-width: 2.4;
-  stroke-linecap: round;
-}
-
-.lace-seg {
-  stroke: rgba(220, 210, 191, 0.72);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-}
-
-.callout-line {
-  stroke: rgba(235, 229, 220, 0.74);
-  stroke-width: 1.6;
-}
-
-.callout-label {
-  fill: rgba(241, 233, 223, 0.9);
-  font-size: 17px;
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+.src-eyelet {
+  fill: #000000;
 }
 
 .shoe-part {
@@ -239,16 +184,16 @@ body {
 }
 
 .part-shape {
-  fill: rgba(198, 164, 90, 0.03);
-  stroke: rgba(198, 164, 90, 0.28);
-  stroke-width: 1;
+  fill: rgba(198, 164, 90, 0.07);
+  stroke: rgba(198, 164, 90, 0.38);
+  stroke-width: 0.9;
   transition: transform var(--trans), fill var(--trans), stroke var(--trans), filter var(--trans);
   transform-origin: center;
 }
 
 .part-shape-line {
   fill: none;
-  stroke-width: 24;
+  stroke-width: 5.2;
   stroke-linecap: round;
   stroke-linejoin: round;
   pointer-events: stroke;
@@ -257,7 +202,7 @@ body {
 .part-hitline {
   fill: none;
   stroke: transparent;
-  stroke-width: 44;
+  stroke-width: 11;
   stroke-linecap: round;
   stroke-linejoin: round;
   pointer-events: stroke;
@@ -267,7 +212,7 @@ body {
 .shoe-part:focus-visible .part-shape,
 .shoe-part.is-active .part-shape {
   cursor: pointer;
-  fill: rgba(198, 164, 90, 0.18);
+  fill: rgba(198, 164, 90, 0.24);
   stroke: rgba(198, 164, 90, 0.9);
   filter: url(#part-glow);
   transform: translateY(-0.5px);
@@ -451,9 +396,6 @@ body {
     gap: 0.5rem;
   }
 
-  .callout-label {
-    font-size: 14px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
