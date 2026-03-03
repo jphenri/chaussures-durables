@@ -72,42 +72,75 @@
               </defs>
 
               <rect x="0" y="0" width="760" height="360" class="svg-bg" />
-              <ellipse cx="384" cy="324" rx="306" ry="18" class="boot-shadow" />
+              <ellipse cx="390" cy="322" rx="284" ry="16" class="boot-shadow" />
 
-              <!-- Geometrie principale de la botte -->
-              <path
-                class="upper-main"
-                d="M142 260 C220 208 334 182 500 186 C550 188 593 202 618 226 L618 292 L176 292 C161 292 150 280 142 260 Z"
-              />
-              <path
-                class="shaft-main"
-                d="M458 116 L604 112 C617 112 626 121 626 134 L626 230 C626 246 620 258 610 268 L552 268 L458 262 Z"
-              />
-              <path
-                class="toe-cap"
-                d="M108 270 C130 238 170 222 220 218 C242 216 256 226 260 246 C263 261 262 274 258 286 C216 294 165 288 124 274 C114 271 109 275 108 270 Z"
-              />
+              <!-- Illustration style schema technique -->
+              <g class="tech-drawing">
+                <!-- Tige / empeigne -->
+                <path
+                  class="tech-outline"
+                  d="M146 257 C226 208 338 182 506 188 C554 190 594 204 618 228 L618 290 L178 290 C162 290 152 278 146 257 Z"
+                />
+                <path
+                  class="tech-outline"
+                  d="M456 120 L600 116 C614 116 624 126 624 140 L624 226 C624 244 620 256 610 266 L554 266 L456 260 Z"
+                />
+                <path
+                  class="tech-detail"
+                  d="M184 252 C284 214 426 198 576 210"
+                />
+                <path
+                  class="tech-detail"
+                  d="M196 262 C300 224 440 210 584 222"
+                />
+                <path
+                  class="tech-detail"
+                  d="M468 158 C532 152 574 152 604 158"
+                />
+                <circle cx="444" cy="150" r="7" class="eyelet" />
+                <circle cx="436" cy="182" r="8" class="eyelet" />
+                <circle cx="426" cy="216" r="9" class="eyelet" />
+                <circle cx="388" cy="240" r="10" class="eyelet" />
 
-              <!-- Semelle avec base horizontale parfaite -->
-              <path
-                class="sole-base"
-                d="M94 292 C210 286 460 286 670 292 L670 314 C472 322 224 322 94 314 Z"
-              />
+                <!-- Pieces eclatees de semelle -->
+                <path
+                  class="sole-layer layer-top"
+                  d="M500 252 C538 247 582 247 622 252 C612 268 598 278 576 286 C546 287 518 286 494 283 Z"
+                />
+                <path
+                  class="sole-layer layer-mid"
+                  d="M488 274 C530 268 586 266 642 270 C634 288 620 298 592 307 C548 309 510 307 480 302 Z"
+                />
+                <path
+                  class="sole-layer layer-bottom"
+                  d="M476 296 C536 291 610 289 678 292 C674 304 658 316 620 324 C548 327 494 324 468 318 Z"
+                />
 
-              <!-- Talon aligne sur l'extremite arriere de la semelle -->
-              <path
-                class="heel-block"
-                d="M598 258 L670 258 L670 314 L592 314 Z"
-              />
+                <!-- Semelle principale montee -->
+                <path
+                  class="sole-base"
+                  d="M96 292 C210 286 460 286 670 292 L670 314 C472 322 224 322 96 314 Z"
+                />
+                <path class="heel-block" d="M598 258 L670 258 L670 314 L592 314 Z" />
 
-              <!-- Coutures fines et alignees au-dessus de l'empeigne -->
-              <path class="stitch-line" d="M186 252 C292 214 434 200 584 212" />
-              <path class="stitch-line" d="M194 262 C304 224 444 212 590 224" />
-              <path class="stitch-line" d="M470 156 C532 150 575 150 606 156" />
-              <circle cx="445" cy="148" r="8" class="eyelet" />
-              <circle cx="438" cy="182" r="9" class="eyelet" />
-              <circle cx="430" cy="218" r="10" class="eyelet" />
-              <circle cx="390" cy="242" r="11" class="eyelet" />
+                <!-- Appels de texte style plan -->
+                <g class="callout-group">
+                  <line x1="196" y1="226" x2="92" y2="226" class="callout-line" />
+                  <text x="32" y="230" class="callout-label">Empeigne</text>
+                </g>
+                <g class="callout-group">
+                  <line x1="604" y1="300" x2="710" y2="300" class="callout-line" />
+                  <text x="716" y="304" class="callout-label">Semelle</text>
+                </g>
+                <g class="callout-group">
+                  <line x1="596" y1="274" x2="708" y2="262" class="callout-line" />
+                  <text x="716" y="266" class="callout-label">Talon</text>
+                </g>
+                <g class="callout-group">
+                  <line x1="500" y1="210" x2="708" y2="204" class="callout-line" />
+                  <text x="716" y="208" class="callout-label">Coutures</text>
+                </g>
+              </g>
 
               <!-- Zones interactives -->
 

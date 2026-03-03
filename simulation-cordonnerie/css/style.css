@@ -148,19 +148,51 @@ body {
 }
 
 .svg-bg {
-  fill: #1a120f;
+  fill: #221916;
 }
 
 .boot-shadow {
-  fill: rgba(0, 0, 0, 0.34);
+  fill: rgba(0, 0, 0, 0.26);
 }
 
-.upper-main,
-.shaft-main,
-.toe-cap {
-  fill: url(#upperLeatherGradient);
-  stroke: rgba(17, 10, 7, 0.48);
+.tech-drawing {
+  opacity: 0.98;
+}
+
+.tech-outline {
+  fill: rgba(164, 61, 19, 0.18);
+  stroke: rgba(229, 215, 198, 0.7);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.tech-detail {
+  fill: none;
+  stroke: rgba(214, 179, 106, 0.78);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.eyelet {
+  fill: #080706;
+}
+
+.sole-layer {
+  fill: rgba(238, 232, 226, 0.06);
+  stroke: rgba(232, 223, 212, 0.72);
   stroke-width: 1.8;
+}
+
+.layer-top {
+  transform: translateY(2px);
+}
+
+.layer-mid {
+  transform: translateY(5px);
+}
+
+.layer-bottom {
+  transform: translateY(8px);
 }
 
 .sole-base {
@@ -178,12 +210,19 @@ body {
 .stitch-line {
   fill: none;
   stroke: rgba(198, 164, 90, 0.86);
-  stroke-width: 3.2;
+  stroke-width: 2.4;
   stroke-linecap: round;
 }
 
-.eyelet {
-  fill: #080706;
+.callout-line {
+  stroke: rgba(233, 227, 218, 0.72);
+  stroke-width: 1.8;
+}
+
+.callout-label {
+  fill: rgba(241, 233, 223, 0.92);
+  font-size: 19px;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
 }
 
 .shoe-part {
@@ -191,9 +230,9 @@ body {
 }
 
 .part-shape {
-  fill: rgba(198, 164, 90, 0.04);
-  stroke: rgba(198, 164, 90, 0.32);
-  stroke-width: 1.1;
+  fill: rgba(198, 164, 90, 0.03);
+  stroke: rgba(198, 164, 90, 0.28);
+  stroke-width: 1;
   transition: transform var(--trans), fill var(--trans), stroke var(--trans), filter var(--trans);
   transform-origin: center;
 }
@@ -392,6 +431,10 @@ body {
   .header-chips {
     grid-template-columns: repeat(2, minmax(92px, 1fr));
     gap: 0.5rem;
+  }
+
+  .callout-label {
+    font-size: 14px;
   }
 }
 
