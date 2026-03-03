@@ -202,3 +202,11 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 - Verification:
   - `node --check simulation-cordonnerie/js/game.js` OK.
   - Test Playwright du skill tente mais bloque dans l'environnement: package `playwright` manquant (`ERR_MODULE_NOT_FOUND`).
+
+## 2026-03-03 - Fix affichage type chaussure
+- Correction du bug de rendu multi-icone dans `simulation-cordonnerie/js/game.js`:
+  - `setShoeVisual()` passe `shoe-type-image` en `display: block` (au lieu de `""`) pour contourner la classe CSS `display: none`.
+- Ajustement de la generation client:
+  - ajout `lastShoeTypeId` dans le state pour eviter deux types identiques consecutifs.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.

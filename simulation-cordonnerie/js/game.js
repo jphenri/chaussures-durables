@@ -608,6 +608,7 @@ class Game {
       currentClient: null,
       history: [],
       transitionLock: false,
+      lastShoeTypeId: null,
     };
 
     this.clients = [];
@@ -727,17 +728,30 @@ class Game {
 
     const useSourceShape = shoeType.id === "trepointe_plate";
     this.ui.shoeBaseShape.style.display = useSourceShape ? "" : "none";
-    this.ui.shoeTypeImage.style.display = useSourceShape ? "none" : "";
+    // Important: ne pas remettre a "" car la classe CSS a "display: none".
+    this.ui.shoeTypeImage.style.display = useSourceShape ? "none" : "block";
   }
 
   // Genere un client complet: type de chaussure aleatoire + 1 a 3 pannes compatibles.
   generateClient() {
     this.state.transitionLock = false;
-    const shoeType = pickRandom(Object.values(SHOE_TYPES));
+    const availableTypes = Object.values(SHOE_TYPES);
+    let shoeType = pickRandom(availableTypes);
+
+    // Evite de servir le meme type 2 fois de suite pour garder une rotation visible.
+    if (
+      availableTypes.length > 1
+      && shoeType
+      && shoeType.id === this.state.lastShoeTypeId
+    ) {
+      const withoutLast = availableTypes.filter((item) => item.id !== this.state.lastShoeTypeId);
+      shoeType = pickRandom(withoutLast) || shoeType;
+    }
 
     if (!shoeType) {
       return null;
     }
+    this.state.lastShoeTypeId = shoeType.id;
 
     const profile = pickRandom(this.clients) || {
       id: "local-client",
@@ -1117,6 +1131,7 @@ class Game {
       currentClient: null,
       history: [],
       transitionLock: false,
+      lastShoeTypeId: null,
     };
 
     this.generateClient();
