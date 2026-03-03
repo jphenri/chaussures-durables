@@ -179,3 +179,26 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - couture au-dessus de l'empeigne avec hitbox elargie.
 - Classes CSS remplacees/ajoutees: `boot-upper`, `boot-shaft`, `boot-quarter`, `boot-toecap`, `heel-cap`, `sole-tread`, `lace-seg`.
 - Mecanique JS inchangee (`node --check` OK).
+
+## 2026-03-03 - Randomisation type chaussure + reparations metier
+- `simulation-cordonnerie/js/game.js` recree completement avec un state central + `render()`.
+- Ajout des catalogues metier demandes:
+  - `SHOE_TYPES` (4 familles): trepointe plate, trepointe modulaire, talons hauts, sandale.
+  - `REPAIRS` avec metadonnees reelles: difficulte (1-5), temps estime, impact reputation, prix simule, cout de stock.
+- Ajout du moteur pannes/reparations:
+  - `PROBLEM_LIBRARY` par type, piece ciblee (`semelle`, `talon`, `couture`, `empeigne`) et reparations compatibles.
+  - `generateClient()` genere un type de chaussure aleatoire et 1 a 3 problemes compatibles.
+  - `applyRepair(repairId)` valide compatibilite type/piece, bloque si stock vide, applique score/reputation/XP, et penalise les erreurs.
+- Regles metier couvertes:
+  - mauvais diagnostic/reparation -> penalite reputation via `Player.applyWrongDiagnostic` (minimum -10).
+  - reparation parfaite -> bonus score.
+  - difficulte elevee -> gain reputation superieur.
+  - incompatibilites bloquees (sandale vs ressemelage trepointe, talon aiguille vs Dainite, etc.).
+- UI branchee sur la logique:
+  - mise a jour diagnostic, severite, actions filtrees, historique, chips header.
+  - icone chaussure dynamique (`shoe-type-image`) selon type client.
+- Hooks exposes:
+  - `window.generateClient`, `window.applyRepair`, `window.SHOE_TYPES`, `window.REPAIRS`, `window.render_game_to_text`, `window.advanceTime`.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
+  - Test Playwright du skill tente mais bloque dans l'environnement: package `playwright` manquant (`ERR_MODULE_NOT_FOUND`).

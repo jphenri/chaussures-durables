@@ -159,6 +159,11 @@ body {
   opacity: 0.98;
 }
 
+.shoe-type-image {
+  display: none;
+  opacity: 0.98;
+}
+
 .src-outline {
   fill: #000000;
 }
