@@ -54,3 +54,25 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 ## TODO / Suite (mecaniques avancees)
 - Installer `playwright` si validation e2e automatisee requise.
 - Ajouter des paliers d'inventaire par niveau pour renforcer la difficulte.
+
+## 2026-03-03 - Systeme de progression (3 niveaux)
+- Ajout architecture demandee:
+  - `Level` dans `simulation-cordonnerie/js/levels.js`
+  - `Player` dans `simulation-cordonnerie/js/score.js`
+  - `Game` dans `simulation-cordonnerie/js/game.js`
+- Niveaux implementes:
+  - Niveau 1 `Apprenti`: 1 client simultane, timer OFF, tutoriel guide.
+  - Niveau 2 `Atelier Local`: 2 clients simultanes, timer ON, inventaire actif.
+  - Niveau 3 `Maitre Cordonnerie`: clients exigeants, reparations plus complexes, penalite reputation elevee.
+- Progression implementee:
+  - XP + barre de progression + seuils de niveau.
+  - Passage automatique de niveau selon XP.
+  - Fonction reset globale (`reset-game-btn` + `window.resetCobblerSimulation`).
+- UI adaptee:
+  - Bandeau progression XP, nom du niveau, onglets clients actifs, tutoriel, bouton reset.
+- Verification:
+  - `node --check` OK sur `levels.js`, `score.js`, `game.js`.
+  - Smoke test HTTP local OK.
+
+## TODO / Suite
+- Executer validation Playwright si `playwright` devient disponible dans l'environnement.

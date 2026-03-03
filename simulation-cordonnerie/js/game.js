@@ -3,10 +3,11 @@ import {
   createDayQueue,
   getDiagnosticZoneById,
   getDiagnosticZones,
+  getLevelByXp,
   getRepairById,
   resolveZoneInspection,
 } from "./levels.js";
-import { createScoreSystem } from "./score.js";
+import { Player } from "./score.js";
 
 const RESOURCE_KEYS = ["semelles", "fil", "cuir", "colle"];
 const RESOURCE_LABELS = {
@@ -17,18 +18,23 @@ const RESOURCE_LABELS = {
 };
 
 const ui = {
+  levelName: document.getElementById("level-name"),
   dayValue: document.getElementById("day-value"),
   scoreValue: document.getElementById("score-value"),
   reputationValue: document.getElementById("reputation-value"),
   streakValue: document.getElementById("streak-value"),
+  xpValue: document.getElementById("xp-value"),
+  xpFill: document.getElementById("xp-fill"),
+  xpNextLabel: document.getElementById("xp-next-label"),
   queueValue: document.getElementById("queue-value"),
-  timerState: document.getElementById("timer-state"),
-  timerToggle: document.getElementById("timer-toggle"),
+  activeClients: document.getElementById("active-clients"),
   clientCard: document.getElementById("client-card"),
   startDayBtn: document.getElementById("start-day-btn"),
+  resetGameBtn: document.getElementById("reset-game-btn"),
   diagnosticProgress: document.getElementById("diagnostic-progress"),
   diagnosticCanvas: document.getElementById("diagnostic-canvas"),
   zoneLegend: document.getElementById("zone-legend"),
+  tutorialBox: document.getElementById("tutorial-box"),
   diagnosticFeedback: document.getElementById("diagnostic-feedback"),
   toRepairBtn: document.getElementById("to-repair-btn"),
   repairOptions: document.getElementById("repair-options"),
@@ -46,6 +52,20 @@ const ui = {
   atelierCanvas: document.getElementById("atelier-canvas"),
 };
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function safeText(text) {
+  return String(text || "").replace(/[<>]/g, "");
+}
+
+function formatResourceSummary(resources = {}) {
+  return RESOURCE_KEYS.filter((key) => Number(resources[key]) > 0)
+    .map((key) => `${RESOURCE_LABELS[key]}:${resources[key]}`)
+    .join(" | ");
+}
+
 class InventoryManager {
   constructor(initialStock = {}) {
     this.initialStock = {
@@ -54,8 +74,12 @@ class InventoryManager {
       cuir: initialStock.cuir ?? 6,
       colle: initialStock.colle ?? 5,
     };
-
     this.stock = { ...this.initialStock };
+  }
+
+  reset() {
+    this.stock = { ...this.initialStock };
+    return this.getStockSnapshot();
   }
 
   getStockSnapshot() {
@@ -93,19 +117,17 @@ class InventoryManager {
 
   getMissingResources(requirements = {}) {
     const missing = [];
+
     Object.entries(requirements).forEach(([resource, amount]) => {
       const needed = Math.max(0, Number(amount) || 0);
       const available = this.stock[resource] || 0;
+
       if (available < needed) {
         missing.push(`${RESOURCE_LABELS[resource] || resource} (${available}/${needed})`);
       }
     });
-    return missing;
-  }
 
-  reset() {
-    this.stock = { ...this.initialStock };
-    return this.getStockSnapshot();
+    return missing;
   }
 }
 
@@ -165,7 +187,6 @@ class DiagnosticZoneBoard {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, width, height);
 
-    // Stylized shoe body used as diagnostic board.
     ctx.fillStyle = "#a47b4f";
     ctx.beginPath();
     ctx.moveTo(44, 152);
@@ -200,11 +221,11 @@ class DiagnosticZoneBoard {
     });
 
     if (!active) {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
       ctx.fillRect(0, 0, width, height);
       ctx.fillStyle = "#594934";
       ctx.font = "bold 16px Trebuchet MS";
-      ctx.fillText("Diagnostic en attente d'un client", 190, 106);
+      ctx.fillText("Diagnostic en attente", 240, 106);
     }
   }
 }
@@ -213,7 +234,7 @@ class StitchPrecisionMiniGame {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
-    this.maxDurationMs = 17000;
+    this.maxDurationMs = 16000;
     this.hitRadius = 16;
     this.reset();
   }
@@ -243,9 +264,8 @@ class StitchPrecisionMiniGame {
     this.totalDistance = 0;
     this.elapsedMs = 0;
     this.currentIndex = 0;
-    this.cursor = null;
 
-    const yCurve = [95, 90, 88, 86, 88, 90, 95, 99];
+    const yCurve = [95, 91, 88, 86, 88, 91, 95, 99];
     this.points = yCurve.map((y, index) => ({
       x: 54 + index * 58,
       y,
@@ -294,6 +314,7 @@ class StitchPrecisionMiniGame {
       this.hits += 1;
       this.totalDistance += distance;
       this.currentIndex += 1;
+
       if (this.currentIndex >= this.points.length) {
         this.completed = true;
         this.active = false;
@@ -311,11 +332,12 @@ class StitchPrecisionMiniGame {
       return this.getSnapshot();
     }
 
-    this.elapsedMs += ms;
-
-    if (timerEnabled && this.elapsedMs >= this.maxDurationMs) {
-      this.timeUp = true;
-      this.active = false;
+    if (timerEnabled) {
+      this.elapsedMs += ms;
+      if (this.elapsedMs >= this.maxDurationMs) {
+        this.timeUp = true;
+        this.active = false;
+      }
     }
 
     return this.getSnapshot();
@@ -325,6 +347,7 @@ class StitchPrecisionMiniGame {
     const accuracy = this.hits / Math.max(1, this.attempts);
     const averageDistance = this.hits > 0 ? this.totalDistance / this.hits : this.hitRadius * 2;
     const precision = clamp(1 - averageDistance / this.hitRadius, 0, 1);
+
     return {
       accuracy,
       precision,
@@ -416,991 +439,1132 @@ class StitchPrecisionMiniGame {
       ctx.arc(this.cursor.x, this.cursor.y, 9, 0, Math.PI * 2);
       ctx.stroke();
     }
+  }
+}
 
-    const snap = this.getSnapshot();
-    ctx.fillStyle = "#2f2519";
-    ctx.font = "13px Trebuchet MS";
-    ctx.fillText(
-      `Points: ${this.currentIndex}/${this.points.length} | Precision: ${Math.round(snap.quality * 100)}%`,
-      14,
-      22
+class Game {
+  constructor(uiRefs) {
+    this.ui = uiRefs;
+    this.player = new Player({
+      score: 0,
+      reputation: 50,
+      xp: 0,
+      streak: 0,
+    });
+
+    this.level = getLevelByXp(0);
+    this.inventory = new InventoryManager();
+    this.diagnosticBoard = new DiagnosticZoneBoard(
+      this.ui.diagnosticCanvas,
+      getDiagnosticZones()
+    );
+    this.stitchMiniGame = new StitchPrecisionMiniGame(this.ui.stitchCanvas);
+    this.workshopCtx = this.ui.atelierCanvas.getContext("2d");
+
+    this.day = 1;
+    this.clients = [];
+    this.waitingQueue = [];
+    this.activeScenarios = [];
+    this.selectedScenarioId = null;
+    this.stitchScenarioId = null;
+    this.hoveredZoneId = null;
+    this.dayRunning = false;
+    this.gameOver = false;
+
+    this.visualClockMs = 0;
+    this.previousTime = performance.now();
+    this.rafId = 0;
+  }
+
+  getSelectedScenario() {
+    if (!this.selectedScenarioId) {
+      return null;
+    }
+
+    return this.activeScenarios.find((scenario) => scenario.id === this.selectedScenarioId) || null;
+  }
+
+  getCurrentMode() {
+    if (this.gameOver) {
+      return "gameover";
+    }
+
+    if (!this.dayRunning) {
+      return "idle";
+    }
+
+    const scenario = this.getSelectedScenario();
+    return scenario?.phase || "idle";
+  }
+
+  pushLog(message, tone = "") {
+    const entry = document.createElement("li");
+    entry.textContent = `J${this.day} - ${message}`;
+    if (tone) {
+      entry.classList.add(`status-${tone}`);
+    }
+
+    this.ui.eventLog.prepend(entry);
+
+    while (this.ui.eventLog.children.length > 12) {
+      this.ui.eventLog.removeChild(this.ui.eventLog.lastChild);
+    }
+  }
+
+  async loadClients() {
+    try {
+      const dataUrl = new URL("../data/clients.json", import.meta.url);
+      const response = await fetch(dataUrl);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const payload = await response.json();
+      this.clients = Array.isArray(payload.clients) ? payload.clients : [];
+
+      if (!this.clients.length) {
+        throw new Error("liste clients vide");
+      }
+
+      this.pushLog(`${this.clients.length} fiches clients chargees.`);
+    } catch (error) {
+      this.pushLog(
+        `Echec du chargement clients (${safeText(error.message)}). Lancez via un serveur local ou GitHub Pages.`,
+        "danger"
+      );
+    }
+  }
+
+  setClientWaitingState(message) {
+    this.ui.clientCard.classList.add("empty-state");
+    this.ui.clientCard.innerHTML = `<p>${safeText(message)}</p>`;
+  }
+
+  initScenarioForPlay(scenario) {
+    scenario.phase = "diagnostic";
+    scenario.finished = false;
+    scenario.inspectedZoneIds = [];
+    scenario.discoveredClues = [];
+    scenario.selectedZoneId = null;
+    scenario.selectedRepairId = null;
+    scenario.stitchResult = null;
+    scenario.elapsedMs = 0;
+    scenario.resultText = "";
+    scenario.resultTone = "";
+    return scenario;
+  }
+
+  fillActiveSlots() {
+    while (
+      this.activeScenarios.length < this.level.maxConcurrentClients &&
+      this.waitingQueue.length > 0
+    ) {
+      const scenario = this.initScenarioForPlay(this.waitingQueue.shift());
+      this.activeScenarios.push(scenario);
+    }
+
+    if (!this.selectedScenarioId && this.activeScenarios.length > 0) {
+      this.selectedScenarioId = this.activeScenarios[0].id;
+    }
+
+    const selected = this.getSelectedScenario();
+    if (!selected && this.activeScenarios.length > 0) {
+      this.selectedScenarioId = this.activeScenarios[0].id;
+    }
+  }
+
+  startDay() {
+    if (!this.clients.length) {
+      this.pushLog("Impossible de demarrer: base clients vide.", "danger");
+      return;
+    }
+
+    this.dayRunning = true;
+    this.gameOver = false;
+
+    this.waitingQueue = createDayQueue(this.clients, this.day, this.level);
+    this.activeScenarios = [];
+    this.selectedScenarioId = null;
+    this.stitchScenarioId = null;
+
+    if (this.level.inventoryEnabled) {
+      this.inventory.restock({ semelles: 1, fil: 1, cuir: 1, colle: 1 });
+      this.pushLog("Niveau avec inventaire actif: reassort journalier +1.", "warn");
+    }
+
+    this.fillActiveSlots();
+
+    if (!this.activeScenarios.length) {
+      this.dayRunning = false;
+      this.pushLog("Aucun scenario genere pour ce jour.", "danger");
+      return;
+    }
+
+    this.ui.startDayBtn.textContent = "Journee en cours";
+    this.pushLog(
+      `${this.level.name}: ${this.level.maxConcurrentClients} client(s) simultane(s).`
     );
 
-    if (this.timeUp) {
-      ctx.fillStyle = "#8f2d2d";
-      ctx.font = "bold 16px Trebuchet MS";
-      ctx.fillText("Temps couture ecoule", 174, 160);
-    }
-
-    if (this.completed) {
-      ctx.fillStyle = "#2f6b45";
-      ctx.font = "bold 16px Trebuchet MS";
-      ctx.fillText("Couture terminee", 198, 160);
-    }
-  }
-}
-
-const scoreSystem = createScoreSystem({
-  score: 0,
-  reputation: 50,
-});
-
-const inventory = new InventoryManager();
-const diagnosticBoard = new DiagnosticZoneBoard(ui.diagnosticCanvas, getDiagnosticZones());
-const stitchMiniGame = new StitchPrecisionMiniGame(ui.stitchCanvas);
-const workshopCtx = ui.atelierCanvas.getContext("2d");
-
-const state = {
-  day: 1,
-  mode: "idle",
-  timerEnabled: true,
-  clients: [],
-  dayQueue: [],
-  queueIndex: 0,
-  currentScenario: null,
-  hoveredZoneId: null,
-  visualClockMs: 0,
-  rafId: 0,
-  previousTime: performance.now(),
-};
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function safeText(text) {
-  return String(text || "").replace(/[<>]/g, "");
-}
-
-function formatResourceSummary(resources = {}) {
-  return RESOURCE_KEYS.filter((key) => Number(resources[key]) > 0)
-    .map((key) => `${RESOURCE_LABELS[key]}:${resources[key]}`)
-    .join(" | ");
-}
-
-function pushLog(message, tone = "") {
-  const entry = document.createElement("li");
-  entry.textContent = `J${state.day} - ${message}`;
-  if (tone) {
-    entry.classList.add(`status-${tone}`);
+    this.renderAll();
   }
 
-  ui.eventLog.prepend(entry);
-
-  while (ui.eventLog.children.length > 12) {
-    ui.eventLog.removeChild(ui.eventLog.lastChild);
-  }
-}
-
-function renderHud() {
-  const scoreState = scoreSystem.getState();
-  ui.dayValue.textContent = String(state.day);
-  ui.scoreValue.textContent = String(scoreState.score);
-  ui.reputationValue.textContent = String(scoreState.reputation);
-  ui.streakValue.textContent = String(scoreState.streak);
-  ui.timerState.textContent = state.timerEnabled ? "ON" : "OFF";
-  ui.timerToggle.checked = state.timerEnabled;
-}
-
-function renderQueue() {
-  const remaining = Math.max(0, state.dayQueue.length - state.queueIndex);
-  ui.queueValue.textContent = `File: ${remaining}`;
-}
-
-function renderInventory() {
-  const snapshot = inventory.getStockSnapshot();
-  ui.inventoryGrid.innerHTML = "";
-
-  RESOURCE_KEYS.forEach((resource) => {
-    const amount = snapshot[resource] || 0;
-    const item = document.createElement("article");
-    item.className = "inventory-item";
-
-    if (amount <= 0) {
-      item.classList.add("empty");
-    } else if (amount <= 1) {
-      item.classList.add("low");
+  canMoveToRepair(scenario) {
+    if (!scenario) {
+      return false;
     }
 
-    item.innerHTML = `
-      <h4>${RESOURCE_LABELS[resource]}</h4>
-      <p>${amount}</p>
+    const hasCoreZone = scenario.selectedZoneId === scenario.problem.correctZoneId;
+    const enoughClues = scenario.discoveredClues.length >= scenario.problem.requiredClues;
+    const enoughExploration = scenario.inspectedZoneIds.length >= 4;
+
+    return hasCoreZone || enoughClues || enoughExploration;
+  }
+
+  inspectZone(zoneId) {
+    const scenario = this.getSelectedScenario();
+
+    if (!scenario || scenario.phase !== "diagnostic") {
+      return;
+    }
+
+    if (scenario.inspectedZoneIds.includes(zoneId)) {
+      this.ui.diagnosticFeedback.textContent = "Cette zone a deja ete inspectee.";
+      return;
+    }
+
+    scenario.inspectedZoneIds.push(zoneId);
+
+    const answer = resolveZoneInspection(scenario.problem, zoneId);
+    this.ui.diagnosticFeedback.textContent = answer.text;
+
+    if (answer.useful && !scenario.discoveredClues.includes(answer.text)) {
+      scenario.discoveredClues.push(answer.text);
+    }
+
+    if (answer.primaryMatch) {
+      scenario.selectedZoneId = zoneId;
+    }
+
+    if (answer.primaryMatch) {
+      this.pushLog(`Zone critique identifiee pour ${scenario.client.name}.`);
+    }
+
+    this.renderAll();
+  }
+
+  moveToRepair() {
+    const scenario = this.getSelectedScenario();
+    if (!scenario || scenario.phase !== "diagnostic") {
+      return;
+    }
+
+    scenario.phase = "repair";
+    this.ui.diagnosticFeedback.textContent =
+      "Diagnostic termine. Choisissez la reparation adaptee.";
+
+    this.pushLog(`Passage en reparation pour ${scenario.client.name}.`);
+    this.renderAll();
+  }
+
+  selectRepair(repairId) {
+    const scenario = this.getSelectedScenario();
+    if (!scenario || scenario.phase !== "repair") {
+      return;
+    }
+
+    scenario.selectedRepairId = repairId;
+    this.renderAll();
+  }
+
+  launchStitchMiniGame(scenario) {
+    this.stitchScenarioId = scenario.id;
+    scenario.phase = "stitching";
+
+    this.stitchMiniGame.start();
+    this.ui.stitchingPanel.classList.remove("hidden");
+
+    this.ui.resultBox.classList.remove("success", "fail");
+    this.ui.resultBox.textContent =
+      "Mini-jeu couture actif: cliquez les reperes avec precision.";
+
+    this.pushLog(`Mini-jeu couture lance pour ${scenario.client.name}.`);
+    this.renderStitchStats();
+    this.renderAll();
+  }
+
+  applyLevelFromXp() {
+    const previous = this.level;
+    this.level = getLevelByXp(this.player.xp);
+
+    if (previous.id !== this.level.id) {
+      this.pushLog(`Nouveau niveau atteint: ${this.level.name}.`, "warn");
+
+      if (this.dayRunning) {
+        this.fillActiveSlots();
+      }
+    }
+  }
+
+  completeScenarioRepair(scenario, stitchResult = null) {
+    const selectedRepair = getRepairById(scenario.selectedRepairId);
+    if (!selectedRepair) {
+      this.ui.resultBox.classList.remove("success", "fail");
+      this.ui.resultBox.textContent = "Selectionnez une reparation avant validation.";
+      return;
+    }
+
+    if (this.level.inventoryEnabled && !this.inventory.canConsume(selectedRepair.resources)) {
+      const missing = this.inventory.getMissingResources(selectedRepair.resources);
+      const inventoryPenalty = this.player.applyInventoryBlockPenalty();
+
+      this.ui.resultBox.classList.remove("success");
+      this.ui.resultBox.classList.add("fail");
+      this.ui.resultBox.textContent =
+        `Stock vide: reparation impossible (${missing.join(", ")}). Reputation ${inventoryPenalty.reputationDelta}.`;
+
+      this.pushLog("Stock insuffisant: intervention bloquee.", "danger");
+      this.renderAll();
+      return;
+    }
+
+    if (this.level.inventoryEnabled) {
+      this.inventory.consume(selectedRepair.resources);
+    }
+
+    const needsComplexFlow = this.level.shouldUseComplexRepair(
+      selectedRepair,
+      scenario.problem
+    );
+
+    let success = scenario.selectedRepairId === scenario.problem.correctRepair;
+
+    if (needsComplexFlow) {
+      success = success && Boolean(stitchResult?.completed);
+    }
+
+    const elapsedSeconds = this.level.timerEnabled
+      ? Math.floor(scenario.elapsedMs / 1000)
+      : 0;
+
+    const timeSpent = elapsedSeconds + selectedRepair.timeCost;
+
+    let outcome;
+
+    if (success) {
+      const perfectRepair = Boolean(stitchResult?.perfect) || (
+        !needsComplexFlow &&
+        scenario.selectedZoneId === scenario.problem.correctZoneId &&
+        scenario.discoveredClues.length >= scenario.problem.requiredClues
+      );
+
+      outcome = this.player.applySuccessfulRepair({
+        baseScore: scenario.problem.baseScore,
+        timeSpent,
+        timeLimit: scenario.timeLimit,
+        cluesFound: scenario.discoveredClues.length,
+        cluesRequired: scenario.problem.requiredClues,
+        perfectRepair,
+        demandingClient: scenario.demanding,
+      });
+
+      scenario.resultTone = "success";
+      scenario.resultText = `Succes. +${outcome.deltaScore} points, +${outcome.xpGained} XP.${outcome.perfectBonus ? " Reparation parfaite." : ""} Conseil: ${scenario.problem.tip}`;
+    } else {
+      outcome = this.player.applyWrongDiagnostic({
+        baseScore: scenario.problem.baseScore,
+        penaltyMultiplier: this.level.reputationPenaltyMultiplier,
+      });
+
+      scenario.resultTone = "fail";
+      scenario.resultText = `Mauvais diagnostic. ${outcome.deltaScore} points, reputation ${outcome.reputationDelta}. Regle appliquee: -10 (multipliee au niveau 3).`;
+    }
+
+    scenario.outcome = outcome;
+    scenario.finished = true;
+    scenario.phase = "result";
+
+    this.stitchScenarioId = null;
+    this.ui.stitchingPanel.classList.add("hidden");
+    this.stitchMiniGame.reset();
+
+    this.applyLevelFromXp();
+
+    if (this.player.reputation <= 0) {
+      this.gameOver = true;
+      this.dayRunning = false;
+      this.pushLog("Reputation a zero: fermeture temporaire.", "danger");
+    } else if (outcome.success) {
+      this.pushLog(`Client satisfait: ${scenario.client.name}.`);
+    } else {
+      this.pushLog(`Client mecontent: ${scenario.client.name}.`, "warn");
+    }
+
+    this.renderAll();
+  }
+
+  validateRepair() {
+    const scenario = this.getSelectedScenario();
+    if (!scenario || scenario.phase !== "repair") {
+      return;
+    }
+
+    const selectedRepair = getRepairById(scenario.selectedRepairId);
+    if (!selectedRepair) {
+      this.ui.resultBox.classList.remove("success", "fail");
+      this.ui.resultBox.textContent = "Selectionnez une reparation avant validation.";
+      return;
+    }
+
+    const needsComplexFlow = this.level.shouldUseComplexRepair(
+      selectedRepair,
+      scenario.problem
+    );
+
+    if (needsComplexFlow) {
+      this.launchStitchMiniGame(scenario);
+      return;
+    }
+
+    this.completeScenarioRepair(scenario, null);
+  }
+
+  finishStitchMiniGame() {
+    if (!this.stitchScenarioId) {
+      return;
+    }
+
+    const scenario = this.activeScenarios.find((entry) => entry.id === this.stitchScenarioId);
+    if (!scenario) {
+      return;
+    }
+
+    const stitchResult = this.stitchMiniGame.finalizeResult();
+    scenario.stitchResult = stitchResult;
+    this.completeScenarioRepair(scenario, stitchResult);
+  }
+
+  applyTimeoutToScenario(scenario) {
+    if (!scenario || scenario.finished || !this.level.timerEnabled) {
+      return;
+    }
+
+    scenario.finished = true;
+    scenario.phase = "result";
+
+    const outcome = this.player.applyTimeoutPenalty({
+      penaltyMultiplier: this.level.reputationPenaltyMultiplier,
+    });
+
+    scenario.outcome = outcome;
+    scenario.resultTone = "fail";
+    scenario.resultText =
+      `Temps ecoule. ${outcome.deltaScore} points, reputation ${outcome.reputationDelta}.`;
+
+    if (this.stitchScenarioId === scenario.id) {
+      this.stitchScenarioId = null;
+      this.ui.stitchingPanel.classList.add("hidden");
+      this.stitchMiniGame.reset();
+    }
+
+    if (this.player.reputation <= 0) {
+      this.gameOver = true;
+      this.dayRunning = false;
+      this.pushLog("Reputation epuisee apres timeout.", "danger");
+    } else {
+      this.pushLog(`Temps depasse pour ${scenario.client.name}.`, "warn");
+    }
+  }
+
+  nextClient() {
+    if (this.gameOver) {
+      this.reset();
+      return;
+    }
+
+    const scenario = this.getSelectedScenario();
+    if (!scenario || !scenario.finished) {
+      return;
+    }
+
+    this.activeScenarios = this.activeScenarios.filter((entry) => entry.id !== scenario.id);
+
+    if (this.stitchScenarioId === scenario.id) {
+      this.stitchScenarioId = null;
+      this.ui.stitchingPanel.classList.add("hidden");
+      this.stitchMiniGame.reset();
+    }
+
+    this.fillActiveSlots();
+
+    if (!this.activeScenarios.length && this.waitingQueue.length === 0) {
+      this.dayRunning = false;
+      this.day += 1;
+      this.selectedScenarioId = null;
+      this.ui.startDayBtn.textContent = `Demarrer le jour ${this.day}`;
+      this.pushLog("Journee terminee. Passez au jour suivant.");
+    }
+
+    if (!this.selectedScenarioId && this.activeScenarios.length > 0) {
+      this.selectedScenarioId = this.activeScenarios[0].id;
+    }
+
+    this.renderAll();
+  }
+
+  manualRestock() {
+    if (!this.level.inventoryEnabled) {
+      this.pushLog("Inventaire desactive a ce niveau.", "warn");
+      return;
+    }
+
+    this.inventory.restock({ semelles: 1, fil: 1, cuir: 1, colle: 1 });
+    this.pushLog("Reassort manuel effectue (+1).", "warn");
+    this.renderAll();
+  }
+
+  selectScenario(scenarioId) {
+    const exists = this.activeScenarios.some((scenario) => scenario.id === scenarioId);
+    if (!exists) {
+      return;
+    }
+
+    this.selectedScenarioId = scenarioId;
+    this.renderAll();
+  }
+
+  reset() {
+    this.player.reset({
+      score: 0,
+      reputation: 50,
+      xp: 0,
+      streak: 0,
+      resolvedClients: 0,
+      failedClients: 0,
+    });
+
+    this.level = getLevelByXp(0);
+    this.inventory.reset();
+
+    this.day = 1;
+    this.waitingQueue = [];
+    this.activeScenarios = [];
+    this.selectedScenarioId = null;
+    this.stitchScenarioId = null;
+    this.hoveredZoneId = null;
+    this.dayRunning = false;
+    this.gameOver = false;
+
+    this.ui.startDayBtn.textContent = "Demarrer la journee";
+    this.ui.stitchingPanel.classList.add("hidden");
+    this.stitchMiniGame.reset();
+
+    this.pushLog("Progression reinitialisee.", "warn");
+    this.renderAll();
+  }
+
+  renderHud() {
+    const playerState = this.player.getState();
+
+    this.ui.levelName.textContent = this.level.name;
+    this.ui.dayValue.textContent = String(this.day);
+    this.ui.scoreValue.textContent = String(playerState.score);
+    this.ui.reputationValue.textContent = String(playerState.reputation);
+    this.ui.streakValue.textContent = String(playerState.streak);
+  }
+
+  renderProgress() {
+    const playerState = this.player.getState();
+    const currentXp = playerState.xp;
+
+    this.ui.xpValue.textContent = `XP: ${currentXp}`;
+
+    if (this.level.xpToNext == null) {
+      this.ui.xpFill.style.width = "100%";
+      this.ui.xpNextLabel.textContent = "Niveau maximum atteint";
+      return;
+    }
+
+    const min = this.level.minXp;
+    const max = this.level.xpToNext;
+    const ratio = clamp((currentXp - min) / Math.max(1, max - min), 0, 1);
+
+    this.ui.xpFill.style.width = `${Math.round(ratio * 100)}%`;
+    this.ui.xpNextLabel.textContent = `Prochain niveau: ${max} XP`;
+  }
+
+  renderQueue() {
+    this.ui.queueValue.textContent = `En attente: ${this.waitingQueue.length}`;
+  }
+
+  renderActiveClients() {
+    this.ui.activeClients.innerHTML = "";
+
+    if (!this.activeScenarios.length) {
+      return;
+    }
+
+    this.activeScenarios.forEach((scenario) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "client-tab";
+      button.dataset.scenarioId = scenario.id;
+
+      const stateLabel =
+        scenario.phase === "result"
+          ? "pret"
+          : scenario.phase === "repair"
+            ? "reparation"
+            : scenario.phase === "stitching"
+              ? "couture"
+              : "diagnostic";
+
+      button.textContent = `${scenario.client.name} - ${stateLabel}${scenario.demanding ? " *" : ""}`;
+
+      if (scenario.id === this.selectedScenarioId) {
+        button.classList.add("active");
+      }
+
+      this.ui.activeClients.appendChild(button);
+    });
+  }
+
+  renderClientCard() {
+    const scenario = this.getSelectedScenario();
+
+    if (!scenario) {
+      this.setClientWaitingState(
+        this.dayRunning
+          ? "Aucun client actif. Attendez le prochain passage." 
+          : "Cliquez sur Demarrer la journee pour accueillir le premier client."
+      );
+      return;
+    }
+
+    const selectedZoneLabel = scenario.selectedZoneId
+      ? getDiagnosticZoneById(scenario.selectedZoneId)?.label || "Inconnue"
+      : "Aucune";
+
+    this.ui.clientCard.classList.remove("empty-state");
+    this.ui.clientCard.innerHTML = `
+      <h3>${safeText(scenario.client.name)} - ${safeText(scenario.client.shoeType)}</h3>
+      <p><strong>Profil:</strong> ${safeText(scenario.client.profile)}</p>
+      <p><strong>Urgence:</strong> ${safeText(scenario.client.urgency)}</p>
+      <p><strong>Demande:</strong> ${safeText(scenario.client.quote)}</p>
+      <p><strong>Symptome:</strong> ${safeText(scenario.problem.symptom)}</p>
+      <p><strong>Zone suspecte:</strong> ${safeText(selectedZoneLabel)}</p>
+      <p><strong>Niveau client:</strong> ${scenario.demanding ? "Exigeant" : "Standard"}</p>
     `;
-
-    ui.inventoryGrid.appendChild(item);
-  });
-}
-
-function setClientWaitingState(message) {
-  ui.clientCard.classList.add("empty-state");
-  ui.clientCard.innerHTML = `<p>${safeText(message)}</p>`;
-}
-
-function renderCurrentClientCard() {
-  const scenario = state.currentScenario;
-
-  if (!scenario) {
-    setClientWaitingState(
-      "Aucun client en cours. Lancez une nouvelle journee pour continuer."
-    );
-    return;
   }
 
-  const selectedZoneLabel = scenario.selectedZoneId
-    ? getDiagnosticZoneById(scenario.selectedZoneId)?.label || "Inconnue"
-    : "Aucune";
+  renderDiagnosticProgress() {
+    const scenario = this.getSelectedScenario();
 
-  ui.clientCard.classList.remove("empty-state");
-  ui.clientCard.innerHTML = `
-    <h3>${safeText(scenario.client.name)} - ${safeText(scenario.client.shoeType)}</h3>
-    <p><strong>Profil:</strong> ${safeText(scenario.client.profile)}</p>
-    <p><strong>Urgence:</strong> ${safeText(scenario.client.urgency)}</p>
-    <p><strong>Demande:</strong> ${safeText(scenario.client.quote)}</p>
-    <p><strong>Symptome:</strong> ${safeText(scenario.problem.symptom)}</p>
-    <p><strong>Zone suspecte:</strong> ${safeText(selectedZoneLabel)}</p>
-  `;
-}
-
-function renderDiagnosticProgress() {
-  const scenario = state.currentScenario;
-  if (!scenario) {
-    ui.diagnosticProgress.textContent = "Indices: 0 / 2";
-    return;
-  }
-
-  const zoneLabel = scenario.selectedZoneId
-    ? getDiagnosticZoneById(scenario.selectedZoneId)?.label || "Inconnue"
-    : "Aucune";
-
-  ui.diagnosticProgress.textContent = `Indices: ${scenario.discoveredClues.length} / ${scenario.problem.requiredClues} | Zone: ${zoneLabel}`;
-}
-
-function renderZoneLegend() {
-  const scenario = state.currentScenario;
-  const inspectedZoneIds = scenario?.inspectedZoneIds || [];
-  ui.zoneLegend.innerHTML = "";
-
-  diagnosticBoard.zones.forEach((zone) => {
-    const pill = document.createElement("span");
-    pill.className = "zone-pill";
-    pill.textContent = zone.label;
-
-    if (inspectedZoneIds.includes(zone.id)) {
-      pill.classList.add("active");
+    if (!scenario) {
+      this.ui.diagnosticProgress.textContent = "Indices: 0 / 2";
+      return;
     }
 
-    if (state.hoveredZoneId === zone.id) {
-      pill.classList.add("hovered");
+    const zoneLabel = scenario.selectedZoneId
+      ? getDiagnosticZoneById(scenario.selectedZoneId)?.label || "Inconnue"
+      : "Aucune";
+
+    this.ui.diagnosticProgress.textContent =
+      `Indices: ${scenario.discoveredClues.length} / ${scenario.problem.requiredClues} | Zone: ${zoneLabel}`;
+  }
+
+  renderTutorial() {
+    const scenario = this.getSelectedScenario();
+
+    if (!this.level.guidedTutorial || !scenario || !this.dayRunning) {
+      this.ui.tutorialBox.textContent =
+        "Tutoriel inactif. La progression automatique ajuste la difficulte.";
+      return;
     }
 
-    ui.zoneLegend.appendChild(pill);
-  });
-}
-
-function renderRepairButtons() {
-  const scenario = state.currentScenario;
-  ui.repairOptions.innerHTML = "";
-
-  REPAIR_OPTIONS.forEach((repair) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "btn choice-btn";
-    button.dataset.repairId = repair.id;
-
-    const stockOk = inventory.canConsume(repair.resources);
-    const baseLabel = `${repair.label} (${repair.timeCost} min)`;
-    const resourceLabel = formatResourceSummary(repair.resources);
-    button.textContent = stockOk
-      ? `${baseLabel} | ${resourceLabel}`
-      : `${baseLabel} | Stock insuffisant`;
-
-    button.title = `${repair.description} - ${resourceLabel}`;
-
-    if (scenario && scenario.selectedRepairId === repair.id) {
-      button.classList.add("active");
-    }
-
-    button.disabled = !scenario || state.mode !== "repair" || !stockOk;
-
-    ui.repairOptions.appendChild(button);
-  });
-
-  const selectedRepair = scenario ? getRepairById(scenario.selectedRepairId) : null;
-  const selectedInStock = selectedRepair
-    ? inventory.canConsume(selectedRepair.resources)
-    : false;
-
-  ui.validateRepairBtn.disabled = !(
-    scenario && state.mode === "repair" && selectedRepair && selectedInStock
-  );
-}
-
-function renderStitchStats() {
-  const snap = stitchMiniGame.getSnapshot();
-  const quality = Math.round(snap.quality * 100);
-
-  ui.stitchStats.textContent = `Precision: ${quality}% | Hits: ${snap.hits}/${Math.max(
-    1,
-    snap.attempts
-  )} | Restant: ${snap.remainingSeconds}s`;
-
-  ui.finishStitchBtn.disabled = !(
-    state.mode === "stitching" && (snap.completed || snap.timeUp)
-  );
-}
-
-function showStitchingPanel(visible) {
-  ui.stitchingPanel.classList.toggle("hidden", !visible);
-}
-
-function resetPanelsForNewClient() {
-  ui.diagnosticFeedback.textContent = "";
-  ui.resultBox.textContent = "";
-  ui.resultBox.classList.remove("success", "fail");
-  ui.toRepairBtn.disabled = true;
-  ui.nextClientBtn.disabled = true;
-  ui.nextClientBtn.textContent = "Client suivant";
-
-  stitchMiniGame.reset();
-  renderStitchStats();
-  showStitchingPanel(false);
-}
-
-function updateTimerBadge() {
-  const scenario = state.currentScenario;
-  if (!scenario) {
-    ui.timerValue.textContent = "Temps: 0s";
-    ui.timerValue.classList.remove("status-warn", "status-danger");
-    return;
+    this.ui.tutorialBox.textContent = this.level.getTutorialText(scenario);
   }
 
-  ui.timerValue.classList.remove("status-warn", "status-danger");
+  renderZoneLegend() {
+    const scenario = this.getSelectedScenario();
+    const inspectedZoneIds = scenario?.inspectedZoneIds || [];
 
-  if (!state.timerEnabled) {
-    ui.timerValue.textContent = "Temps: OFF";
-    return;
-  }
+    this.ui.zoneLegend.innerHTML = "";
 
-  const elapsedSeconds = Math.floor(scenario.elapsedMs / 1000);
-  const remaining = Math.max(0, scenario.timeLimit - elapsedSeconds);
+    this.diagnosticBoard.zones.forEach((zone) => {
+      const chip = document.createElement("span");
+      chip.className = "zone-pill";
+      chip.textContent = zone.label;
 
-  ui.timerValue.textContent = `Temps: ${remaining}s`;
+      if (inspectedZoneIds.includes(zone.id)) {
+        chip.classList.add("active");
+      }
 
-  if (remaining <= 18 && remaining > 8) {
-    ui.timerValue.classList.add("status-warn");
-  }
-  if (remaining <= 8) {
-    ui.timerValue.classList.add("status-danger");
-  }
-}
+      if (zone.id === this.hoveredZoneId) {
+        chip.classList.add("hovered");
+      }
 
-function canMoveToRepair(scenario) {
-  if (!scenario) {
-    return false;
-  }
-
-  const foundCoreZone = scenario.selectedZoneId === scenario.problem.correctZoneId;
-  const enoughClues = scenario.discoveredClues.length >= scenario.problem.requiredClues;
-  const enoughExploration = scenario.inspectedZoneIds.length >= 4;
-
-  return foundCoreZone || enoughClues || enoughExploration;
-}
-
-function renderControlsState() {
-  const scenario = state.currentScenario;
-  ui.startDayBtn.disabled = state.mode !== "idle";
-  ui.toRepairBtn.disabled = !(state.mode === "diagnostic" && canMoveToRepair(scenario));
-  ui.nextClientBtn.disabled = !(state.mode === "result" || state.mode === "gameover");
-
-  renderRepairButtons();
-  renderStitchStats();
-}
-
-function setMode(nextMode) {
-  state.mode = nextMode;
-  renderControlsState();
-}
-
-function showScenario(index) {
-  if (index >= state.dayQueue.length) {
-    state.currentScenario = null;
-    state.hoveredZoneId = null;
-    setMode("idle");
-    state.day += 1;
-
-    ui.startDayBtn.textContent = `Demarrer le jour ${state.day}`;
-    ui.diagnosticFeedback.textContent = "";
-    ui.resultBox.classList.remove("success", "fail");
-    ui.resultBox.textContent =
-      "Journee terminee. Relisez les conseils avant de reprendre.";
-
-    renderHud();
-    renderQueue();
-    renderInventory();
-    renderDiagnosticProgress();
-    renderZoneLegend();
-    updateTimerBadge();
-    setClientWaitingState(`Journee terminee. Pret pour le jour ${state.day}.`);
-
-    pushLog("Journee terminee. L'atelier prepare la suite.");
-    return;
-  }
-
-  state.queueIndex = index;
-  state.currentScenario = state.dayQueue[index];
-
-  state.currentScenario.elapsedMs = 0;
-  state.currentScenario.inspectedZoneIds = [];
-  state.currentScenario.discoveredClues = [];
-  state.currentScenario.selectedZoneId = null;
-  state.currentScenario.selectedRepairId = null;
-  state.currentScenario.stitchResult = null;
-
-  state.hoveredZoneId = null;
-
-  resetPanelsForNewClient();
-  renderCurrentClientCard();
-  renderDiagnosticProgress();
-  renderZoneLegend();
-  renderQueue();
-  updateTimerBadge();
-
-  setMode("diagnostic");
-  pushLog(`Nouveau client: ${state.currentScenario.client.name}.`);
-}
-
-function startDay() {
-  if (!state.clients.length) {
-    pushLog("Impossible de demarrer: la base clients est vide.", "danger");
-    return;
-  }
-
-  // Light daily refill so inventory remains part of the strategy.
-  inventory.restock({ semelles: 1, fil: 1, cuir: 1, colle: 1 });
-
-  state.dayQueue = createDayQueue(state.clients, state.day);
-  state.queueIndex = 0;
-
-  if (!state.dayQueue.length) {
-    pushLog("Aucun scenario genere pour cette journee.", "danger");
-    return;
-  }
-
-  ui.startDayBtn.textContent = "Journee en cours";
-  renderInventory();
-  pushLog("Reassort quotidien effectue (+1 par ressource).", "warn");
-  showScenario(0);
-}
-
-function inspectZone(zoneId) {
-  const scenario = state.currentScenario;
-
-  if (!scenario || state.mode !== "diagnostic") {
-    return;
-  }
-
-  if (scenario.inspectedZoneIds.includes(zoneId)) {
-    ui.diagnosticFeedback.textContent = "Cette zone a deja ete inspectee.";
-    return;
-  }
-
-  scenario.inspectedZoneIds.push(zoneId);
-
-  const answer = resolveZoneInspection(scenario.problem, zoneId);
-  ui.diagnosticFeedback.textContent = answer.text;
-
-  if (answer.useful && !scenario.discoveredClues.includes(answer.text)) {
-    scenario.discoveredClues.push(answer.text);
-  }
-
-  if (answer.primaryMatch) {
-    scenario.selectedZoneId = zoneId;
-  }
-
-  renderCurrentClientCard();
-  renderDiagnosticProgress();
-  renderZoneLegend();
-  renderControlsState();
-
-  if (answer.primaryMatch) {
-    pushLog("Zone critique du diagnostic identifiee.");
-  } else if (answer.useful) {
-    pushLog("Indice secondaire trouve lors du diagnostic.");
-  } else {
-    pushLog("Zone analysee, sans indice decisif.");
-  }
-}
-
-function moveToRepair() {
-  if (!state.currentScenario || state.mode !== "diagnostic") {
-    return;
-  }
-
-  setMode("repair");
-  ui.diagnosticFeedback.textContent =
-    "Diagnostic clos. Choisissez l'intervention adaptee a la panne.";
-
-  pushLog("Passage en zone reparation.");
-}
-
-function selectRepair(repairId) {
-  const scenario = state.currentScenario;
-  if (!scenario || state.mode !== "repair") {
-    return;
-  }
-
-  scenario.selectedRepairId = repairId;
-  const repair = getRepairById(repairId);
-
-  if (repair?.requiresMiniGame) {
-    ui.resultBox.classList.remove("success", "fail");
-    ui.resultBox.textContent =
-      "Cette intervention inclut un mini-jeu couture de precision souris.";
-  }
-
-  renderRepairButtons();
-}
-
-function renderOutcome(outcome, scenario, repair, options = {}) {
-  const { timedOut = false, stitchResult = null } = options;
-
-  ui.resultBox.classList.remove("success", "fail");
-
-  const expectedRepair = getRepairById(scenario.problem.correctRepair);
-  let message = "";
-
-  if (timedOut) {
-    ui.resultBox.classList.add("fail");
-    message = `Temps ecoule. Score ${outcome.deltaScore}, reputation ${outcome.reputationDelta}. Reparation attendue: ${expectedRepair?.label || "inconnue"}.`;
-  } else if (outcome.success) {
-    ui.resultBox.classList.add("success");
-
-    const perfectChunk = outcome.perfectBonus
-      ? ` Reparation parfaite: +${outcome.perfectBonus} points.`
-      : "";
-
-    const stitchChunk = stitchResult
-      ? ` Precision couture: ${Math.round(stitchResult.quality * 100)}%.`
-      : "";
-
-    message = `Succes. ${repair?.label || "Intervention"} validee. +${outcome.deltaScore} points, reputation ${outcome.reputationDelta >= 0 ? "+" : ""}${outcome.reputationDelta}.${perfectChunk}${stitchChunk} Conseil: ${scenario.problem.tip}`;
-  } else {
-    ui.resultBox.classList.add("fail");
-    message = `Mauvais diagnostic. ${repair?.label || "Intervention"} n'etait pas adaptee. ${outcome.deltaScore} points, reputation ${outcome.reputationDelta} (regle -10). Reparation correcte: ${expectedRepair?.label || "inconnue"}.`;
-  }
-
-  ui.resultBox.textContent = message;
-}
-
-function completeRepairValidation(selectedRepair, stitchResult = null) {
-  const scenario = state.currentScenario;
-  if (!scenario) {
-    return;
-  }
-
-  if (!inventory.consume(selectedRepair.resources)) {
-    const missing = inventory.getMissingResources(selectedRepair.resources);
-    ui.resultBox.classList.remove("success");
-    ui.resultBox.classList.add("fail");
-    ui.resultBox.textContent = `Stock vide ou insuffisant: reparation impossible (${missing.join(", " )}).`;
-    pushLog("Reparation bloquee: stock insuffisant.", "danger");
-    renderRepairButtons();
-    return;
-  }
-
-  renderInventory();
-
-  const success = scenario.selectedRepairId === scenario.problem.correctRepair;
-  const elapsedSeconds = state.timerEnabled ? Math.floor(scenario.elapsedMs / 1000) : 0;
-  const timeSpent = elapsedSeconds + (selectedRepair?.timeCost || 10);
-
-  let outcome;
-
-  if (success) {
-    const perfectRepair = Boolean(stitchResult?.perfect);
-
-    outcome = scoreSystem.applySuccessfulRepair({
-      baseScore: scenario.problem.baseScore,
-      timeSpent,
-      timeLimit: scenario.timeLimit,
-      cluesFound: scenario.discoveredClues.length,
-      cluesRequired: scenario.problem.requiredClues,
-      perfectRepair,
-    });
-
-    if (scenario.discoveredClues.length >= scenario.problem.requiredClues) {
-      scoreSystem.addEducationalBonus(8);
-      pushLog("Bonus pedagogique accorde pour diagnostic complet.");
-    }
-
-    if (perfectRepair) {
-      pushLog("Reparation parfaite: bonus de precision applique.");
-    }
-  } else {
-    // Explicit business rule: wrong diagnostic => -10 reputation.
-    outcome = scoreSystem.applyWrongDiagnostic({
-      baseScore: scenario.problem.baseScore,
+      this.ui.zoneLegend.appendChild(chip);
     });
   }
 
-  renderOutcome(outcome, scenario, selectedRepair, { stitchResult });
-  renderHud();
+  renderInventory() {
+    this.ui.inventoryGrid.innerHTML = "";
 
-  if (scoreSystem.getState().reputation <= 0) {
-    setMode("gameover");
-    ui.nextClientBtn.disabled = false;
-    ui.nextClientBtn.textContent = "Recommencer";
-    pushLog("Reputation a zero: fermeture temporaire de l'atelier.", "danger");
-    return;
+    if (!this.level.inventoryEnabled) {
+      const item = document.createElement("article");
+      item.className = "inventory-item";
+      item.innerHTML = "<h4>Inventaire</h4><p>OFF</p>";
+      this.ui.inventoryGrid.appendChild(item);
+      return;
+    }
+
+    const snapshot = this.inventory.getStockSnapshot();
+
+    RESOURCE_KEYS.forEach((resource) => {
+      const amount = snapshot[resource] || 0;
+      const item = document.createElement("article");
+      item.className = "inventory-item";
+
+      if (amount <= 0) {
+        item.classList.add("empty");
+      } else if (amount <= 1) {
+        item.classList.add("low");
+      }
+
+      item.innerHTML = `<h4>${RESOURCE_LABELS[resource]}</h4><p>${amount}</p>`;
+      this.ui.inventoryGrid.appendChild(item);
+    });
   }
 
-  setMode("result");
-  ui.nextClientBtn.disabled = false;
+  renderRepairButtons() {
+    const scenario = this.getSelectedScenario();
+    const isRepairPhase = scenario && scenario.phase === "repair";
 
-  if (outcome.success) {
-    pushLog("Client satisfait, reputation en hausse.");
-  } else {
-    pushLog("Client mecontent: diagnostic incorrect.", "warn");
-  }
-}
+    this.ui.repairOptions.innerHTML = "";
 
-function startStitchMiniGame() {
-  if (!state.currentScenario || state.mode !== "repair") {
-    return;
-  }
+    REPAIR_OPTIONS.forEach((repair) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn choice-btn";
+      button.dataset.repairId = repair.id;
 
-  stitchMiniGame.start();
-  showStitchingPanel(true);
-  setMode("stitching");
-  renderStitchStats();
+      const resourceLabel = formatResourceSummary(repair.resources);
+      const stockOk = this.level.inventoryEnabled
+        ? this.inventory.canConsume(repair.resources)
+        : true;
 
-  ui.resultBox.classList.remove("success", "fail");
-  ui.resultBox.textContent =
-    "Mini-jeu couture lance. Cliquez chaque repere avec precision.";
+      button.textContent = stockOk
+        ? `${repair.label} (${repair.timeCost} min) | ${resourceLabel}`
+        : `${repair.label} (${repair.timeCost} min) | Stock insuffisant`;
 
-  pushLog("Mini-jeu couture en cours.");
-}
+      button.title = repair.description;
 
-function finishStitchMiniGame() {
-  if (!state.currentScenario || state.mode !== "stitching") {
-    return;
-  }
+      if (scenario && scenario.selectedRepairId === repair.id) {
+        button.classList.add("active");
+      }
 
-  const selectedRepair = getRepairById(state.currentScenario.selectedRepairId);
-  if (!selectedRepair) {
-    return;
-  }
+      button.disabled = !isRepairPhase || !stockOk;
+      this.ui.repairOptions.appendChild(button);
+    });
 
-  const stitchResult = stitchMiniGame.finalizeResult();
-  state.currentScenario.stitchResult = stitchResult;
+    const selectedRepair = scenario ? getRepairById(scenario.selectedRepairId) : null;
+    const selectedInStock = selectedRepair
+      ? !this.level.inventoryEnabled || this.inventory.canConsume(selectedRepair.resources)
+      : false;
 
-  showStitchingPanel(false);
-  setMode("repair");
-
-  completeRepairValidation(selectedRepair, stitchResult);
-}
-
-function validateRepair() {
-  const scenario = state.currentScenario;
-  if (!scenario || state.mode !== "repair") {
-    return;
+    this.ui.validateRepairBtn.disabled = !(isRepairPhase && selectedRepair && selectedInStock);
   }
 
-  const selectedRepair = getRepairById(scenario.selectedRepairId);
-  if (!selectedRepair) {
-    ui.resultBox.classList.remove("success", "fail");
-    ui.resultBox.textContent = "Selectionnez une reparation avant validation.";
-    return;
+  renderTimerBadge() {
+    const scenario = this.getSelectedScenario();
+
+    this.ui.timerValue.classList.remove("status-warn", "status-danger");
+
+    if (!scenario) {
+      this.ui.timerValue.textContent = "Temps: 0s";
+      return;
+    }
+
+    if (!this.level.timerEnabled) {
+      this.ui.timerValue.textContent = "Temps: OFF";
+      return;
+    }
+
+    const elapsedSeconds = Math.floor(scenario.elapsedMs / 1000);
+    const remaining = Math.max(0, scenario.timeLimit - elapsedSeconds);
+
+    this.ui.timerValue.textContent = `Temps: ${remaining}s`;
+
+    if (remaining <= 18 && remaining > 8) {
+      this.ui.timerValue.classList.add("status-warn");
+    }
+
+    if (remaining <= 8) {
+      this.ui.timerValue.classList.add("status-danger");
+    }
   }
 
-  if (!inventory.canConsume(selectedRepair.resources)) {
-    const missing = inventory.getMissingResources(selectedRepair.resources);
-    ui.resultBox.classList.remove("success");
-    ui.resultBox.classList.add("fail");
-    ui.resultBox.textContent = `Stock vide ou insuffisant: reparation impossible (${missing.join(", " )}).`;
-    pushLog("Reparation impossible: inventaire insuffisant.", "danger");
-    return;
+  renderResultBox() {
+    const scenario = this.getSelectedScenario();
+
+    this.ui.resultBox.classList.remove("success", "fail");
+
+    if (!scenario) {
+      this.ui.resultBox.textContent = "";
+      return;
+    }
+
+    this.ui.resultBox.textContent = scenario.resultText || "";
+
+    if (scenario.resultTone) {
+      this.ui.resultBox.classList.add(scenario.resultTone);
+    }
   }
 
-  if (selectedRepair.requiresMiniGame) {
-    startStitchMiniGame();
-    return;
-  }
+  renderStitchStats() {
+    const snap = this.stitchMiniGame.getSnapshot();
+    const quality = Math.round(snap.quality * 100);
 
-  completeRepairValidation(selectedRepair, null);
-}
+    this.ui.stitchStats.textContent =
+      `Precision: ${quality}% | Hits: ${snap.hits}/${Math.max(1, snap.attempts)} | Restant: ${snap.remainingSeconds}s`;
 
-function applyTimeoutOutcome() {
-  if (!state.currentScenario) {
-    return;
-  }
-
-  const outcome = scoreSystem.applyTimeoutPenalty();
-
-  showStitchingPanel(false);
-  stitchMiniGame.reset();
-
-  renderOutcome(outcome, state.currentScenario, null, { timedOut: true });
-  renderHud();
-
-  if (scoreSystem.getState().reputation <= 0) {
-    setMode("gameover");
-    ui.nextClientBtn.disabled = false;
-    ui.nextClientBtn.textContent = "Recommencer";
-    pushLog("Reputation epuisee apres depassement du temps.", "danger");
-    return;
-  }
-
-  setMode("result");
-  ui.nextClientBtn.disabled = false;
-  pushLog("Temps depasse: client perdu.", "warn");
-}
-
-function manualRestock() {
-  inventory.restock({ semelles: 1, fil: 1, cuir: 1, colle: 1 });
-  renderInventory();
-  renderRepairButtons();
-  pushLog("Reassort manuel effectue (+1).", "warn");
-}
-
-function nextClient() {
-  if (state.mode === "gameover") {
-    scoreSystem.reset({ score: 0, reputation: 50, streak: 0 });
-    inventory.reset();
-
-    state.day = 1;
-    state.dayQueue = [];
-    state.queueIndex = 0;
-    state.currentScenario = null;
-    state.hoveredZoneId = null;
-
-    ui.startDayBtn.textContent = "Demarrer la journee";
-    ui.nextClientBtn.textContent = "Client suivant";
-    ui.nextClientBtn.disabled = true;
-    ui.resultBox.textContent = "";
-    ui.diagnosticFeedback.textContent = "";
-
-    showStitchingPanel(false);
-    stitchMiniGame.reset();
-
-    setMode("idle");
-    renderHud();
-    renderQueue();
-    renderInventory();
-    renderDiagnosticProgress();
-    renderZoneLegend();
-    updateTimerBadge();
-    setClientWaitingState(
-      "Atelier reouvert. Cliquez sur Demarrer la journee pour reprendre."
+    const scenario = this.getSelectedScenario();
+    const isActive = Boolean(
+      scenario && scenario.id === this.stitchScenarioId && scenario.phase === "stitching"
     );
 
-    pushLog("Nouvelle partie lancee apres fermeture temporaire.");
-    return;
+    this.ui.finishStitchBtn.disabled = !(isActive && (snap.completed || snap.timeUp));
   }
 
-  if (state.mode !== "result") {
-    return;
+  renderControlStates() {
+    const mode = this.getCurrentMode();
+    const scenario = this.getSelectedScenario();
+
+    this.ui.startDayBtn.disabled = this.dayRunning;
+    this.ui.resetGameBtn.disabled = false;
+
+    this.ui.restockBtn.disabled = !this.level.inventoryEnabled;
+
+    this.ui.toRepairBtn.disabled = !(
+      scenario &&
+      scenario.phase === "diagnostic" &&
+      this.canMoveToRepair(scenario)
+    );
+
+    this.ui.nextClientBtn.disabled = !(this.gameOver || (scenario && scenario.finished));
+    this.ui.nextClientBtn.textContent = this.gameOver ? "Recommencer" : "Client suivant";
+
+    this.ui.diagnosticCanvas.style.pointerEvents =
+      mode === "diagnostic" ? "auto" : "none";
   }
 
-  showScenario(state.queueIndex + 1);
-}
-
-function tick(seconds) {
-  state.visualClockMs += seconds * 1000;
-
-  const scenarioIsActive =
-    state.currentScenario &&
-    (state.mode === "diagnostic" || state.mode === "repair" || state.mode === "stitching");
-
-  if (!scenarioIsActive) {
-    return;
+  renderAll() {
+    this.renderHud();
+    this.renderProgress();
+    this.renderQueue();
+    this.renderActiveClients();
+    this.renderClientCard();
+    this.renderDiagnosticProgress();
+    this.renderTutorial();
+    this.renderZoneLegend();
+    this.renderInventory();
+    this.renderRepairButtons();
+    this.renderTimerBadge();
+    this.renderResultBox();
+    this.renderStitchStats();
+    this.renderControlStates();
   }
 
-  const elapsedDeltaMs = seconds * 1000;
-  state.currentScenario.elapsedMs += elapsedDeltaMs;
+  drawWorkshop() {
+    const ctx = this.workshopCtx;
+    const width = this.ui.atelierCanvas.width;
+    const height = this.ui.atelierCanvas.height;
 
-  if (state.mode === "stitching") {
-    stitchMiniGame.advance(elapsedDeltaMs, state.timerEnabled);
-    renderStitchStats();
-  }
+    ctx.clearRect(0, 0, width, height);
 
-  updateTimerBadge();
+    const bg = ctx.createLinearGradient(0, 0, 0, height);
+    bg.addColorStop(0, "#f9e5bf");
+    bg.addColorStop(1, "#d0a674");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, width, height);
 
-  if (
-    state.timerEnabled &&
-    state.currentScenario.elapsedMs >= state.currentScenario.timeLimit * 1000 &&
-    state.mode !== "result" &&
-    state.mode !== "gameover"
-  ) {
-    applyTimeoutOutcome();
-  }
-}
+    ctx.fillStyle = "#7d5f3b";
+    ctx.fillRect(0, height - 46, width, 46);
 
-function drawWorkshop() {
-  const ctx = workshopCtx;
-  const width = ui.atelierCanvas.width;
-  const height = ui.atelierCanvas.height;
+    ctx.fillStyle = "#5f3f27";
+    ctx.fillRect(85, 108, 285, 16);
+    ctx.fillRect(95, 124, 12, 46);
+    ctx.fillRect(348, 124, 12, 46);
 
-  ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#8f6b44";
+    ctx.fillRect(520, 58, 250, 10);
+    ctx.fillRect(520, 92, 250, 10);
 
-  const bg = ctx.createLinearGradient(0, 0, 0, height);
-  bg.addColorStop(0, "#f9e5bf");
-  bg.addColorStop(1, "#d0a674");
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#c49350";
+    ctx.fillRect(540, 38, 52, 20);
+    ctx.fillRect(614, 38, 52, 20);
+    ctx.fillRect(688, 38, 52, 20);
+    ctx.fillRect(560, 72, 60, 20);
+    ctx.fillRect(640, 72, 72, 20);
 
-  ctx.fillStyle = "#7d5f3b";
-  ctx.fillRect(0, height - 46, width, 46);
+    const waitingClient = Boolean(
+      this.activeScenarios.some((scenario) => !scenario.finished)
+    );
 
-  ctx.fillStyle = "#5f3f27";
-  ctx.fillRect(85, 108, 285, 16);
-  ctx.fillRect(95, 124, 12, 46);
-  ctx.fillRect(348, 124, 12, 46);
+    const blink = Math.floor(this.visualClockMs / 360) % 2 === 0;
 
-  ctx.fillStyle = "#8f6b44";
-  ctx.fillRect(520, 58, 250, 10);
-  ctx.fillRect(520, 92, 250, 10);
+    ctx.fillStyle = waitingClient && blink ? "#2f6b45" : "#3f3428";
+    ctx.beginPath();
+    ctx.ellipse(260, 100, 52, 20, -0.16, 0, Math.PI * 2);
+    ctx.fill();
 
-  ctx.fillStyle = "#c49350";
-  ctx.fillRect(540, 38, 52, 20);
-  ctx.fillRect(614, 38, 52, 20);
-  ctx.fillRect(688, 38, 52, 20);
-  ctx.fillRect(560, 72, 60, 20);
-  ctx.fillRect(640, 72, 72, 20);
-
-  const waitingClient = Boolean(
-    state.currentScenario && (state.mode === "diagnostic" || state.mode === "repair")
-  );
-
-  const blink = Math.floor(state.visualClockMs / 360) % 2 === 0;
-
-  ctx.fillStyle = waitingClient && blink ? "#2f6b45" : "#3f3428";
-  ctx.beginPath();
-  ctx.ellipse(260, 100, 52, 20, -0.16, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#1f2a22";
-  ctx.font = "bold 19px Trebuchet MS";
-  ctx.fillText(`Mode: ${state.mode}`, 25, 33);
-
-  const reputation = scoreSystem.getState().reputation;
-  const repWidth = Math.round((Math.max(0, reputation) / 100) * 180);
-
-  ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
-  ctx.fillRect(24, 44, 180, 16);
-  ctx.fillStyle = reputation > 35 ? "#2f6b45" : "#8f2d2d";
-  ctx.fillRect(24, 44, repWidth, 16);
-  ctx.strokeStyle = "#58462f";
-  ctx.strokeRect(24, 44, 180, 16);
-
-  ctx.fillStyle = "#1f2a22";
-  ctx.font = "14px Trebuchet MS";
-  ctx.fillText(`Timer: ${state.timerEnabled ? "ON" : "OFF"}`, 220, 57);
-
-  if (state.currentScenario) {
-    const elapsed = Math.floor(state.currentScenario.elapsedMs / 1000);
-    const timeText = `Chrono client: ${elapsed}s / ${state.currentScenario.timeLimit}s`;
     ctx.fillStyle = "#1f2a22";
-    ctx.font = "15px Trebuchet MS";
-    ctx.fillText(timeText, 25, 86);
+    ctx.font = "bold 19px Trebuchet MS";
+    ctx.fillText(`Niveau: ${this.level.name}`, 24, 33);
+
+    const rep = this.player.reputation;
+    const repWidth = Math.round((Math.max(0, rep) / 100) * 180);
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+    ctx.fillRect(24, 44, 180, 16);
+    ctx.fillStyle = rep > 35 ? "#2f6b45" : "#8f2d2d";
+    ctx.fillRect(24, 44, repWidth, 16);
+    ctx.strokeStyle = "#58462f";
+    ctx.strokeRect(24, 44, 180, 16);
+
+    ctx.fillStyle = "#1f2a22";
+    ctx.font = "14px Trebuchet MS";
+    ctx.fillText(`Timer: ${this.level.timerEnabled ? "ON" : "OFF"}`, 220, 57);
+
+    const scenario = this.getSelectedScenario();
+    if (scenario) {
+      const elapsed = Math.floor(scenario.elapsedMs / 1000);
+      ctx.font = "15px Trebuchet MS";
+      ctx.fillText(`Client actif: ${scenario.client.name}`, 24, 86);
+      ctx.fillText(`Chrono: ${elapsed}s / ${scenario.timeLimit}s`, 24, 106);
+    }
   }
-}
 
-function drawBoards() {
-  diagnosticBoard.draw({
-    active: Boolean(state.currentScenario && state.mode === "diagnostic"),
-    inspectedZoneIds: state.currentScenario?.inspectedZoneIds || [],
-    hoveredZoneId: state.hoveredZoneId,
-  });
+  drawBoards() {
+    const scenario = this.getSelectedScenario();
 
-  if (state.mode === "stitching") {
-    stitchMiniGame.draw();
+    this.diagnosticBoard.draw({
+      active: Boolean(scenario && scenario.phase === "diagnostic"),
+      inspectedZoneIds: scenario?.inspectedZoneIds || [],
+      hoveredZoneId: this.hoveredZoneId,
+    });
+
+    if (scenario && scenario.phase === "stitching") {
+      this.stitchMiniGame.draw();
+    }
   }
-}
 
-function frame(time) {
-  const deltaSeconds = Math.min(0.1, (time - state.previousTime) / 1000);
-  state.previousTime = time;
+  tick(seconds) {
+    this.visualClockMs += seconds * 1000;
 
-  tick(deltaSeconds);
-  drawWorkshop();
-  drawBoards();
+    if (!this.dayRunning) {
+      return;
+    }
 
-  state.rafId = window.requestAnimationFrame(frame);
-}
+    const deltaMs = seconds * 1000;
 
-function installHooksForTesting() {
-  window.render_game_to_text = () => {
-    const scenario = state.currentScenario;
-    const payload = {
-      coordinateSystem: {
-        workshopCanvas: "origin top-left, x right, y down",
-        diagnosticCanvas: "origin top-left, x right, y down",
-        stitchCanvas: "origin top-left, x right, y down",
-      },
-      mode: state.mode,
-      day: state.day,
-      timerEnabled: state.timerEnabled,
-      queue: {
-        currentIndex: state.queueIndex,
-        total: state.dayQueue.length,
-      },
-      inventory: inventory.getStockSnapshot(),
-      currentClient: scenario
-        ? {
-            name: scenario.client.name,
-            shoeType: scenario.client.shoeType,
-            issue: scenario.problem.title,
-            elapsedSeconds: Math.floor(scenario.elapsedMs / 1000),
-            timeLimitSeconds: scenario.timeLimit,
-            inspectedZoneIds: [...scenario.inspectedZoneIds],
-            selectedZoneId: scenario.selectedZoneId,
-            cluesFound: scenario.discoveredClues.length,
-            selectedRepairId: scenario.selectedRepairId,
-            stitchResult: scenario.stitchResult,
-          }
-        : null,
-      stitching: stitchMiniGame.getSnapshot(),
-      score: scoreSystem.getState(),
+    this.activeScenarios.forEach((scenario) => {
+      if (scenario.finished) {
+        return;
+      }
+
+      if (this.level.timerEnabled) {
+        scenario.elapsedMs += deltaMs;
+
+        if (scenario.elapsedMs >= scenario.timeLimit * 1000) {
+          this.applyTimeoutToScenario(scenario);
+        }
+      }
+    });
+
+    if (this.stitchScenarioId) {
+      this.stitchMiniGame.advance(deltaMs, this.level.timerEnabled);
+      this.renderStitchStats();
+    }
+  }
+
+  frame(time) {
+    const deltaSeconds = Math.min(0.1, (time - this.previousTime) / 1000);
+    this.previousTime = time;
+
+    this.tick(deltaSeconds);
+    this.drawWorkshop();
+    this.drawBoards();
+    this.renderAll();
+
+    this.rafId = window.requestAnimationFrame((next) => this.frame(next));
+  }
+
+  bindEvents() {
+    this.ui.startDayBtn.addEventListener("click", () => this.startDay());
+    this.ui.resetGameBtn.addEventListener("click", () => this.reset());
+    this.ui.toRepairBtn.addEventListener("click", () => this.moveToRepair());
+    this.ui.validateRepairBtn.addEventListener("click", () => this.validateRepair());
+    this.ui.nextClientBtn.addEventListener("click", () => this.nextClient());
+    this.ui.restockBtn.addEventListener("click", () => this.manualRestock());
+    this.ui.finishStitchBtn.addEventListener("click", () => this.finishStitchMiniGame());
+
+    this.ui.activeClients.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-scenario-id]");
+      if (!button) {
+        return;
+      }
+
+      this.selectScenario(button.dataset.scenarioId);
+    });
+
+    this.ui.repairOptions.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-repair-id]");
+      if (!button) {
+        return;
+      }
+
+      this.selectRepair(button.dataset.repairId);
+    });
+
+    this.ui.diagnosticCanvas.addEventListener("mousemove", (event) => {
+      const zone = this.diagnosticBoard.getZoneAtEvent(event);
+      this.hoveredZoneId = zone?.id || null;
+      this.renderZoneLegend();
+      this.drawBoards();
+    });
+
+    this.ui.diagnosticCanvas.addEventListener("mouseleave", () => {
+      this.hoveredZoneId = null;
+      this.renderZoneLegend();
+      this.drawBoards();
+    });
+
+    this.ui.diagnosticCanvas.addEventListener("click", (event) => {
+      const scenario = this.getSelectedScenario();
+      if (!scenario || scenario.phase !== "diagnostic") {
+        return;
+      }
+
+      const zone = this.diagnosticBoard.getZoneAtEvent(event);
+      if (!zone) {
+        this.ui.diagnosticFeedback.textContent =
+          "Cliquez sur une zone coloree de la chaussure.";
+        return;
+      }
+
+      this.inspectZone(zone.id);
+    });
+
+    this.ui.stitchCanvas.addEventListener("mousemove", (event) => {
+      const scenario = this.getSelectedScenario();
+      if (!scenario || scenario.phase !== "stitching") {
+        return;
+      }
+
+      this.stitchMiniGame.handleMove(event);
+      this.renderStitchStats();
+    });
+
+    this.ui.stitchCanvas.addEventListener("click", (event) => {
+      const scenario = this.getSelectedScenario();
+      if (!scenario || scenario.phase !== "stitching") {
+        return;
+      }
+
+      this.stitchMiniGame.handleClick(event);
+      this.renderStitchStats();
+      this.drawBoards();
+    });
+  }
+
+  installHooksForTesting() {
+    window.render_game_to_text = () => {
+      const selected = this.getSelectedScenario();
+
+      return JSON.stringify({
+        coordinateSystem: {
+          workshopCanvas: "origin top-left, x right, y down",
+          diagnosticCanvas: "origin top-left, x right, y down",
+          stitchCanvas: "origin top-left, x right, y down",
+        },
+        mode: this.getCurrentMode(),
+        day: this.day,
+        level: {
+          id: this.level.id,
+          name: this.level.name,
+          timerEnabled: this.level.timerEnabled,
+          maxConcurrentClients: this.level.maxConcurrentClients,
+          inventoryEnabled: this.level.inventoryEnabled,
+          reputationPenaltyMultiplier: this.level.reputationPenaltyMultiplier,
+        },
+        queue: {
+          waiting: this.waitingQueue.length,
+          active: this.activeScenarios.length,
+        },
+        selectedClient: selected
+          ? {
+              id: selected.id,
+              name: selected.client.name,
+              issue: selected.problem.title,
+              phase: selected.phase,
+              elapsedSeconds: Math.floor(selected.elapsedMs / 1000),
+              timeLimitSeconds: selected.timeLimit,
+              inspectedZoneIds: [...selected.inspectedZoneIds],
+              selectedZoneId: selected.selectedZoneId,
+              selectedRepairId: selected.selectedRepairId,
+              finished: selected.finished,
+            }
+          : null,
+        inventory: this.inventory.getStockSnapshot(),
+        stitching: this.stitchMiniGame.getSnapshot(),
+        player: this.player.getState(),
+      });
     };
 
-    return JSON.stringify(payload);
-  };
+    window.advanceTime = (ms) => {
+      const frameMs = 1000 / 60;
+      const steps = Math.max(1, Math.round(ms / frameMs));
 
-  window.advanceTime = (ms) => {
-    const frameMs = 1000 / 60;
-    const steps = Math.max(1, Math.round(ms / frameMs));
+      for (let i = 0; i < steps; i += 1) {
+        this.tick(frameMs / 1000);
+      }
 
-    for (let i = 0; i < steps; i += 1) {
-      tick(frameMs / 1000);
-    }
+      this.drawWorkshop();
+      this.drawBoards();
+      this.renderAll();
+    };
 
-    drawWorkshop();
-    drawBoards();
-  };
-}
+    window.resetCobblerSimulation = () => {
+      this.reset();
+    };
+  }
 
-async function loadClients() {
-  try {
-    const dataUrl = new URL("../data/clients.json", import.meta.url);
-    const response = await fetch(dataUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
+  async init() {
+    this.bindEvents();
+    this.installHooksForTesting();
 
-    const payload = await response.json();
-    state.clients = Array.isArray(payload.clients) ? payload.clients : [];
-
-    if (state.clients.length === 0) {
-      throw new Error("liste clients vide");
-    }
-
-    pushLog(`${state.clients.length} fiches clients chargees.`);
-  } catch (error) {
-    pushLog(
-      `Echec du chargement des clients (${safeText(error.message)}). Lancez via un serveur local ou GitHub Pages.`,
-      "danger"
+    this.setClientWaitingState(
+      "Cliquez sur Demarrer la journee pour accueillir le premier client."
     );
+
+    this.ui.stitchingPanel.classList.add("hidden");
+
+    await this.loadClients();
+
+    this.renderAll();
+    this.drawWorkshop();
+    this.drawBoards();
+
+    if (this.rafId) {
+      window.cancelAnimationFrame(this.rafId);
+    }
+
+    this.previousTime = performance.now();
+    this.rafId = window.requestAnimationFrame((time) => this.frame(time));
   }
 }
 
-function bindUiEvents() {
-  ui.startDayBtn.addEventListener("click", startDay);
-  ui.toRepairBtn.addEventListener("click", moveToRepair);
-  ui.validateRepairBtn.addEventListener("click", validateRepair);
-  ui.nextClientBtn.addEventListener("click", nextClient);
-  ui.restockBtn.addEventListener("click", manualRestock);
-  ui.finishStitchBtn.addEventListener("click", finishStitchMiniGame);
-
-  ui.timerToggle.addEventListener("change", () => {
-    state.timerEnabled = Boolean(ui.timerToggle.checked);
-    renderHud();
-    updateTimerBadge();
-    pushLog(`Timer ${state.timerEnabled ? "active" : "desactive"}.`, "warn");
-  });
-
-  ui.repairOptions.addEventListener("click", (event) => {
-    const target = event.target.closest("button[data-repair-id]");
-    if (!target) {
-      return;
-    }
-
-    selectRepair(target.dataset.repairId);
-  });
-
-  ui.diagnosticCanvas.addEventListener("mousemove", (event) => {
-    const zone = diagnosticBoard.getZoneAtEvent(event);
-    state.hoveredZoneId = zone?.id || null;
-    renderZoneLegend();
-    drawBoards();
-  });
-
-  ui.diagnosticCanvas.addEventListener("mouseleave", () => {
-    state.hoveredZoneId = null;
-    renderZoneLegend();
-    drawBoards();
-  });
-
-  ui.diagnosticCanvas.addEventListener("click", (event) => {
-    if (state.mode !== "diagnostic") {
-      return;
-    }
-
-    const zone = diagnosticBoard.getZoneAtEvent(event);
-    if (!zone) {
-      ui.diagnosticFeedback.textContent = "Cliquez sur une zone coloree de la chaussure.";
-      return;
-    }
-
-    inspectZone(zone.id);
-  });
-
-  ui.stitchCanvas.addEventListener("mousemove", (event) => {
-    if (state.mode !== "stitching") {
-      return;
-    }
-
-    stitchMiniGame.handleMove(event);
-  });
-
-  ui.stitchCanvas.addEventListener("click", (event) => {
-    if (state.mode !== "stitching") {
-      return;
-    }
-
-    stitchMiniGame.handleClick(event);
-    renderStitchStats();
-  });
-}
-
-function init() {
-  bindUiEvents();
-  installHooksForTesting();
-
-  setClientWaitingState(
-    "Cliquez sur Demarrer la journee pour accueillir le premier client."
-  );
-
-  renderHud();
-  renderQueue();
-  renderInventory();
-  renderDiagnosticProgress();
-  renderZoneLegend();
-  renderStitchStats();
-  updateTimerBadge();
-
-  setMode("idle");
-
-  loadClients();
-  drawWorkshop();
-  drawBoards();
-
-  if (state.rafId) {
-    window.cancelAnimationFrame(state.rafId);
-  }
-
-  state.previousTime = performance.now();
-  state.rafId = window.requestAnimationFrame(frame);
-}
-
-init();
+const game = new Game(ui);
+game.init();

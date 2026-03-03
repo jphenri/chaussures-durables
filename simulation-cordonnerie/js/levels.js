@@ -1,4 +1,4 @@
-// Gameplay data and pure helpers for the shoe repair simulation.
+// Gameplay data and level progression helpers.
 
 export const DIAGNOSTIC_ZONES = [
   {
@@ -44,7 +44,7 @@ export const DIAGNOSTIC_ZONES = [
     y: 60,
     w: 132,
     h: 36,
-    fallbackHint: "Les oeillets testees semblent tenir la traction.",
+    fallbackHint: "Les oeillets testes semblent tenir la traction.",
   },
   {
     id: "leather_zone",
@@ -65,6 +65,7 @@ export const REPAIR_OPTIONS = [
     timeCost: 16,
     resources: { semelles: 1, colle: 1, fil: 0, cuir: 0 },
     requiresMiniGame: false,
+    complexity: 1,
   },
   {
     id: "heel_replace",
@@ -73,6 +74,7 @@ export const REPAIR_OPTIONS = [
     timeCost: 18,
     resources: { semelles: 1, colle: 1, fil: 0, cuir: 0 },
     requiresMiniGame: false,
+    complexity: 2,
   },
   {
     id: "restitch",
@@ -81,6 +83,7 @@ export const REPAIR_OPTIONS = [
     timeCost: 14,
     resources: { semelles: 0, colle: 0, fil: 2, cuir: 1 },
     requiresMiniGame: true,
+    complexity: 3,
   },
   {
     id: "dehumidify",
@@ -89,6 +92,7 @@ export const REPAIR_OPTIONS = [
     timeCost: 15,
     resources: { semelles: 0, colle: 1, fil: 0, cuir: 1 },
     requiresMiniGame: false,
+    complexity: 2,
   },
   {
     id: "eyelet_swap",
@@ -97,6 +101,7 @@ export const REPAIR_OPTIONS = [
     timeCost: 12,
     resources: { semelles: 0, colle: 0, fil: 1, cuir: 1 },
     requiresMiniGame: false,
+    complexity: 2,
   },
   {
     id: "condition_leather",
@@ -105,6 +110,7 @@ export const REPAIR_OPTIONS = [
     timeCost: 10,
     resources: { semelles: 0, colle: 0, fil: 0, cuir: 2 },
     requiresMiniGame: false,
+    complexity: 1,
   },
 ];
 
@@ -114,10 +120,12 @@ export const PROBLEM_LIBRARY = {
     symptom: "Bruit sec et decollement en bordure.",
     correctZoneId: "sole_zone",
     correctRepair: "resole",
-    baseTimeLimit: 78,
-    minDay: 1,
-    baseScore: 125,
+    baseTimeLimit: 84,
+    minLevel: 1,
+    baseScore: 120,
     requiredClues: 2,
+    demandingHint: "Client inquiet de perdre de l'adherence en marchant vite.",
+    complexity: 1,
     clueByZoneId: {
       sole_zone: "Un jour apparait entre la tige et la semelle.",
       stitch_zone: "La couture est stable: le probleme vient surtout du collage.",
@@ -130,10 +138,12 @@ export const PROBLEM_LIBRARY = {
     symptom: "Instabilite et glissade a l'arriere.",
     correctZoneId: "heel_zone",
     correctRepair: "heel_replace",
-    baseTimeLimit: 74,
-    minDay: 1,
-    baseScore: 115,
+    baseTimeLimit: 80,
+    minLevel: 1,
+    baseScore: 128,
     requiredClues: 2,
+    demandingHint: "Client exige une correction immediate de l'appui.",
+    complexity: 2,
     clueByZoneId: {
       heel_zone: "Le patin est tasse et l'accroche est asymetrique.",
       sole_zone: "L'usure principale est localisee a l'arriere.",
@@ -146,10 +156,12 @@ export const PROBLEM_LIBRARY = {
     symptom: "Ouverture progressive sur le quartier lateral.",
     correctZoneId: "stitch_zone",
     correctRepair: "restitch",
-    baseTimeLimit: 70,
-    minDay: 1,
-    baseScore: 110,
+    baseTimeLimit: 78,
+    minLevel: 1,
+    baseScore: 140,
     requiredClues: 2,
+    demandingHint: "Client craint une ouverture complete pendant le trajet.",
+    complexity: 3,
     clueByZoneId: {
       stitch_zone: "Fil relache detecte: la couture n'est plus continue.",
       eyelet_zone: "Les oeillets tiennent, le souci est bien la couture.",
@@ -162,10 +174,12 @@ export const PROBLEM_LIBRARY = {
     symptom: "Humidite interieure et odeur persistante.",
     correctZoneId: "lining_zone",
     correctRepair: "dehumidify",
-    baseTimeLimit: 68,
-    minDay: 2,
-    baseScore: 118,
+    baseTimeLimit: 74,
+    minLevel: 2,
+    baseScore: 134,
     requiredClues: 2,
+    demandingHint: "Client demande un resultat propre et durable sans odeur.",
+    complexity: 2,
     clueByZoneId: {
       lining_zone: "Humidite nette et odeur forte en zone talonniere.",
       leather_zone: "Le cuir externe est correct: la panne est interne.",
@@ -178,10 +192,12 @@ export const PROBLEM_LIBRARY = {
     symptom: "Le lacage ne tient pas sous tension.",
     correctZoneId: "eyelet_zone",
     correctRepair: "eyelet_swap",
-    baseTimeLimit: 66,
-    minDay: 2,
-    baseScore: 105,
+    baseTimeLimit: 72,
+    minLevel: 2,
+    baseScore: 132,
     requiredClues: 1,
+    demandingHint: "Client veut retrouver un serrage parfaitement stable.",
+    complexity: 2,
     clueByZoneId: {
       eyelet_zone: "Un oeillet se deforme immediatement a la traction.",
       stitch_zone: "La couture voisine est saine, seul l'oeillet est defectueux.",
@@ -193,10 +209,12 @@ export const PROBLEM_LIBRARY = {
     symptom: "Craquements et rigidite au pli de marche.",
     correctZoneId: "leather_zone",
     correctRepair: "condition_leather",
-    baseTimeLimit: 72,
-    minDay: 3,
-    baseScore: 130,
+    baseTimeLimit: 76,
+    minLevel: 3,
+    baseScore: 158,
     requiredClues: 2,
+    demandingHint: "Client haut de gamme: refus de toute alteraton visuelle.",
+    complexity: 3,
     clueByZoneId: {
       leather_zone: "Micro-craquelures visibles sur la zone de flexion du cuir.",
       lining_zone: "Doublure intacte: la degradation est surtout externe.",
@@ -206,51 +224,132 @@ export const PROBLEM_LIBRARY = {
   },
 };
 
-const LEVELS = [
-  {
-    dayMin: 1,
-    dayMax: 2,
-    queueLength: 3,
-    timeMultiplier: 1,
-    difficultyMax: 2,
-  },
-  {
-    dayMin: 3,
-    dayMax: 4,
-    queueLength: 4,
-    timeMultiplier: 0.92,
-    difficultyMax: 3,
-  },
-  {
-    dayMin: 5,
-    dayMax: 99,
-    queueLength: 5,
-    timeMultiplier: 0.86,
-    difficultyMax: 4,
-  },
+export class Level {
+  constructor(config) {
+    this.id = config.id;
+    this.name = config.name;
+    this.minXp = config.minXp;
+    this.maxConcurrentClients = config.maxConcurrentClients;
+    this.timerEnabled = config.timerEnabled;
+    this.guidedTutorial = config.guidedTutorial;
+    this.inventoryEnabled = config.inventoryEnabled;
+    this.demandingClients = config.demandingClients;
+    this.complexRepairs = config.complexRepairs;
+    this.reputationPenaltyMultiplier = config.reputationPenaltyMultiplier;
+    this.baseQueueSize = config.baseQueueSize;
+    this.xpToNext = config.xpToNext;
+  }
+
+  computeQueueSize(day) {
+    const dayBoost = Math.floor(Math.max(0, day - 1) / 3);
+    return this.baseQueueSize + dayBoost;
+  }
+
+  computeTimeLimit(problem) {
+    const base = problem.baseTimeLimit;
+
+    if (!this.timerEnabled) {
+      return base;
+    }
+
+    const timerFactor = this.id === 2 ? 0.92 : 0.84;
+    return Math.max(44, Math.round(base * timerFactor));
+  }
+
+  shouldUseComplexRepair(repair, problem) {
+    if (!this.complexRepairs) {
+      return repair.requiresMiniGame;
+    }
+
+    return repair.requiresMiniGame || repair.complexity >= 2 || problem.complexity >= 3;
+  }
+
+  getTutorialText(scenario) {
+    if (!this.guidedTutorial || !scenario) {
+      return "";
+    }
+
+    if (!scenario.selectedZoneId) {
+      return "Tutoriel: inspectez d'abord la zone qui semble la plus liee au symptome client.";
+    }
+
+    if (!scenario.selectedRepairId) {
+      return "Tutoriel: choisissez ensuite la reparation la plus logique selon la zone validee.";
+    }
+
+    return "Tutoriel: validez la reparation pour finaliser la commande client.";
+  }
+}
+
+export const LEVELS = [
+  new Level({
+    id: 1,
+    name: "Apprenti",
+    minXp: 0,
+    xpToNext: 120,
+    maxConcurrentClients: 1,
+    timerEnabled: false,
+    guidedTutorial: true,
+    inventoryEnabled: false,
+    demandingClients: false,
+    complexRepairs: false,
+    reputationPenaltyMultiplier: 1,
+    baseQueueSize: 3,
+  }),
+  new Level({
+    id: 2,
+    name: "Atelier Local",
+    minXp: 120,
+    xpToNext: 320,
+    maxConcurrentClients: 2,
+    timerEnabled: true,
+    guidedTutorial: false,
+    inventoryEnabled: true,
+    demandingClients: false,
+    complexRepairs: false,
+    reputationPenaltyMultiplier: 1,
+    baseQueueSize: 4,
+  }),
+  new Level({
+    id: 3,
+    name: "Maitre Cordonnerie",
+    minXp: 320,
+    xpToNext: null,
+    maxConcurrentClients: 2,
+    timerEnabled: true,
+    guidedTutorial: false,
+    inventoryEnabled: true,
+    demandingClients: true,
+    complexRepairs: true,
+    reputationPenaltyMultiplier: 1.7,
+    baseQueueSize: 5,
+  }),
 ];
 
 function pickRandom(list, randomFn) {
   if (!Array.isArray(list) || list.length === 0) {
     return null;
   }
+
   const idx = Math.floor(randomFn() * list.length);
   return list[idx];
 }
 
-function estimateDifficulty(problemCode) {
-  const problem = PROBLEM_LIBRARY[problemCode];
-  if (!problem) {
-    return 1;
-  }
-  return Math.max(1, Math.ceil(problem.minDay / 1.2));
+export function getLevelByXp(xp) {
+  const sorted = [...LEVELS].sort((a, b) => a.minXp - b.minXp);
+  let chosen = sorted[0];
+
+  sorted.forEach((level) => {
+    if (xp >= level.minXp) {
+      chosen = level;
+    }
+  });
+
+  return chosen;
 }
 
-export function getLevelConfig(day) {
-  return (
-    LEVELS.find((level) => day >= level.dayMin && day <= level.dayMax) ||
-    LEVELS[LEVELS.length - 1]
-  );
+export function getLevelById(levelId) {
+  return LEVELS.find((level) => level.id === levelId) || LEVELS[0];
 }
 
 export function getProblem(problemCode) {
@@ -269,23 +368,22 @@ export function getDiagnosticZoneById(zoneId) {
   return DIAGNOSTIC_ZONES.find((zone) => zone.id === zoneId) || null;
 }
 
-export function buildClientScenario(baseClient, day, randomFn = Math.random) {
-  const level = getLevelConfig(day);
-  const allowedProblemCodes = (baseClient.problemPool || []).filter((code) => {
+export function buildClientScenario(baseClient, day, level, randomFn = Math.random) {
+  const candidateCodes = (baseClient.problemPool || []).filter((code) => {
     const problem = getProblem(code);
-    return problem && estimateDifficulty(code) <= level.difficultyMax;
+    return problem && problem.minLevel <= level.id;
   });
 
-  const candidatePool =
-    allowedProblemCodes.length > 0 ? allowedProblemCodes : baseClient.problemPool || [];
-
-  const problemCode = pickRandom(candidatePool, randomFn);
+  const pool = candidateCodes.length > 0 ? candidateCodes : baseClient.problemPool || [];
+  const problemCode = pickRandom(pool, randomFn);
   const problem = getProblem(problemCode);
+
   if (!problem) {
     return null;
   }
 
-  const timeLimit = Math.max(42, Math.round(problem.baseTimeLimit * level.timeMultiplier));
+  const timeLimit = level.computeTimeLimit(problem);
+  const demanding = level.demandingClients || randomFn() > 0.7;
 
   return {
     id: `${baseClient.id}-${problemCode}-${day}-${Math.round(randomFn() * 10000)}`,
@@ -293,26 +391,29 @@ export function buildClientScenario(baseClient, day, randomFn = Math.random) {
     problemCode,
     problem,
     timeLimit,
+    demanding,
     inspectedZoneIds: [],
     discoveredClues: [],
     selectedZoneId: null,
     selectedRepairId: null,
     stitchResult: null,
     elapsedMs: 0,
+    finished: false,
   };
 }
 
-export function createDayQueue(clients, day, randomFn = Math.random) {
-  const level = getLevelConfig(day);
+export function createDayQueue(clients, day, level, randomFn = Math.random) {
   const queue = [];
 
   if (!Array.isArray(clients) || clients.length === 0) {
     return queue;
   }
 
-  for (let i = 0; i < level.queueLength; i += 1) {
+  const queueSize = level.computeQueueSize(day);
+
+  for (let i = 0; i < queueSize; i += 1) {
     const client = clients[Math.floor(randomFn() * clients.length)];
-    const scenario = buildClientScenario(client, day, randomFn);
+    const scenario = buildClientScenario(client, day, level, randomFn);
     if (scenario) {
       queue.push(scenario);
     }

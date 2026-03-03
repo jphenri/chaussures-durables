@@ -19,6 +19,10 @@
         </div>
         <div class="hud">
           <div class="hud-item">
+            <span>Niveau</span>
+            <strong id="level-name">Apprenti</strong>
+          </div>
+          <div class="hud-item">
             <span>Jour</span>
             <strong id="day-value">1</strong>
           </div>
@@ -35,12 +39,18 @@
             <strong id="streak-value">0</strong>
           </div>
         </div>
-        <label class="timer-toggle" for="timer-toggle">
-          <input id="timer-toggle" type="checkbox" checked />
-          Timer actif
-          <strong id="timer-state">ON</strong>
-        </label>
+        <button id="reset-game-btn" class="btn" type="button">Reset progression</button>
       </header>
+      <section class="card progression-panel" aria-label="Progression joueur">
+        <div class="panel-heading">
+          <h2>Progression</h2>
+          <span id="xp-value" class="badge">XP: 0</span>
+        </div>
+        <div class="xp-track">
+          <div id="xp-fill" class="xp-fill"></div>
+        </div>
+        <p id="xp-next-label" class="support-text">Prochain niveau: 120 XP</p>
+      </section>
 
       <main class="layout-grid">
         <section class="panel card canvas-panel" aria-label="Ambiance atelier">
@@ -53,8 +63,9 @@
         <section class="panel card" aria-live="polite">
           <div class="panel-heading">
             <h2>Client entrant</h2>
-            <span id="queue-value" class="badge">File: 0</span>
+            <span id="queue-value" class="badge">En attente: 0</span>
           </div>
+          <div id="active-clients" class="active-clients"></div>
           <article id="client-card" class="client-card empty-state">
             <p>Cliquez sur "Demarrer la journee" pour accueillir le premier client.</p>
           </article>
@@ -75,6 +86,7 @@
             <canvas id="diagnostic-canvas" width="640" height="210"></canvas>
             <div id="zone-legend" class="zone-legend"></div>
           </div>
+          <div id="tutorial-box" class="feedback-box tutorial-box"></div>
           <div id="diagnostic-feedback" class="feedback-box" role="status"></div>
           <button
             id="to-repair-btn"
