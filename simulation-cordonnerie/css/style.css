@@ -159,9 +159,18 @@ body {
   opacity: 0.98;
 }
 
-.tech-outline {
-  fill: rgba(164, 61, 19, 0.18);
-  stroke: rgba(229, 215, 198, 0.7);
+.boot-upper,
+.boot-quarter,
+.boot-toecap {
+  fill: rgba(151, 58, 22, 0.22);
+  stroke: rgba(237, 226, 210, 0.76);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.boot-shaft {
+  fill: rgba(138, 52, 20, 0.24);
+  stroke: rgba(237, 226, 210, 0.76);
   stroke-width: 2;
   stroke-linejoin: round;
 }
@@ -177,34 +186,28 @@ body {
   fill: #080706;
 }
 
-.sole-layer {
-  fill: rgba(238, 232, 226, 0.06);
-  stroke: rgba(232, 223, 212, 0.72);
-  stroke-width: 1.8;
-}
-
-.layer-top {
-  transform: translateY(2px);
-}
-
-.layer-mid {
-  transform: translateY(5px);
-}
-
-.layer-bottom {
-  transform: translateY(8px);
-}
-
 .sole-base {
   fill: url(#soleGradient);
   stroke: rgba(20, 14, 11, 0.54);
   stroke-width: 1.6;
 }
 
+.heel-cap {
+  fill: rgba(147, 127, 112, 0.58);
+  stroke: rgba(238, 226, 210, 0.56);
+  stroke-width: 1.4;
+}
+
 .heel-block {
   fill: #715d4f;
   stroke: rgba(20, 14, 11, 0.56);
   stroke-width: 1.6;
+}
+
+.sole-tread {
+  stroke: rgba(42, 34, 28, 0.62);
+  stroke-width: 2.2;
+  stroke-linecap: round;
 }
 
 .stitch-line {
@@ -214,14 +217,20 @@ body {
   stroke-linecap: round;
 }
 
+.lace-seg {
+  stroke: rgba(220, 210, 191, 0.72);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
 .callout-line {
-  stroke: rgba(233, 227, 218, 0.72);
-  stroke-width: 1.8;
+  stroke: rgba(235, 229, 220, 0.74);
+  stroke-width: 1.6;
 }
 
 .callout-label {
-  fill: rgba(241, 233, 223, 0.92);
-  font-size: 19px;
+  fill: rgba(241, 233, 223, 0.9);
+  font-size: 17px;
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
 }
 

@@ -169,3 +169,13 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - coutures tracees en paths fins et alignes au-dessus de l'empeigne.
 - Zones interactives `semelle`, `talon`, `couture`, `empeigne` conservees avec `data-part`.
 - CSS SVG mis a jour (classes `upper-main`, `sole-base`, `heel-block`, `stitch-line`, `part-shape-line`).
+
+## 2026-03-03 - Rework silhouette botte (lisibilite)
+- Refonte du dessin SVG de la botte pour une silhouette plus credible (tige haute, quartier, bout, laçage, semelle montee).
+- Labels repositionnes a l'interieur du viewBox pour eviter les textes tronques.
+- Geometrie preservee:
+  - semelle base horizontale,
+  - talon aligne a l'arriere de la semelle,
+  - couture au-dessus de l'empeigne avec hitbox elargie.
+- Classes CSS remplacees/ajoutees: `boot-upper`, `boot-shaft`, `boot-quarter`, `boot-toecap`, `heel-cap`, `sole-tread`, `lace-seg`.
+- Mecanique JS inchangee (`node --check` OK).
