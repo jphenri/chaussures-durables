@@ -131,3 +131,13 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 - Validation:
   - `node --check` OK sur `js/game.js`.
   - Smoke test HTTP local OK.
+
+## 2026-03-03 - Diagnostic sur fichier Chaussure_icone.svg
+- UI diagnostic migree pour utiliser le fichier source `assets/img/sora/Chaussure_icone.svg` dans le panneau Chaussure.
+- Le SVG interactif garde 4 zones cliquables (`semelle`, `talon`, `couture`, `empeigne`) via hitboxes superposees dans `simulation-cordonnerie/index.html`.
+- CSS ajuste pour rendre l'icone source lisible + overlays discrets (`shoe-illustration`, `part-shape`).
+- Logique metier preservee (selection piece, diagnostic, actions, historique, reset) sans changement de `game.js`.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
+  - Presence des zones/chemin SVG confirmee dans `index.html`.
+- Test Playwright du skill re-tente mais bloque: package `playwright` absent (`ERR_MODULE_NOT_FOUND`).

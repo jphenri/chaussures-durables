@@ -6,225 +6,176 @@
     <title>Simulation de Cordonnerie</title>
     <meta
       name="description"
-      content="Jeu educatif de gestion de cordonnerie en JavaScript vanilla."
+      content="Atelier premium interactif de diagnostic et reparation de chaussure."
     />
     <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
-    <div class="app-shell">
-      <header class="topbar card">
-        <div class="atelier-brand">
-          <p class="eyebrow">Simulation de Cordonnerie</p>
-          <h1>Atelier Saint-Crepin</h1>
-          <div class="reputation-rail">
-            <div class="reputation-head">
-              <span>Reputation atelier</span>
-              <strong id="reputation-value">50</strong>
-            </div>
-            <div
-              id="reputation-meter"
-              class="reputation-meter"
-              role="progressbar"
-              aria-label="Niveau de reputation"
-              aria-valuemin="0"
-              aria-valuemax="100"
-              aria-valuenow="50"
-            >
-              <div id="reputation-meter-fill" class="reputation-meter-fill"></div>
-            </div>
-          </div>
+    <div class="page-wrap">
+      <header class="app-header" role="banner">
+        <div class="header-title">
+          <p class="kicker">Simulation de Cordonnerie</p>
+          <h1>Atelier H&eacute;ritage</h1>
         </div>
-        <div class="hud">
-          <div class="hud-item">
-            <span>Niveau</span>
-            <strong id="level-name">Apprenti</strong>
-          </div>
-          <div class="hud-item">
+        <div class="header-chips" aria-label="Statistiques session">
+          <article class="chip">
             <span>Jour</span>
-            <strong id="day-value">1</strong>
-          </div>
-          <div class="hud-item">
+            <strong id="day-chip">1</strong>
+          </article>
+          <article class="chip chip-reputation">
+            <span>R&eacute;putation</span>
+            <strong id="reputation-chip">50</strong>
+          </article>
+          <article class="chip">
+            <span>Niveau</span>
+            <strong id="level-chip">Apprenti</strong>
+          </article>
+          <article class="chip">
             <span>Score</span>
-            <strong id="score-value">0</strong>
-          </div>
-          <div class="hud-item">
-            <span>Serie</span>
-            <strong id="streak-value">0</strong>
-          </div>
-        </div>
-        <div class="toolbar-actions">
-          <label class="contrast-switch" for="contrast-toggle">
-            <input
-              id="contrast-toggle"
-              type="checkbox"
-              role="switch"
-              aria-label="Activer le mode contraste eleve"
-            />
-            <span>Contraste eleve</span>
-          </label>
-          <button id="reset-game-btn" class="btn" type="button">Reset progression</button>
+            <strong id="score-chip">0</strong>
+          </article>
         </div>
       </header>
-      <section class="card progression-panel" aria-label="Progression joueur">
-        <div class="panel-heading">
-          <h2>Progression</h2>
-          <span id="xp-value" class="badge">XP: 0</span>
-        </div>
-        <div class="xp-track">
-          <div id="xp-fill" class="xp-fill"></div>
-        </div>
-        <p id="xp-next-label" class="support-text">Prochain niveau: 120 XP</p>
-      </section>
 
-      <main class="layout-grid">
-        <section class="panel card canvas-panel" aria-label="Ambiance atelier">
-          <canvas id="atelier-canvas" width="880" height="220"></canvas>
-          <p class="canvas-caption">
-            Vue simplifiee de l'atelier. Le sabot clignote quand un client attend.
-          </p>
-        </section>
+      <main class="atelier-layout" aria-label="Interface atelier premium">
+        <section class="panel shoe-panel" aria-labelledby="shoe-panel-title">
+          <div class="panel-head">
+            <h2 id="shoe-panel-title">Chaussure</h2>
+            <p class="panel-sub">Diagnostic visuel interactif</p>
+          </div>
 
-        <section class="panel card" aria-live="polite">
-          <div class="panel-heading">
-            <div class="heading-title">
-              <h2>Client entrant</h2>
-              <button
-                class="edu-tip"
-                type="button"
-                aria-label="Conseil client"
-                data-tip="Lisez toujours le dialogue avant mission: il indique le niveau d'exigence et l'impact reputation."
-              >
-                ?
-              </button>
-            </div>
-            <span id="queue-value" class="badge">En attente: 0</span>
-          </div>
-          <div id="active-clients" class="active-clients"></div>
-          <div id="mission-dialogue-box" class="dialogue-box">
-            <p id="mission-dialogue-text" class="dialogue-text">
-              Le dialogue client apparaitra ici avant le debut de la mission.
-            </p>
-            <button id="accept-mission-btn" class="btn btn-primary" type="button" disabled>
-              Accepter la mission
-            </button>
-          </div>
-          <article id="client-card" class="client-card empty-state">
-            <p>Cliquez sur "Demarrer la journee" pour accueillir le premier client.</p>
-          </article>
-          <button id="start-day-btn" class="btn btn-primary" type="button">
-            Demarrer la journee
-          </button>
-        </section>
-
-        <section class="panel card" aria-label="Diagnostic interactif">
-          <div class="panel-heading">
-            <div class="heading-title">
-              <h2>Diagnostic interactif</h2>
-              <button
-                class="edu-tip"
-                type="button"
-                aria-label="Conseil diagnostic"
-                data-tip="Cliquez 3 a 4 zones cles: un diagnostic complet reduit les erreurs et augmente le score final."
-              >
-                ?
-              </button>
-            </div>
-            <span id="diagnostic-progress" class="badge">Indices: 0 / 2</span>
-          </div>
-          <p class="support-text">
-            Cliquez les zones de la chaussure pour trouver l'origine de la panne.
-          </p>
-          <div class="diagnostic-board">
-            <canvas id="diagnostic-canvas" width="640" height="210"></canvas>
-            <div id="zone-legend" class="zone-legend"></div>
-          </div>
-          <div id="tutorial-box" class="feedback-box tutorial-box"></div>
-          <div id="diagnostic-feedback" class="feedback-box" role="status"></div>
-          <button
-            id="to-repair-btn"
-            class="btn"
-            type="button"
-            disabled
-          >
-            Passer a la reparation
-          </button>
-        </section>
-
-        <section class="panel card" aria-label="Zone de reparation">
-          <div class="panel-heading">
-            <div class="heading-title">
-              <h2>Reparation</h2>
-              <button
-                class="edu-tip"
-                type="button"
-                aria-label="Conseil reparation"
-                data-tip="Stock vide = mission bloquee. Surveillez l'inventaire avant de valider une intervention."
-              >
-                ?
-              </button>
-            </div>
-            <span id="timer-value" class="badge timer-badge" role="status" aria-live="polite">Temps: 0s</span>
-          </div>
-          <p class="support-text">
-            Choisissez l'intervention la plus adaptee a la panne detectee.
-          </p>
-          <div id="repair-options" class="button-grid"></div>
-          <div class="panel-heading subheading">
-            <h3>Inventaire atelier</h3>
-            <button id="restock-btn" class="btn" type="button">Reassort (+1)</button>
-          </div>
-          <div id="inventory-grid" class="inventory-grid"></div>
-          <button
-            id="validate-repair-btn"
-            class="btn btn-primary"
-            type="button"
-            disabled
-          >
-            Valider la reparation
-          </button>
-          <div id="stitching-panel" class="stitching-panel hidden">
-            <p class="support-text">
-              Mini-jeu couture: cliquez chaque repere le plus precisement possible.
-            </p>
-            <canvas id="stitch-canvas" width="520" height="180"></canvas>
-            <p id="stitch-stats" class="mini-stats">Precision: --</p>
-            <button
-              id="finish-stitch-btn"
-              class="btn btn-primary"
-              type="button"
-              disabled
+          <div class="svg-shell" id="svg-shell">
+            <svg
+              id="shoe-svg"
+              class="shoe-svg"
+              viewBox="0 0 188.76117 127.00133"
+              role="img"
+              aria-labelledby="shoe-svg-title shoe-svg-desc"
             >
-              Terminer la couture
-            </button>
+              <title id="shoe-svg-title">Chaussure de diagnostic</title>
+              <desc id="shoe-svg-desc">
+                Cliquez une zone de la chaussure pour lancer un diagnostic.
+              </desc>
+
+              <defs>
+                <filter id="part-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#c6a45a" flood-opacity="0.55" />
+                </filter>
+              </defs>
+
+              <rect x="0" y="0" width="188.76117" height="127.00133" class="svg-bg" />
+              <image
+                href="../assets/img/sora/Chaussure_icone.svg"
+                x="0"
+                y="0"
+                width="188.76117"
+                height="127.00133"
+                preserveAspectRatio="xMidYMid meet"
+                class="shoe-illustration"
+              />
+
+              <!-- Hitboxes de diagnostic au-dessus de l'icone SVG source. -->
+
+              <g
+                class="shoe-part"
+                data-part="semelle"
+                role="button"
+                tabindex="0"
+                aria-label="Zone semelle"
+              >
+                <title>Semelle</title>
+                <path
+                  d="M8 109 C34 107 94 106 144 106 C161 106 174 105 186 104 L186 118 L8 118 Z"
+                  class="part-shape"
+                />
+              </g>
+
+              <g
+                class="shoe-part"
+                data-part="talon"
+                role="button"
+                tabindex="0"
+                aria-label="Zone talon"
+              >
+                <title>Talon</title>
+                <path
+                  d="M128 80 L168 80 L164 113 L126 113 Z"
+                  class="part-shape"
+                />
+              </g>
+
+              <g
+                class="shoe-part"
+                data-part="couture"
+                role="button"
+                tabindex="0"
+                aria-label="Zone couture"
+              >
+                <title>Couture</title>
+                <path
+                  d="M67 83 C83 74 106 69 130 69 C145 69 155 71 163 75 L162 80 C148 76 129 75 109 78 C95 80 80 84 69 89 Z"
+                  class="part-shape"
+                />
+              </g>
+
+              <g
+                class="shoe-part"
+                data-part="empeigne"
+                role="button"
+                tabindex="0"
+                aria-label="Zone empeigne"
+              >
+                <title>Empeigne</title>
+                <path
+                  d="M54 73 C71 56 97 47 129 45 C145 44 156 47 162 53 C164 58 165 66 164 77 C146 72 124 72 105 75 C84 79 67 86 55 95 C53 87 52 79 54 73 Z"
+                  class="part-shape"
+                />
+              </g>
+            </svg>
+
+            <div id="part-tooltip" class="part-tooltip" role="status" aria-live="polite"></div>
           </div>
-          <div id="result-box" class="result-box" aria-live="polite"></div>
-          <button id="next-client-btn" class="btn" type="button" disabled>
-            Client suivant
-          </button>
         </section>
 
-        <section class="panel card" aria-label="Journal atelier">
-          <div class="panel-heading">
-            <div class="heading-title">
-              <h2>Journal atelier</h2>
-              <button
-                class="edu-tip"
-                type="button"
-                aria-label="Conseil journal"
-                data-tip="Le journal vous aide a analyser vos decisions pour mieux gerer la reputation et l'XP."
-              >
-                ?
-              </button>
+        <aside class="side-panels" aria-label="Panneaux de mission">
+          <section class="panel" aria-labelledby="diag-title">
+            <div class="panel-head">
+              <h2 id="diag-title">Diagnostic</h2>
+              <span id="diagnostic-severity" class="severity severity-neutral">Aucun</span>
             </div>
-            <span class="badge">Educatif</span>
-          </div>
-          <ul id="event-log" class="log-list"></ul>
-        </section>
+            <p id="diagnostic-text" class="diagnostic-text">
+              Selectionnez une partie de la chaussure pour analyser son etat.
+            </p>
+            <div class="selection-line">
+              <span>Piece selectionnee</span>
+              <strong id="selected-part-label">-</strong>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="actions-title">
+            <div class="panel-head">
+              <h2 id="actions-title">Actions</h2>
+              <button id="reset-ui-btn" class="btn" type="button">Reinitialiser</button>
+            </div>
+            <div
+              id="actions-list"
+              class="actions-list"
+              role="group"
+              aria-label="Actions de reparation"
+            ></div>
+          </section>
+
+          <section class="panel" aria-labelledby="history-title">
+            <div class="panel-head">
+              <h2 id="history-title">Historique</h2>
+            </div>
+            <ul id="history-list" class="history-list" aria-live="polite"></ul>
+          </section>
+        </aside>
       </main>
     </div>
 
     <noscript>Cette simulation necessite JavaScript.</noscript>
-
     <script type="module" src="./js/game.js"></script>
   </body>
 </html>
