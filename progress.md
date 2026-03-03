@@ -31,3 +31,26 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 - Ajouter eventuellement de nouveaux clients/pannes dans `clients.json` et `levels.js` pour plus de variete.
 - Smoke test HTTP local OK (serveur temporaire):
   - `index.html`, `data/clients.json`, `js/game.js` accessibles.
+
+## 2026-03-03 - Mecaniques avancees
+- Migration de la simulation vers 5 mecaniques avancees:
+  - Diagnostic interactif par zones cliquables (`diagnostic-canvas`).
+  - Mini-jeu couture precision souris (`stitch-canvas`) pour la reparation `restitch`.
+  - Gestion inventaire (semelles, fil, cuir, colle) avec blocage si stock insuffisant.
+  - Timer optionnel via toggle (`timer-toggle`) et logique de timeout conditionnelle.
+  - Systeme reputation borne 0-100, avec regle metier explicite: mauvais diagnostic = -10 reputation.
+- Refonte modulaire:
+  - `js/levels.js`: zones diagnostic, ressources par reparation, scenarios.
+  - `js/score.js`: classes `ReputationMeter` et `WorkshopScoreSystem`.
+  - `js/game.js`: classes `InventoryManager`, `DiagnosticZoneBoard`, `StitchPrecisionMiniGame`.
+- Hooks de test conserves et enrichis: `window.render_game_to_text`, `window.advanceTime(ms)`.
+
+## 2026-03-03 - Verification (mecaniques avancees)
+- Verification ASCII: OK.
+- Verification syntaxique JS: OK (`node --check` sur `levels.js`, `score.js`, `game.js`).
+- Smoke test HTTP local: OK (`index.html`, CSS, JS, JSON accessibles).
+- Tentative boucle Playwright du skill: bloquee, dependance `playwright` absente (`ERR_MODULE_NOT_FOUND`).
+
+## TODO / Suite (mecaniques avancees)
+- Installer `playwright` si validation e2e automatisee requise.
+- Ajouter des paliers d'inventaire par niveau pour renforcer la difficulte.

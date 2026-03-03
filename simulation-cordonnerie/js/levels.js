@@ -1,43 +1,59 @@
 // Gameplay data and pure helpers for the shoe repair simulation.
 
-export const DIAGNOSTIC_QUESTIONS = [
+export const DIAGNOSTIC_ZONES = [
   {
-    id: "visual_gap",
-    label: "Observer la semelle et la jonction",
-    fallbackAnswer:
-      "Aucun indice decisif ici, mais l'observation visuelle reste utile.",
+    id: "sole_zone",
+    label: "Semelle",
+    x: 58,
+    y: 126,
+    w: 278,
+    h: 28,
+    fallbackHint: "Aucun decollement marque dans cette zone.",
   },
   {
-    id: "flex_test",
-    label: "Tester la flexion de l'avant-pied",
-    fallbackAnswer:
-      "La flexion semble correcte, sans symptome majeur apparent.",
+    id: "heel_zone",
+    label: "Talon",
+    x: 38,
+    y: 95,
+    w: 82,
+    h: 40,
+    fallbackHint: "Le talon parait stable, sans usure critique.",
   },
   {
-    id: "heel_press",
-    label: "Presser le talon et verifier l'accroche",
-    fallbackAnswer: "Le talon parait stable, sans ancrage casse.",
+    id: "stitch_zone",
+    label: "Coutures",
+    x: 143,
+    y: 84,
+    w: 212,
+    h: 26,
+    fallbackHint: "Couture reguliere sur cette ligne.",
   },
   {
-    id: "lining_check",
-    label: "Verifier la doublure interieure",
-    fallbackAnswer:
-      "La doublure est propre, sans deterioration evidente.",
+    id: "lining_zone",
+    label: "Doublure",
+    x: 244,
+    y: 50,
+    w: 166,
+    h: 58,
+    fallbackHint: "La doublure semble saine a cet endroit.",
   },
   {
-    id: "stitch_trace",
-    label: "Inspecter les coutures laterales",
-    fallbackAnswer: "Les coutures sont regulieres sur cette zone.",
+    id: "eyelet_zone",
+    label: "Oeillets",
+    x: 330,
+    y: 60,
+    w: 132,
+    h: 36,
+    fallbackHint: "Les oeillets testees semblent tenir la traction.",
   },
   {
-    id: "eyelet_pull",
-    label: "Tester les oeillets de lacage",
-    fallbackAnswer: "Les oeillets resistent bien a la traction.",
-  },
-  {
-    id: "odor_check",
-    label: "Controle hygiene et humidite",
-    fallbackAnswer: "Aucune humidite anormale detectee.",
+    id: "leather_zone",
+    label: "Cuir externe",
+    x: 120,
+    y: 38,
+    w: 260,
+    h: 48,
+    fallbackHint: "Le cuir ne montre pas de fragilite evidente ici.",
   },
 ];
 
@@ -47,36 +63,48 @@ export const REPAIR_OPTIONS = [
     label: "Recoller et presser la semelle",
     description: "Nettoyage, collage neoprene, pressage controle.",
     timeCost: 16,
+    resources: { semelles: 1, colle: 1, fil: 0, cuir: 0 },
+    requiresMiniGame: false,
   },
   {
     id: "heel_replace",
     label: "Remplacer patin et talon",
     description: "Depose talon use puis pose d'un patin neuf.",
     timeCost: 18,
+    resources: { semelles: 1, colle: 1, fil: 0, cuir: 0 },
+    requiresMiniGame: false,
   },
   {
     id: "restitch",
     label: "Refaire les coutures de maintien",
     description: "Reprise des points avec fil cire adapte.",
     timeCost: 14,
+    resources: { semelles: 0, colle: 0, fil: 2, cuir: 1 },
+    requiresMiniGame: true,
   },
   {
     id: "dehumidify",
     label: "Assainir et secher la doublure",
     description: "Traitement antibacterien + sechage maitrise.",
     timeCost: 15,
+    resources: { semelles: 0, colle: 1, fil: 0, cuir: 1 },
+    requiresMiniGame: false,
   },
   {
     id: "eyelet_swap",
     label: "Changer l'oeillet defectueux",
     description: "Extraction de l'oeillet puis rivetage neuf.",
     timeCost: 12,
+    resources: { semelles: 0, colle: 0, fil: 1, cuir: 1 },
+    requiresMiniGame: false,
   },
   {
     id: "condition_leather",
     label: "Nourrir et assouplir le cuir",
     description: "Brossage, creme nourrissante, repos du cuir.",
     timeCost: 10,
+    resources: { semelles: 0, colle: 0, fil: 0, cuir: 2 },
+    requiresMiniGame: false,
   },
 ];
 
@@ -84,97 +112,97 @@ export const PROBLEM_LIBRARY = {
   sole_loose: {
     title: "Semelle decollee",
     symptom: "Bruit sec et decollement en bordure.",
+    correctZoneId: "sole_zone",
     correctRepair: "resole",
     baseTimeLimit: 78,
     minDay: 1,
     baseScore: 125,
-    reputation: { success: 7, fail: -6 },
     requiredClues: 2,
-    clueByQuestion: {
-      visual_gap: "Un jour apparait entre la tige et la semelle.",
-      flex_test: "La semelle plie independamment de la chaussure.",
-      stitch_trace: "Les coutures sont stables: le souci est surtout le collage.",
+    clueByZoneId: {
+      sole_zone: "Un jour apparait entre la tige et la semelle.",
+      stitch_zone: "La couture est stable: le probleme vient surtout du collage.",
+      heel_zone: "Le talon est sain, la panne est a l'avant et sur le flanc.",
     },
-    tip: "Toujours degraisser avant collage pour eviter un decollement rapide.",
+    tip: "Toujours degraisser avant collage pour eviter un nouveau decollement.",
   },
   heel_worn: {
     title: "Talon use",
     symptom: "Instabilite et glissade a l'arriere.",
+    correctZoneId: "heel_zone",
     correctRepair: "heel_replace",
     baseTimeLimit: 74,
     minDay: 1,
     baseScore: 115,
-    reputation: { success: 6, fail: -6 },
     requiredClues: 2,
-    clueByQuestion: {
-      heel_press: "Le talon est tasse et l'accroche est asymetrique.",
-      visual_gap: "Le patin est use sur un seul bord.",
-      flex_test: "L'avant-pied est correct, le probleme est concentre au talon.",
+    clueByZoneId: {
+      heel_zone: "Le patin est tasse et l'accroche est asymetrique.",
+      sole_zone: "L'usure principale est localisee a l'arriere.",
+      lining_zone: "La doublure est correcte, pas de souci interne majeur.",
     },
     tip: "Verifier l'axe du talon pour eviter une usure prematuree.",
   },
   stitch_open: {
     title: "Couture ouverte",
     symptom: "Ouverture progressive sur le quartier lateral.",
+    correctZoneId: "stitch_zone",
     correctRepair: "restitch",
     baseTimeLimit: 70,
     minDay: 1,
     baseScore: 110,
-    reputation: { success: 6, fail: -5 },
     requiredClues: 2,
-    clueByQuestion: {
-      stitch_trace: "Fil relache detecte, la couture n'est plus continue.",
-      visual_gap: "L'ouverture suit la ligne de couture.",
-      eyelet_pull: "Les oeillets tiennent, la panne est bien textile.",
+    clueByZoneId: {
+      stitch_zone: "Fil relache detecte: la couture n'est plus continue.",
+      eyelet_zone: "Les oeillets tiennent, le souci est bien la couture.",
+      sole_zone: "La semelle suit correctement, pas de decollement ici.",
     },
-    tip: "Repartir les points de couture pour equilibrer la tension.",
+    tip: "Repartir les points pour equilibrer la tension de couture.",
   },
   liner_wet: {
     title: "Doublure humide",
     symptom: "Humidite interieure et odeur persistante.",
+    correctZoneId: "lining_zone",
     correctRepair: "dehumidify",
     baseTimeLimit: 68,
     minDay: 2,
     baseScore: 118,
-    reputation: { success: 7, fail: -7 },
     requiredClues: 2,
-    clueByQuestion: {
-      odor_check: "Humidite nette et odeur forte en zone talonniere.",
-      lining_check: "La doublure retient l'humidite, risque de moisissure.",
-      heel_press: "La structure externe est correcte: le probleme est interne.",
+    clueByZoneId: {
+      lining_zone: "Humidite nette et odeur forte en zone talonniere.",
+      leather_zone: "Le cuir externe est correct: la panne est interne.",
+      heel_zone: "Le talon n'est pas la source du probleme.",
     },
-    tip: "Un sechage lent preserve la forme de la chaussure.",
+    tip: "Un sechage progressif preserve la forme de la chaussure.",
   },
   eyelet_broken: {
     title: "Oeillet casse",
     symptom: "Le lacage ne tient pas sous tension.",
+    correctZoneId: "eyelet_zone",
     correctRepair: "eyelet_swap",
     baseTimeLimit: 66,
     minDay: 2,
     baseScore: 105,
-    reputation: { success: 5, fail: -5 },
     requiredClues: 1,
-    clueByQuestion: {
-      eyelet_pull: "Un oeillet se deforme immediatement a la traction.",
-      stitch_trace: "La couture voisine est saine, seul l'oeillet est defectueux.",
+    clueByZoneId: {
+      eyelet_zone: "Un oeillet se deforme immediatement a la traction.",
+      stitch_zone: "La couture voisine est saine, seul l'oeillet est defectueux.",
     },
-    tip: "Verifier le diametre de l'oeillet pour respecter le lacage d'origine.",
+    tip: "Respecter le diametre de l'oeillet d'origine pour un bon maintien.",
   },
   leather_dry: {
     title: "Cuir desseche",
     symptom: "Craquements et rigidite au pli de marche.",
+    correctZoneId: "leather_zone",
     correctRepair: "condition_leather",
     baseTimeLimit: 72,
     minDay: 3,
     baseScore: 130,
-    reputation: { success: 8, fail: -8 },
     requiredClues: 2,
-    clueByQuestion: {
-      flex_test: "Des micro-craquelures apparaissent lors de la flexion.",
-      visual_gap: "Pas de decollement: c'est la matiere qui manque de souplesse.",
-      lining_check: "Doublure intacte, le probleme concerne bien le cuir externe.",
+    clueByZoneId: {
+      leather_zone: "Micro-craquelures visibles sur la zone de flexion du cuir.",
+      lining_zone: "Doublure intacte: la degradation est surtout externe.",
+      sole_zone: "Pas de decollement notable de la semelle.",
     },
-    tip: "Hydrater en couches fines pour eviter de saturer le cuir.",
+    tip: "Hydrater en couches fines pour eviter de saturer la matiere.",
   },
 };
 
@@ -202,14 +230,6 @@ const LEVELS = [
   },
 ];
 
-function estimateDifficulty(problemCode) {
-  const problem = PROBLEM_LIBRARY[problemCode];
-  if (!problem) {
-    return 1;
-  }
-  return Math.max(1, Math.ceil(problem.minDay / 1.2));
-}
-
 function pickRandom(list, randomFn) {
   if (!Array.isArray(list) || list.length === 0) {
     return null;
@@ -218,12 +238,12 @@ function pickRandom(list, randomFn) {
   return list[idx];
 }
 
-function cloneQuestion(question) {
-  return {
-    id: question.id,
-    label: question.label,
-    fallbackAnswer: question.fallbackAnswer,
-  };
+function estimateDifficulty(problemCode) {
+  const problem = PROBLEM_LIBRARY[problemCode];
+  if (!problem) {
+    return 1;
+  }
+  return Math.max(1, Math.ceil(problem.minDay / 1.2));
 }
 
 export function getLevelConfig(day) {
@@ -239,6 +259,14 @@ export function getProblem(problemCode) {
 
 export function getRepairById(repairId) {
   return REPAIR_OPTIONS.find((repair) => repair.id === repairId) || null;
+}
+
+export function getDiagnosticZones() {
+  return DIAGNOSTIC_ZONES.map((zone) => ({ ...zone }));
+}
+
+export function getDiagnosticZoneById(zoneId) {
+  return DIAGNOSTIC_ZONES.find((zone) => zone.id === zoneId) || null;
 }
 
 export function buildClientScenario(baseClient, day, randomFn = Math.random) {
@@ -265,9 +293,11 @@ export function buildClientScenario(baseClient, day, randomFn = Math.random) {
     problemCode,
     problem,
     timeLimit,
-    askedQuestionIds: [],
+    inspectedZoneIds: [],
     discoveredClues: [],
+    selectedZoneId: null,
     selectedRepairId: null,
+    stitchResult: null,
     elapsedMs: 0,
   };
 }
@@ -291,32 +321,28 @@ export function createDayQueue(clients, day, randomFn = Math.random) {
   return queue;
 }
 
-export function getDiagnosticQuestions() {
-  return DIAGNOSTIC_QUESTIONS.map(cloneQuestion);
-}
-
-export function resolveQuestion(problem, questionId) {
-  if (!problem) {
+export function resolveZoneInspection(problem, zoneId) {
+  const zone = getDiagnosticZoneById(zoneId);
+  if (!problem || !zone) {
     return {
       useful: false,
-      text: "La chaussure n'est pas en atelier pour le moment.",
+      primaryMatch: false,
+      text: "Zone indisponible pour ce diagnostic.",
     };
   }
 
-  const clue = problem.clueByQuestion[questionId];
+  const clue = problem.clueByZoneId?.[zoneId];
   if (clue) {
     return {
       useful: true,
+      primaryMatch: zoneId === problem.correctZoneId,
       text: clue,
     };
   }
 
-  const fallback =
-    DIAGNOSTIC_QUESTIONS.find((question) => question.id === questionId)?.fallbackAnswer ||
-    "Cet angle d'analyse n'apporte pas d'indice supplementaire.";
-
   return {
     useful: false,
-    text: fallback,
+    primaryMatch: false,
+    text: `${zone.label}: ${zone.fallbackHint}`,
   };
 }

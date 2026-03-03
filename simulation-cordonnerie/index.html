@@ -35,6 +35,11 @@
             <strong id="streak-value">0</strong>
           </div>
         </div>
+        <label class="timer-toggle" for="timer-toggle">
+          <input id="timer-toggle" type="checkbox" checked />
+          Timer actif
+          <strong id="timer-state">ON</strong>
+        </label>
       </header>
 
       <main class="layout-grid">
@@ -64,9 +69,12 @@
             <span id="diagnostic-progress" class="badge">Indices: 0 / 2</span>
           </div>
           <p class="support-text">
-            Posez des questions pour identifier la bonne reparation avant d'agir.
+            Cliquez les zones de la chaussure pour trouver l'origine de la panne.
           </p>
-          <div id="diagnostic-questions" class="button-grid"></div>
+          <div class="diagnostic-board">
+            <canvas id="diagnostic-canvas" width="640" height="210"></canvas>
+            <div id="zone-legend" class="zone-legend"></div>
+          </div>
           <div id="diagnostic-feedback" class="feedback-box" role="status"></div>
           <button
             id="to-repair-btn"
@@ -87,6 +95,11 @@
             Choisissez l'intervention la plus adaptee a la panne detectee.
           </p>
           <div id="repair-options" class="button-grid"></div>
+          <div class="panel-heading subheading">
+            <h3>Inventaire atelier</h3>
+            <button id="restock-btn" class="btn" type="button">Reassort (+1)</button>
+          </div>
+          <div id="inventory-grid" class="inventory-grid"></div>
           <button
             id="validate-repair-btn"
             class="btn btn-primary"
@@ -95,6 +108,21 @@
           >
             Valider la reparation
           </button>
+          <div id="stitching-panel" class="stitching-panel hidden">
+            <p class="support-text">
+              Mini-jeu couture: cliquez chaque repere le plus precisement possible.
+            </p>
+            <canvas id="stitch-canvas" width="520" height="180"></canvas>
+            <p id="stitch-stats" class="mini-stats">Precision: --</p>
+            <button
+              id="finish-stitch-btn"
+              class="btn btn-primary"
+              type="button"
+              disabled
+            >
+              Terminer la couture
+            </button>
+          </div>
           <div id="result-box" class="result-box" aria-live="polite"></div>
           <button id="next-client-btn" class="btn" type="button" disabled>
             Client suivant

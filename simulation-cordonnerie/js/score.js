@@ -1,122 +1,172 @@
-// Score and reputation system isolated from UI.
+// Score and reputation logic isolated from UI/game orchestration.
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-export function createScoreSystem(initialState = {}) {
-  const state = {
-    score: initialState.score ?? 0,
-    reputation: initialState.reputation ?? 50,
-    streak: initialState.streak ?? 0,
-    resolvedClients: initialState.resolvedClients ?? 0,
-    failedClients: initialState.failedClients ?? 0,
-  };
+export class ReputationMeter {
+  constructor(initialValue = 50) {
+    this.value = clamp(initialValue, 0, 100);
+  }
 
-  function applyRepairOutcome({
-    success,
+  adjust(delta) {
+    const previous = this.value;
+    this.value = clamp(this.value + delta, 0, 100);
+    return this.value - previous;
+  }
+
+  rewardService(points = 6) {
+    return this.adjust(Math.max(0, Math.round(points)));
+  }
+
+  penalizeWrongDiagnostic() {
+    // Explicit business rule from the specification.
+    return this.adjust(-10);
+  }
+
+  penalizeTimeout() {
+    return this.adjust(-8);
+  }
+
+  getValue() {
+    return this.value;
+  }
+
+  reset(nextValue = 50) {
+    this.value = clamp(nextValue, 0, 100);
+    return this.value;
+  }
+}
+
+export class WorkshopScoreSystem {
+  constructor(initialState = {}) {
+    this.score = initialState.score ?? 0;
+    this.streak = initialState.streak ?? 0;
+    this.resolvedClients = initialState.resolvedClients ?? 0;
+    this.failedClients = initialState.failedClients ?? 0;
+    this.reputation = new ReputationMeter(initialState.reputation ?? 50);
+  }
+
+  applySuccessfulRepair({
     baseScore,
     timeSpent,
     timeLimit,
     cluesFound,
     cluesRequired,
-    reputationImpact,
+    perfectRepair = false,
+    reputationGain = 6,
   }) {
     const safeBase = Number.isFinite(baseScore) ? baseScore : 100;
     const safeTimeLimit = Math.max(1, Number.isFinite(timeLimit) ? timeLimit : 60);
     const safeTimeSpent = Math.max(0, Number.isFinite(timeSpent) ? timeSpent : 0);
 
-    let deltaScore = 0;
-    let speedBonus = 0;
-    let diagnosticBonus = 0;
+    const speedRatio = clamp(1 - safeTimeSpent / safeTimeLimit, 0, 1);
+    const speedBonus = Math.round(45 * speedRatio);
 
-    if (success) {
-      const speedRatio = clamp(1 - safeTimeSpent / safeTimeLimit, 0, 1);
-      speedBonus = Math.round(55 * speedRatio);
-      diagnosticBonus = Math.round(
-        35 * clamp((cluesFound || 0) / Math.max(1, cluesRequired || 1), 0, 1)
-      );
+    const clueRatio = clamp(
+      (cluesFound || 0) / Math.max(1, cluesRequired || 1),
+      0,
+      1
+    );
+    const diagnosticBonus = Math.round(30 * clueRatio);
 
-      state.streak += 1;
-      deltaScore = safeBase + speedBonus + diagnosticBonus + state.streak * 5;
-      state.resolvedClients += 1;
-    } else {
-      state.streak = 0;
-      deltaScore = -Math.round(safeBase * 0.35);
-      state.failedClients += 1;
-    }
+    const perfectBonus = perfectRepair ? 60 : 0;
 
-    state.score = Math.max(0, state.score + deltaScore);
+    this.streak += 1;
+    const streakBonus = this.streak * 5;
 
-    const reputationDelta = success
-      ? reputationImpact?.success ?? 5
-      : reputationImpact?.fail ?? -6;
+    const deltaScore = safeBase + speedBonus + diagnosticBonus + perfectBonus + streakBonus;
+    this.score = Math.max(0, this.score + deltaScore);
+    this.resolvedClients += 1;
 
-    state.reputation = clamp(state.reputation + reputationDelta, 0, 100);
+    const reputationDelta = this.reputation.rewardService(
+      perfectRepair ? reputationGain + 1 : reputationGain
+    );
 
     return {
-      success,
+      success: true,
       deltaScore,
       speedBonus,
       diagnosticBonus,
+      perfectBonus,
+      streakBonus,
       reputationDelta,
-      score: state.score,
-      reputation: state.reputation,
-      streak: state.streak,
+      score: this.score,
+      reputation: this.reputation.getValue(),
+      streak: this.streak,
+      perfectRepair,
     };
   }
 
-  function applyTimeoutPenalty() {
-    state.streak = 0;
-    state.score = Math.max(0, state.score - 22);
-    state.reputation = clamp(state.reputation - 8, 0, 100);
-    state.failedClients += 1;
+  applyWrongDiagnostic({ baseScore }) {
+    const safeBase = Number.isFinite(baseScore) ? baseScore : 100;
+
+    this.streak = 0;
+    const deltaScore = -Math.round(safeBase * 0.35);
+    this.score = Math.max(0, this.score + deltaScore);
+    this.failedClients += 1;
+
+    const reputationDelta = this.reputation.penalizeWrongDiagnostic();
 
     return {
       success: false,
-      deltaScore: -22,
-      reputationDelta: -8,
-      score: state.score,
-      reputation: state.reputation,
-      streak: state.streak,
-      timeout: true,
+      wrongDiagnostic: true,
+      deltaScore,
+      reputationDelta,
+      score: this.score,
+      reputation: this.reputation.getValue(),
+      streak: this.streak,
     };
   }
 
-  function addEducationalBonus(points = 10) {
-    const bonus = Math.max(0, Math.round(points));
-    state.score += bonus;
+  applyTimeoutPenalty() {
+    this.streak = 0;
+    const deltaScore = -22;
+    this.score = Math.max(0, this.score + deltaScore);
+    this.failedClients += 1;
 
+    const reputationDelta = this.reputation.penalizeTimeout();
+
+    return {
+      success: false,
+      timeout: true,
+      deltaScore,
+      reputationDelta,
+      score: this.score,
+      reputation: this.reputation.getValue(),
+      streak: this.streak,
+    };
+  }
+
+  addEducationalBonus(points = 10) {
+    const bonus = Math.max(0, Math.round(points));
+    this.score += bonus;
     return {
       deltaScore: bonus,
-      score: state.score,
+      score: this.score,
     };
   }
 
-  function getState() {
+  getState() {
     return {
-      score: state.score,
-      reputation: state.reputation,
-      streak: state.streak,
-      resolvedClients: state.resolvedClients,
-      failedClients: state.failedClients,
+      score: this.score,
+      reputation: this.reputation.getValue(),
+      streak: this.streak,
+      resolvedClients: this.resolvedClients,
+      failedClients: this.failedClients,
     };
   }
 
-  function reset(nextState = {}) {
-    state.score = nextState.score ?? 0;
-    state.reputation = nextState.reputation ?? 50;
-    state.streak = nextState.streak ?? 0;
-    state.resolvedClients = nextState.resolvedClients ?? 0;
-    state.failedClients = nextState.failedClients ?? 0;
-    return getState();
+  reset(nextState = {}) {
+    this.score = nextState.score ?? 0;
+    this.streak = nextState.streak ?? 0;
+    this.resolvedClients = nextState.resolvedClients ?? 0;
+    this.failedClients = nextState.failedClients ?? 0;
+    this.reputation.reset(nextState.reputation ?? 50);
+    return this.getState();
   }
+}
 
-  return {
-    applyRepairOutcome,
-    applyTimeoutPenalty,
-    addEducationalBonus,
-    getState,
-    reset,
-  };
+export function createScoreSystem(initialState = {}) {
+  return new WorkshopScoreSystem(initialState);
 }
