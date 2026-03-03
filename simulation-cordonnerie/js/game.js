@@ -33,6 +33,7 @@ const ui = {
   missionDialogueBox: document.getElementById("mission-dialogue-box"),
   missionDialogueText: document.getElementById("mission-dialogue-text"),
   acceptMissionBtn: document.getElementById("accept-mission-btn"),
+  contrastToggle: document.getElementById("contrast-toggle"),
   clientCard: document.getElementById("client-card"),
   startDayBtn: document.getElementById("start-day-btn"),
   resetGameBtn: document.getElementById("reset-game-btn"),
@@ -186,51 +187,77 @@ class DiagnosticZoneBoard {
 
     ctx.clearRect(0, 0, width, height);
 
-    const bg = ctx.createLinearGradient(0, 0, 0, height);
-    bg.addColorStop(0, "#fff9eb");
-    bg.addColorStop(1, "#f2dec0");
+    const bg = ctx.createLinearGradient(0, 0, width, height);
+    bg.addColorStop(0, "#f7efdf");
+    bg.addColorStop(1, "#e8d3b1");
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = "#a47b4f";
+    // Light grid reference to make the diagnostic board look technical.
+    ctx.strokeStyle = "rgba(103, 79, 56, 0.1)";
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= width; x += 32) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= height; y += 26) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = "#8e6641";
     ctx.beginPath();
-    ctx.moveTo(44, 152);
-    ctx.bezierCurveTo(135, 45, 430, 24, 575, 87);
-    ctx.bezierCurveTo(616, 108, 618, 146, 576, 160);
-    ctx.lineTo(83, 168);
-    ctx.bezierCurveTo(62, 168, 46, 162, 44, 152);
+    ctx.moveTo(40, 156);
+    ctx.bezierCurveTo(130, 45, 440, 18, 589, 84);
+    ctx.bezierCurveTo(629, 106, 630, 148, 585, 166);
+    ctx.lineTo(78, 173);
+    ctx.bezierCurveTo(58, 173, 42, 166, 40, 156);
     ctx.fill();
 
-    ctx.fillStyle = "#d4b48a";
+    ctx.fillStyle = "#d9bf9d";
     ctx.beginPath();
-    ctx.moveTo(116, 144);
-    ctx.bezierCurveTo(210, 82, 414, 71, 545, 110);
-    ctx.lineTo(545, 138);
-    ctx.lineTo(116, 144);
+    ctx.moveTo(112, 147);
+    ctx.bezierCurveTo(206, 81, 424, 66, 563, 109);
+    ctx.lineTo(563, 143);
+    ctx.lineTo(112, 147);
     ctx.fill();
+
+    ctx.fillStyle = "rgba(60, 42, 25, 0.22)";
+    ctx.fillRect(102, 146, 462, 8);
 
     this.zones.forEach((zone) => {
       const inspected = inspectedZoneIds.includes(zone.id);
       const hovered = hoveredZoneId === zone.id;
 
-      ctx.fillStyle = inspected ? "rgba(47, 107, 69, 0.24)" : "rgba(41, 34, 22, 0.1)";
+      ctx.fillStyle = inspected ? "rgba(41, 107, 64, 0.32)" : "rgba(48, 36, 24, 0.12)";
       ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
 
-      ctx.lineWidth = hovered ? 2.4 : 1.2;
-      ctx.strokeStyle = hovered ? "#2f6b45" : "#7f6649";
+      ctx.lineWidth = hovered ? 2.8 : 1.3;
+      ctx.strokeStyle = hovered ? "#1f6a45" : "#6f573c";
       ctx.strokeRect(zone.x, zone.y, zone.w, zone.h);
 
-      ctx.fillStyle = "#2d2117";
+      ctx.fillStyle = hovered ? "#1f6a45" : "#4e3926";
       ctx.font = "12px Trebuchet MS";
       ctx.fillText(zone.label, zone.x + 6, zone.y + 16);
     });
 
     if (!active) {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
+      ctx.fillStyle = "rgba(35, 26, 18, 0.34)";
       ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = "#594934";
+      ctx.strokeStyle = "rgba(255, 241, 217, 0.7)";
+      ctx.setLineDash([8, 6]);
+      ctx.strokeRect(122, 74, 402, 60);
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = "#fff3dd";
       ctx.font = "bold 16px Trebuchet MS";
-      ctx.fillText("Diagnostic en attente", 240, 106);
+      ctx.fillText("Diagnostic en attente", 242, 107);
+      ctx.font = "13px Trebuchet MS";
+      ctx.fillText("Acceptez une mission pour lancer l'analyse", 193, 126);
     }
   }
 }
@@ -513,6 +540,15 @@ class Game {
 
     while (this.ui.eventLog.children.length > 12) {
       this.ui.eventLog.removeChild(this.ui.eventLog.lastChild);
+    }
+  }
+
+  setHighContrast(enabled) {
+    document.body.classList.toggle("high-contrast", Boolean(enabled));
+
+    if (this.ui.contrastToggle) {
+      this.ui.contrastToggle.checked = Boolean(enabled);
+      this.ui.contrastToggle.setAttribute("aria-checked", enabled ? "true" : "false");
     }
   }
 
@@ -1349,30 +1385,57 @@ class Game {
 
     ctx.clearRect(0, 0, width, height);
 
-    const bg = ctx.createLinearGradient(0, 0, 0, height);
-    bg.addColorStop(0, "#f9e5bf");
-    bg.addColorStop(1, "#d0a674");
+    const bg = ctx.createLinearGradient(0, 0, width, height);
+    bg.addColorStop(0, "#f3e1bf");
+    bg.addColorStop(1, "#d5b080");
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = "#7d5f3b";
-    ctx.fillRect(0, height - 46, width, 46);
+    // Warm light cone from a workshop lamp.
+    const lampGlow = ctx.createRadialGradient(180, 8, 10, 180, 24, 170);
+    lampGlow.addColorStop(0, "rgba(255, 248, 224, 0.55)");
+    lampGlow.addColorStop(1, "rgba(255, 248, 224, 0)");
+    ctx.fillStyle = lampGlow;
+    ctx.fillRect(0, 0, 360, 170);
 
-    ctx.fillStyle = "#5f3f27";
-    ctx.fillRect(85, 108, 285, 16);
-    ctx.fillRect(95, 124, 12, 46);
-    ctx.fillRect(348, 124, 12, 46);
+    // Subtle wall slats for depth.
+    ctx.strokeStyle = "rgba(108, 73, 41, 0.12)";
+    for (let x = 0; x <= width; x += 36) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height - 48);
+      ctx.stroke();
+    }
 
-    ctx.fillStyle = "#8f6b44";
-    ctx.fillRect(520, 58, 250, 10);
-    ctx.fillRect(520, 92, 250, 10);
+    // Floor.
+    ctx.fillStyle = "#7b5a34";
+    ctx.fillRect(0, height - 52, width, 52);
+    ctx.fillStyle = "rgba(43, 29, 15, 0.16)";
+    ctx.fillRect(0, height - 52, width, 6);
 
-    ctx.fillStyle = "#c49350";
-    ctx.fillRect(540, 38, 52, 20);
-    ctx.fillRect(614, 38, 52, 20);
-    ctx.fillRect(688, 38, 52, 20);
-    ctx.fillRect(560, 72, 60, 20);
-    ctx.fillRect(640, 72, 72, 20);
+    // Workbench.
+    ctx.fillStyle = "#5f3d22";
+    ctx.fillRect(76, 104, 316, 17);
+    ctx.fillRect(90, 121, 14, 52);
+    ctx.fillRect(358, 121, 14, 52);
+    ctx.fillStyle = "rgba(25, 18, 10, 0.22)";
+    ctx.fillRect(82, 121, 300, 6);
+
+    // Shelves.
+    ctx.fillStyle = "#8f683f";
+    ctx.fillRect(512, 56, 276, 11);
+    ctx.fillRect(512, 92, 276, 11);
+
+    // Boxes and tools silhouettes.
+    ctx.fillStyle = "#c1904c";
+    ctx.fillRect(542, 36, 54, 20);
+    ctx.fillRect(620, 36, 54, 20);
+    ctx.fillRect(698, 36, 54, 20);
+    ctx.fillRect(566, 70, 62, 22);
+    ctx.fillRect(654, 70, 78, 22);
+    ctx.fillStyle = "#6e4b2a";
+    ctx.fillRect(748, 68, 16, 24);
+    ctx.fillRect(770, 64, 8, 28);
 
     const waitingClient = Boolean(
       this.activeScenarios.some((scenario) => !scenario.finished)
@@ -1380,35 +1443,49 @@ class Game {
 
     const blink = Math.floor(this.visualClockMs / 360) % 2 === 0;
 
-    ctx.fillStyle = waitingClient && blink ? "#2f6b45" : "#3f3428";
+    // Shoe icon on table, highlighted when a client is waiting.
+    ctx.fillStyle = waitingClient && blink ? "#2f6b45" : "#3f3326";
     ctx.beginPath();
-    ctx.ellipse(260, 100, 52, 20, -0.16, 0, Math.PI * 2);
+    ctx.ellipse(252, 92, 56, 23, -0.22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(22, 18, 13, 0.22)";
+    ctx.beginPath();
+    ctx.ellipse(254, 102, 60, 10, -0.08, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = "#1f2a22";
-    ctx.font = "bold 19px Trebuchet MS";
-    ctx.fillText(`Niveau: ${this.level.name}`, 24, 33);
+    // Top status chips.
+    ctx.fillStyle = "rgba(33, 24, 15, 0.84)";
+    ctx.fillRect(22, 16, 238, 28);
+    ctx.fillRect(268, 16, 138, 28);
+    ctx.fillRect(412, 16, 116, 28);
+    ctx.fillStyle = "#f8e7cb";
+    ctx.font = "bold 15px Trebuchet MS";
+    ctx.fillText(`Niveau: ${this.level.name}`, 30, 35);
+    ctx.fillText(`Timer: ${this.level.timerEnabled ? "ON" : "OFF"}`, 276, 35);
+    ctx.fillText(`Jour: ${this.day}`, 422, 35);
 
     const rep = this.player.reputation;
-    const repWidth = Math.round((Math.max(0, rep) / 100) * 180);
+    const repWidth = Math.round((Math.max(0, rep) / 100) * 202);
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
-    ctx.fillRect(24, 44, 180, 16);
+    ctx.fillStyle = "rgba(255, 246, 228, 0.82)";
+    ctx.fillRect(22, 52, 202, 14);
     ctx.fillStyle = rep > 35 ? "#2f6b45" : "#8f2d2d";
-    ctx.fillRect(24, 44, repWidth, 16);
-    ctx.strokeStyle = "#58462f";
-    ctx.strokeRect(24, 44, 180, 16);
-
-    ctx.fillStyle = "#1f2a22";
-    ctx.font = "14px Trebuchet MS";
-    ctx.fillText(`Timer: ${this.level.timerEnabled ? "ON" : "OFF"}`, 220, 57);
+    ctx.fillRect(22, 52, repWidth, 14);
+    ctx.strokeStyle = "#4e3a23";
+    ctx.strokeRect(22, 52, 202, 14);
+    ctx.fillStyle = "#2e2116";
+    ctx.font = "12px Trebuchet MS";
+    ctx.fillText("Reputation", 22, 78);
 
     const scenario = this.getSelectedScenario();
     if (scenario) {
       const elapsed = Math.floor(scenario.elapsedMs / 1000);
-      ctx.font = "15px Trebuchet MS";
-      ctx.fillText(`Client actif: ${scenario.client.name}`, 24, 86);
-      ctx.fillText(`Chrono: ${elapsed}s / ${scenario.timeLimit}s`, 24, 106);
+      ctx.fillStyle = "rgba(32, 24, 16, 0.82)";
+      ctx.fillRect(22, 84, 306, 48);
+      ctx.fillStyle = "#f6e4c9";
+      ctx.font = "14px Trebuchet MS";
+      ctx.fillText(`Client actif: ${scenario.client.name}`, 32, 103);
+      ctx.fillText(`Chrono: ${elapsed}s / ${scenario.timeLimit}s`, 32, 122);
     }
   }
 
@@ -1485,6 +1562,18 @@ class Game {
     this.ui.nextClientBtn.addEventListener("click", () => this.nextClient());
     this.ui.restockBtn.addEventListener("click", () => this.manualRestock());
     this.ui.finishStitchBtn.addEventListener("click", () => this.finishStitchMiniGame());
+
+    if (this.ui.contrastToggle) {
+      this.ui.contrastToggle.addEventListener("change", () => {
+        const enabled = Boolean(this.ui.contrastToggle.checked);
+        this.setHighContrast(enabled);
+        try {
+          window.localStorage.setItem("cordonnerie:high-contrast", enabled ? "1" : "0");
+        } catch (_error) {
+          // Ignore storage issues in private mode.
+        }
+      });
+    }
 
     this.ui.activeClients.addEventListener("click", (event) => {
       const button = event.target.closest("button[data-scenario-id]");
@@ -1627,6 +1716,14 @@ class Game {
     );
 
     this.ui.stitchingPanel.classList.add("hidden");
+
+    let highContrastSaved = false;
+    try {
+      highContrastSaved = window.localStorage.getItem("cordonnerie:high-contrast") === "1";
+    } catch (_error) {
+      highContrastSaved = false;
+    }
+    this.setHighContrast(highContrastSaved);
 
     await this.loadClients();
 

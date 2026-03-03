@@ -114,3 +114,20 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 - Verification:
   - `node --check` OK sur `js/game.js`.
   - Smoke test HTTP local OK (`index.html`, `style.css`, `game.js`).
+
+## 2026-03-03 - Ajustement visuel apres retour utilisateur
+- Rework visuel oriente atelier premium (moins plat):
+  - Canvas atelier redessine avec profondeur (lumiere, etablis, etageres, HUD canvas plus propre).
+  - Canvas diagnostic redessine avec grille technique et overlay attente plus lisible.
+- CSS retouche pour un rendu plus contraste et moins "fade":
+  - Cartes/textures plus marquees.
+  - Boutons et panneaux renforces.
+  - Outiltips mieux alignes.
+- Mode contraste eleve rendu robuste:
+  - classe `body.high-contrast` pilotee en JS.
+  - persistance via `localStorage`.
+- Accessibilite:
+  - `prefers-reduced-motion` coupe les animations/transition.
+- Validation:
+  - `node --check` OK sur `js/game.js`.
+  - Smoke test HTTP local OK.

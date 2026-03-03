@@ -1,20 +1,20 @@
 :root {
-  --bg: #ede3d2;
-  --bg-soft: #f7f1e6;
-  --surface: #fffaf1;
-  --surface-elevated: #fffdf8;
-  --ink: #2d231a;
+  --bg: #e6d5bd;
+  --bg-soft: #f4e9d8;
+  --surface: #fffaf0;
+  --surface-elevated: #fffdf7;
+  --ink: #2e2217;
   --ink-soft: #5f5143;
-  --line: #cfb89d;
-  --line-strong: #b28c60;
+  --line: #ccb08f;
+  --line-strong: #9c7851;
   --copper: #8f5f38;
-  --leather: #6f4b2d;
+  --leather: #644126;
   --beige: #f3e7d5;
-  --durable: #2d6d42;
-  --durable-soft: #eaf5ee;
-  --alert: #a63d2f;
-  --alert-soft: #fdecea;
-  --shadow: 0 12px 32px rgba(63, 43, 24, 0.12);
+  --durable: #296b40;
+  --durable-soft: #e8f3ea;
+  --alert: #b13a2d;
+  --alert-soft: #fde7e5;
+  --shadow: 0 12px 34px rgba(50, 30, 13, 0.16);
   --radius: 16px;
 }
 
@@ -29,9 +29,9 @@ body {
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 100% 0, rgba(143, 95, 56, 0.18), transparent 42%),
-    radial-gradient(circle at 0 0, rgba(45, 109, 66, 0.12), transparent 32%),
-    linear-gradient(165deg, #f8f2e8 0%, var(--bg) 60%, #e4d5bf 100%);
+    radial-gradient(circle at 100% 0, rgba(110, 72, 40, 0.2), transparent 40%),
+    radial-gradient(circle at 0 0, rgba(41, 107, 64, 0.12), transparent 33%),
+    linear-gradient(162deg, #f7f0e3 0%, var(--bg) 56%, #d9c2a2 100%);
 }
 
 body:has(#contrast-toggle:checked) {
@@ -63,7 +63,9 @@ body:has(#contrast-toggle:checked) {
 .card {
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.18) 100%),
+    linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%);
   box-shadow: var(--shadow);
 }
 
@@ -73,6 +75,15 @@ body:has(#contrast-toggle:checked) {
   align-items: start;
   gap: 0.8rem;
   padding: 0.95rem 1.05rem;
+  background:
+    repeating-linear-gradient(
+      100deg,
+      rgba(143, 95, 56, 0.08) 0,
+      rgba(143, 95, 56, 0.08) 18px,
+      rgba(255, 255, 255, 0) 18px,
+      rgba(255, 255, 255, 0) 34px
+    ),
+    linear-gradient(180deg, #f6ecdb 0%, #ebddc6 100%);
 }
 
 .atelier-brand {
@@ -83,6 +94,8 @@ body:has(#contrast-toggle:checked) {
 .topbar h1 {
   margin: 0;
   font-size: clamp(1.25rem, 1rem + 1.4vw, 2rem);
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  letter-spacing: 0.01em;
 }
 
 .eyebrow {
@@ -186,11 +199,14 @@ body:has(#contrast-toggle:checked) {
   align-items: center;
   gap: 0.55rem;
   margin-bottom: 0.72rem;
+  border-bottom: 1px solid rgba(156, 120, 81, 0.24);
+  padding-bottom: 0.45rem;
 }
 
 .heading-title {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 0.45rem;
 }
 
@@ -248,9 +264,10 @@ body:has(#contrast-toggle:checked) {
 #diagnostic-canvas,
 #stitch-canvas {
   width: 100%;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 12px;
   background: #fffef8;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 #diagnostic-canvas,
@@ -293,9 +310,11 @@ body:has(#contrast-toggle:checked) {
 }
 
 .dialogue-box {
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 12px;
-  background: linear-gradient(180deg, #f4ebdd 0%, #f8f2e8 100%);
+  background:
+    radial-gradient(circle at 10% 0, rgba(255, 255, 255, 0.45), transparent 48%),
+    linear-gradient(180deg, #ecdbc3 0%, #f5ead8 100%);
   padding: 0.66rem;
   margin-bottom: 0.7rem;
 }
@@ -310,7 +329,9 @@ body:has(#contrast-toggle:checked) {
   min-height: 160px;
   border: 1px dashed var(--line-strong);
   border-radius: 12px;
-  background: #fffcf5;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.42) 100%),
+    #fdf4e6;
   padding: 0.78rem;
   margin-bottom: 0.72rem;
 }
@@ -369,9 +390,9 @@ body:has(#contrast-toggle:checked) {
 }
 
 .btn {
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 10px;
-  background: var(--bg-soft);
+  background: linear-gradient(180deg, #fbf4e8 0%, #efe2cf 100%);
   color: var(--ink);
   padding: 0.56rem 0.8rem;
   font: inherit;
@@ -381,7 +402,7 @@ body:has(#contrast-toggle:checked) {
 
 .btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: #efe2cf;
+  background: linear-gradient(180deg, #fff9ef 0%, #ead5b8 100%);
   border-color: var(--line-strong);
 }
 
@@ -415,7 +436,7 @@ body:has(#contrast-toggle:checked) {
   min-height: 62px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--surface-elevated);
+  background: linear-gradient(180deg, #fffdf7 0%, #fdf4e7 100%);
   color: var(--ink-soft);
   padding: 0.6rem;
   margin-bottom: 0.6rem;
@@ -453,9 +474,9 @@ body:has(#contrast-toggle:checked) {
 }
 
 .inventory-item {
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 10px;
-  background: #fbf5e9;
+  background: linear-gradient(180deg, #fcf7ee 0%, #f1e1c8 100%);
   text-align: center;
   padding: 0.46rem;
 }
@@ -526,19 +547,20 @@ body:has(#contrast-toggle:checked) {
 
 .edu-tip {
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: var(--bg-soft);
-  color: var(--ink-soft);
-  font-size: 0.77rem;
+  background: linear-gradient(180deg, #fff8ec 0%, #ecd7b7 100%);
+  color: #644126;
+  font-size: 0.8rem;
   font-weight: 700;
   line-height: 1;
   cursor: help;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
 }
 
 .edu-tip:hover,
@@ -553,10 +575,10 @@ body:has(#contrast-toggle:checked) {
   left: 50%;
   transform: translateX(-50%);
   bottom: calc(100% + 8px);
-  width: min(240px, 62vw);
-  background: #2f251c;
-  color: #fff6e8;
-  border: 1px solid #54412f;
+  width: min(260px, 68vw);
+  background: #2d2117;
+  color: #fff6ea;
+  border: 1px solid #60452d;
   border-radius: 8px;
   padding: 0.45rem 0.5rem;
   font-size: 0.75rem;
@@ -566,6 +588,17 @@ body:has(#contrast-toggle:checked) {
   pointer-events: none;
   transition: opacity 120ms ease;
   z-index: 20;
+}
+
+body:has(#contrast-toggle:checked) .topbar,
+body.high-contrast .topbar {
+  background: linear-gradient(180deg, #1b1610 0%, #17120d 100%);
+}
+
+body:has(#contrast-toggle:checked) .edu-tip,
+body.high-contrast .edu-tip {
+  background: linear-gradient(180deg, #2d261d 0%, #1f1b15 100%);
+  color: #fff2d8;
 }
 
 .edu-tip:hover::after,
@@ -670,5 +703,13 @@ body:has(#contrast-toggle:checked) {
 
   .toolbar-actions {
     grid-auto-flow: row;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
   }
 }
