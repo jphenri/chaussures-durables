@@ -1368,6 +1368,7 @@ class Game {
     }
 
     const deltaMs = seconds * 1000;
+    let stateChanged = false;
 
     this.activeScenarios.forEach((scenario) => {
       if (scenario.finished) {
@@ -1379,6 +1380,7 @@ class Game {
 
         if (scenario.elapsedMs >= scenario.timeLimit * 1000) {
           this.applyTimeoutToScenario(scenario);
+          stateChanged = true;
         }
       }
     });
@@ -1386,6 +1388,10 @@ class Game {
     if (this.stitchScenarioId) {
       this.stitchMiniGame.advance(deltaMs, this.level.timerEnabled);
       this.renderStitchStats();
+    }
+
+    if (stateChanged) {
+      this.renderAll();
     }
   }
 
@@ -1396,7 +1402,8 @@ class Game {
     this.tick(deltaSeconds);
     this.drawWorkshop();
     this.drawBoards();
-    this.renderAll();
+    this.renderTimerBadge();
+    this.renderStitchStats();
 
     this.rafId = window.requestAnimationFrame((next) => this.frame(next));
   }
