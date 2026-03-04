@@ -293,3 +293,10 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - les actions proposees restent filtrees par type + couleur metier de la photo.
 - Verification:
   - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Ajustement ciblé talons hauts
+- Recalage du layout interactif `talons_hauts` dans `INTERACTIVE_LAYOUTS` (`simulation-cordonnerie/js/game.js`):
+  - `imageFrame` remis en base 188.76117x127.00133.
+  - nouveaux paths pour `semelle`, `talon`, `empeigne`, `couture` afin d'eviter les zones trop basses/oversize.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
