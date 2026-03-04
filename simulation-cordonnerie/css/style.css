@@ -462,6 +462,12 @@ body {
   stroke-linecap: round;
 }
 
+.mini-click-surface {
+  fill: rgba(0, 0, 0, 0.001);
+  stroke: none;
+  cursor: pointer;
+}
+
 .mini-hammer-zone {
   fill: rgba(198, 164, 90, 0.12);
   stroke: rgba(198, 164, 90, 0.82);

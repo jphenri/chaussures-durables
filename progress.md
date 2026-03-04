@@ -389,3 +389,13 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 - `node --check simulation-cordonnerie/js/levels.js` OK
 - `node --check simulation-cordonnerie/js/score.js` OK
 - Playwright du skill non executable localement: package `playwright` absent (`ERR_MODULE_NOT_FOUND`).
+
+## 2026-03-03 - Fix clic mini-jeu collage
+- Correction du bug utilisateur "impossible de cliquer" sur le mini-jeu timing collage.
+- Actions appliquees:
+  - tentative de validation en `pointerdown` (plus reactif que `click`) dans `handleMiniGamePointerDown()`.
+  - ajout d'une surface de clic explicite dans le SVG timing (`.mini-click-surface`) avec listeners locaux.
+  - prevention de double comptage (stopPropagation sur surfaces timing et zone talon).
+- CSS ajoute: `.mini-click-surface` pour garantir une zone cliquable stable.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK

@@ -1255,7 +1255,23 @@ class Game {
 
   handleMiniGamePointerDown(event) {
     const miniGame = this.state.miniGame;
-    if (!miniGame.active || miniGame.mode !== "scrub") {
+    if (!miniGame.active) {
+      return;
+    }
+
+    if (miniGame.mode === "timing") {
+      event.preventDefault();
+      this.handleTimingAttempt();
+      return;
+    }
+
+    if (miniGame.mode === "multi_click") {
+      event.preventDefault();
+      this.handleMultiClick(this.getSvgPointFromEvent(event));
+      return;
+    }
+
+    if (miniGame.mode !== "scrub") {
       return;
     }
 
@@ -1386,11 +1402,13 @@ class Game {
     }
 
     if (miniGame.mode === "timing") {
+      event.preventDefault();
       this.handleTimingAttempt();
       return;
     }
 
     if (miniGame.mode === "multi_click") {
+      event.preventDefault();
       this.handleMultiClick(this.getSvgPointFromEvent(event));
     }
   }
@@ -2434,6 +2452,27 @@ class Game {
       marker.setAttribute("y2", String(baseY + barHeight + 12));
       marker.setAttribute("class", "mini-timing-marker");
       targetsContainer.appendChild(marker);
+
+      const clickSurface = document.createElementNS(ns, "rect");
+      clickSurface.setAttribute("x", String(baseX));
+      clickSurface.setAttribute("y", String(baseY - 16));
+      clickSurface.setAttribute("width", String(barWidth));
+      clickSurface.setAttribute("height", String(barHeight + 32));
+      clickSurface.setAttribute("rx", "10");
+      clickSurface.setAttribute("class", "mini-click-surface");
+      clickSurface.setAttribute("role", "button");
+      clickSurface.setAttribute("aria-label", "Valider le collage");
+      clickSurface.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.handleTimingAttempt();
+      });
+      clickSurface.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.handleTimingAttempt();
+      });
+      targetsContainer.appendChild(clickSurface);
       return;
     }
 
@@ -2450,6 +2489,18 @@ class Game {
     hitZone.setAttribute("height", String(area.height));
     hitZone.setAttribute("rx", "10");
     hitZone.setAttribute("class", "mini-hammer-zone");
+    hitZone.setAttribute("role", "button");
+    hitZone.setAttribute("aria-label", "Frapper pour fixer le talon");
+    hitZone.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.handleMultiClick(this.getSvgPointFromEvent(event));
+    });
+    hitZone.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.handleMultiClick(this.getSvgPointFromEvent(event));
+    });
     targetsContainer.appendChild(hitZone);
 
     const pulse = document.createElementNS(ns, "circle");
