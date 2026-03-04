@@ -210,3 +210,10 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - ajout `lastShoeTypeId` dans le state pour eviter deux types identiques consecutifs.
 - Verification:
   - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Maj fichiers image utilisateur
+- `simulation-cordonnerie/js/game.js` mis a jour pour utiliser:
+  - `assets/img/sora/birkenstock.png`
+  - `assets/img/sora/louboutin.png`
+- Ajout d'un fallback de nom pour talons hauts: `loubloutin.png` si present en production.
+- Verification syntaxique: `node --check simulation-cordonnerie/js/game.js` OK.

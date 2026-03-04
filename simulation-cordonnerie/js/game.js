@@ -70,8 +70,9 @@ export const SHOE_TYPES = {
   talons_hauts: {
     id: "talons_hauts",
     name: "Talons hauts",
-    icon: "louboutin.jpg",
-    iconPath: `${ASSET_BASE}/louboutin.jpg`,
+    icon: "louboutin.png",
+    iconPath: `${ASSET_BASE}/louboutin.png`,
+    fallbackIconPath: `${ASSET_BASE}/loubloutin.png`,
     construction: "Talon aiguille avec semelle fine de ville",
     problemPool: [
       "bonbout_aiguille_use",
@@ -84,8 +85,8 @@ export const SHOE_TYPES = {
   sandale: {
     id: "sandale",
     name: "Sandale",
-    icon: "birkenstock.webp",
-    iconPath: `${ASSET_BASE}/birkenstock.webp`,
+    icon: "birkenstock.png",
+    iconPath: `${ASSET_BASE}/birkenstock.png`,
     construction: "Sandale anatomique liege et cuir",
     problemPool: [
       "liege_tasse",
@@ -723,6 +724,18 @@ class Game {
     }
 
     this.ui.shoeTypeImage.style.pointerEvents = "none";
+    this.ui.shoeTypeImage.dataset.fallbackTried = "false";
+    this.ui.shoeTypeImage.onerror = () => {
+      if (shoeType.fallbackIconPath && this.ui.shoeTypeImage.dataset.fallbackTried !== "true") {
+        this.ui.shoeTypeImage.dataset.fallbackTried = "true";
+        this.ui.shoeTypeImage.setAttribute("href", shoeType.fallbackIconPath);
+        this.ui.shoeTypeImage.setAttributeNS(
+          "http://www.w3.org/1999/xlink",
+          "href",
+          shoeType.fallbackIconPath
+        );
+      }
+    };
     this.ui.shoeTypeImage.setAttribute("href", shoeType.iconPath);
     this.ui.shoeTypeImage.setAttributeNS("http://www.w3.org/1999/xlink", "href", shoeType.iconPath);
 
