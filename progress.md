@@ -269,3 +269,10 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - ajout des couleurs de zones pour `data-shoe-type="sandale"` dans `simulation-cordonnerie/css/style.css`.
 - Verification:
   - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Boutons d'action aligns aux couleurs
+- `renderActions()` met maintenant les boutons en couleur selon la zone active de la picture (`jaune`, `bleu`, `rose`, `rouge`, `blanc`).
+- Ajout d'un rappel au-dessus des boutons: `Couleur active: ... -> ...`.
+- `style.css` enrichi avec variantes de boutons `.action-color-*` (border/texte/hover coherents).
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.

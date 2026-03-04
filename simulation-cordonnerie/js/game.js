@@ -670,6 +670,12 @@ function formatMoney(value) {
   return `${Math.round(value)} $`;
 }
 
+function toColorKey(colorName) {
+  const safe = String(colorName || "").toLowerCase().trim();
+  const allowed = new Set(["jaune", "bleu", "rose", "rouge", "blanc"]);
+  return allowed.has(safe) ? safe : "gold";
+}
+
 function callLegacyHook(name, payload) {
   const fn = window[name];
   if (typeof fn === "function") {
@@ -1393,6 +1399,15 @@ class Game {
     }
 
     const actions = this.getActionsForSelectedPart();
+    const guide = this.getPartGuide(this.state.selectedPart);
+    const colorKey = toColorKey(guide?.color);
+
+    if (guide) {
+      const guideNote = document.createElement("p");
+      guideNote.className = "action-guide";
+      guideNote.textContent = `Couleur active: ${guide.color} -> ${guide.actionLabel}`;
+      this.ui.actionsList.appendChild(guideNote);
+    }
 
     if (actions.length === 0) {
       const note = document.createElement("p");
@@ -1406,7 +1421,7 @@ class Game {
       const button = document.createElement("button");
       const stockAvailable = this.hasStock(action.stockCost);
       button.type = "button";
-      button.className = "action-btn";
+      button.className = `action-btn action-color-${colorKey}`;
       button.disabled = this.state.transitionLock || !stockAvailable;
 
       const difficultyLabel = `Difficulte ${action.difficulty}/5`;
