@@ -415,12 +415,64 @@ body {
   background: linear-gradient(180deg, #19120f 0%, #130e0c 100%);
 }
 
+.mini-game-svg[data-mini-mode="scrub"] {
+  cursor: crosshair;
+}
+
+.mini-game-svg[data-mini-mode="timing"],
+.mini-game-svg[data-mini-mode="multi_click"] {
+  cursor: pointer;
+}
+
 .mini-game-track {
   fill: none;
   stroke: rgba(198, 164, 90, 0.52);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.mini-stage {
+  fill: rgba(198, 164, 90, 0.07);
+  stroke: rgba(198, 164, 90, 0.42);
+  stroke-width: 1.2;
+}
+
+.mini-progress-track {
+  fill: rgba(255, 255, 255, 0.08);
+  stroke: rgba(198, 164, 90, 0.35);
+  stroke-width: 1;
+}
+
+.mini-progress-fill {
+  fill: rgba(198, 164, 90, 0.9);
+  stroke: rgba(209, 242, 205, 0.45);
+  stroke-width: 0.8;
+}
+
+.mini-timing-zone {
+  fill: rgba(95, 170, 119, 0.35);
+  stroke: rgba(145, 223, 165, 0.85);
+  stroke-width: 1;
+}
+
+.mini-timing-marker {
+  stroke: rgba(236, 63, 58, 0.95);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.mini-hammer-zone {
+  fill: rgba(198, 164, 90, 0.12);
+  stroke: rgba(198, 164, 90, 0.82);
+  stroke-width: 1.5;
+}
+
+.mini-hammer-core {
+  fill: rgba(236, 63, 58, 0.78);
+  stroke: rgba(255, 210, 208, 0.94);
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 6px rgba(236, 63, 58, 0.45));
 }
 
 .mini-target {

@@ -358,3 +358,34 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 - `node --check simulation-cordonnerie/js/levels.js` OK
 - `node --check simulation-cordonnerie/js/score.js` OK
 - Boucle Playwright du skill re-tentee mais bloquee: package `playwright` absent (`ERR_MODULE_NOT_FOUND`).
+
+## 2026-03-03 - Mini-jeux specialises par type de reparation
+- Evolution du systeme mini-jeu dans `simulation-cordonnerie/js/game.js` avec 4 modes:
+  - `points` (par defaut, ex couture trepointe),
+  - `scrub` pour reparations de type cirage/nettoyage,
+  - `timing` pour reparations de type collage/recollage (clic precis sur barre),
+  - `multi_click` pour interventions talon (clics repetes).
+- Regles de mapping mini-jeu:
+  - nom/id contenant `cirage` ou `nettoyage` -> `scrub`,
+  - nom/id contenant `collage` / `recollage` -> `timing`,
+  - piece `talon` -> `multi_click`,
+  - sinon -> `points`.
+- Ajout cycle de vie robuste:
+  - ticker interne pour la barre de timing,
+  - arret du ticker sur cancel/fail/timeout/reset/nouveau client,
+  - verrouillage des actions tant que mini-jeu actif conserve.
+- Accessibilite et controle:
+  - mini-game SVG focusable,
+  - clavier `Enter`/`Space` supporte pour timing, multi-click et scrub (fallback clavier),
+  - pointeur supporte pour scrub (frotter maintenu + mouvement).
+- `render_game_to_text` enrichi avec `miniGame.mode` et metriques de progression (`scrubProgress`, `timingPos`, `requiredClicks`).
+- CSS ajoute dans `simulation-cordonnerie/css/style.css` pour les 3 nouveaux visuels mini-jeu:
+  - zone de frottage + barre de progression,
+  - barre timing + fenetre cible + marqueur,
+  - zone talon multi-clic.
+
+## Verification 2026-03-03 (mini-jeux specialises)
+- `node --check simulation-cordonnerie/js/game.js` OK
+- `node --check simulation-cordonnerie/js/levels.js` OK
+- `node --check simulation-cordonnerie/js/score.js` OK
+- Playwright du skill non executable localement: package `playwright` absent (`ERR_MODULE_NOT_FOUND`).

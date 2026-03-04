@@ -675,7 +675,7 @@ const DEFAULT_STOCK = {
   colle: 9,
 };
 
-const MINI_GAME_BY_PART = {
+const POINT_MINI_GAME_BY_PART = {
   couture: {
     title: "Mini-jeu: couture trepointe",
     instruction: "Cliquez chaque point de couture dans l'ordre.",
@@ -686,8 +686,8 @@ const MINI_GAME_BY_PART = {
     radius: 6.5,
   },
   semelle: {
-    title: "Mini-jeu: collage semelle",
-    instruction: "Suivez la ligne de semelle en validant les points.",
+    title: "Mini-jeu: points de semelle",
+    instruction: "Validez les points de controle de semelle.",
     trackPath: "M 18 88 C 90 102 182 102 304 86",
     ordered: true,
     basePoints: 4,
@@ -717,6 +717,7 @@ const MINI_GAME_BY_PART = {
 function createMiniGameState() {
   return {
     active: false,
+    mode: "points",
     repairId: null,
     repairName: "",
     part: null,
@@ -729,6 +730,18 @@ function createMiniGameState() {
     hits: 0,
     nextIndex: 0,
     targets: [],
+    scrubProgress: 0,
+    scrubTarget: 100,
+    scrubbing: false,
+    lastPointer: null,
+    timingPos: 0,
+    timingDir: 1,
+    timingStep: 0.03,
+    timingTargetStart: 0.42,
+    timingTargetEnd: 0.58,
+    timingMaxMisses: 2,
+    requiredClicks: 0,
+    hitArea: null,
   };
 }
 
@@ -823,6 +836,7 @@ class Game {
 
     this.clients = [];
     this.timerId = null;
+    this.miniGameTickerId = null;
   }
 
   async init() {
@@ -1008,6 +1022,25 @@ class Game {
     });
   }
 
+  getMiniGameMode(repair, part) {
+    const repairName = String(repair?.name || "").toLowerCase();
+    const repairId = String(repair?.id || "").toLowerCase();
+
+    if (repairId.includes("recollage") || repairName.includes("collage")) {
+      return "timing";
+    }
+
+    if (repairName.includes("cirage") || repairName.includes("nettoyage")) {
+      return "scrub";
+    }
+
+    if (part === "talon") {
+      return "multi_click";
+    }
+
+    return "points";
+  }
+
   samplePointsOnPath(pathData, count) {
     if (!pathData || count <= 0 || !this.ui.miniGameSvg) {
       return [];
@@ -1049,7 +1082,73 @@ class Game {
 
   buildMiniGameFromRepair(repair) {
     const part = this.state.selectedPart || repair.parts[0] || "semelle";
-    const profile = MINI_GAME_BY_PART[part] || MINI_GAME_BY_PART.semelle;
+    const mode = this.getMiniGameMode(repair, part);
+    const baseState = {
+      repairId: repair.id,
+      repairName: repair.name,
+      part,
+      mode,
+      title: "Mini-jeu",
+      baseInstruction: "",
+      trackPath: "",
+      ordered: false,
+      maxMisses: 0,
+      misses: 0,
+      hits: 0,
+      nextIndex: 0,
+      targets: [],
+      scrubProgress: 0,
+      scrubTarget: 100,
+      scrubbing: false,
+      lastPointer: null,
+      timingPos: 0.1,
+      timingDir: 1,
+      timingStep: 0.03,
+      timingTargetStart: 0.42,
+      timingTargetEnd: 0.58,
+      timingMaxMisses: 2,
+      requiredClicks: 0,
+      hitArea: null,
+      active: true,
+      difficulty: repair.difficulty,
+      lastTimingPrecision: 0,
+    };
+
+    if (mode === "scrub") {
+      return {
+        ...baseState,
+        title: "Mini-jeu: cirage",
+        baseInstruction: "Maintenez le clic et frottez la zone jusqu'a brillance.",
+        scrubTarget: 85 + repair.difficulty * 30,
+      };
+    }
+
+    if (mode === "timing") {
+      const zoneHalf = clamp(0.18 - repair.difficulty * 0.018, 0.065, 0.14);
+      return {
+        ...baseState,
+        title: "Mini-jeu: collage precis",
+        baseInstruction: "Cliquez quand le curseur est dans la zone de collage.",
+        timingPos: Math.random() * 0.12,
+        timingStep: 0.017 + repair.difficulty * 0.004,
+        timingTargetStart: clamp(0.5 - zoneHalf, 0.06, 0.48),
+        timingTargetEnd: clamp(0.5 + zoneHalf, 0.52, 0.94),
+        timingMaxMisses: 2,
+        maxMisses: 2,
+      };
+    }
+
+    if (mode === "multi_click") {
+      return {
+        ...baseState,
+        title: "Mini-jeu: fixation talon",
+        baseInstruction: "Cliquez rapidement plusieurs fois pour fixer le talon.",
+        requiredClicks: 7 + repair.difficulty * 3,
+        hitArea: { x: 126, y: 24, width: 70, height: 70 },
+      };
+    }
+
+    const profile = POINT_MINI_GAME_BY_PART[part] || POINT_MINI_GAME_BY_PART.semelle;
     const extraPoints = clamp(repair.difficulty - 2, 0, 3);
     const pointCount = profile.basePoints + extraPoints;
     const sampledPoints = this.samplePointsOnPath(profile.trackPath, pointCount);
@@ -1062,17 +1161,12 @@ class Game {
     }));
 
     return {
-      repairId: repair.id,
-      repairName: repair.name,
-      part,
+      ...baseState,
       title: profile.title,
       baseInstruction: profile.instruction,
       trackPath: profile.trackPath,
       ordered: profile.ordered,
       maxMisses: profile.maxMisses,
-      misses: 0,
-      hits: 0,
-      nextIndex: 0,
       targets,
       active: targets.length > 0,
     };
@@ -1083,16 +1177,270 @@ class Game {
       return "";
     }
 
+    if (miniGame.mode === "scrub") {
+      const scrubPercent = clamp(
+        Math.round((miniGame.scrubProgress / Math.max(1, miniGame.scrubTarget)) * 100),
+        0,
+        100
+      );
+      return `${miniGame.baseInstruction} Progression: ${scrubPercent}%.`;
+    }
+
+    if (miniGame.mode === "timing") {
+      const remainingErrors = Math.max(0, miniGame.timingMaxMisses - miniGame.misses);
+      return `${miniGame.baseInstruction} Erreurs restantes: ${remainingErrors}.`;
+    }
+
+    if (miniGame.mode === "multi_click") {
+      return `${miniGame.baseInstruction} Coups: ${miniGame.hits}/${miniGame.requiredClicks}.`;
+    }
+
     const attempts = miniGame.hits + miniGame.misses;
     const precision = attempts > 0 ? Math.round((miniGame.hits / attempts) * 100) : 100;
     const orderText = miniGame.ordered ? " Ordre obligatoire." : "";
     const remainingErrors = Math.max(0, miniGame.maxMisses - miniGame.misses);
+    return `${miniGame.baseInstruction}${orderText} Erreurs restantes: ${remainingErrors}. Precision: ${precision}%.`;
+  }
 
-    return (
-      `${miniGame.baseInstruction}${orderText}`
-      + ` Erreurs restantes: ${remainingErrors}.`
-      + ` Precision: ${precision}%.`
+  startMiniGameTicker() {
+    this.stopMiniGameTicker();
+
+    if (!this.state.miniGame.active || this.state.miniGame.mode !== "timing") {
+      return;
+    }
+
+    this.miniGameTickerId = window.setInterval(() => {
+      const miniGame = this.state.miniGame;
+      if (!miniGame.active || miniGame.mode !== "timing") {
+        this.stopMiniGameTicker();
+        return;
+      }
+
+      miniGame.timingPos += miniGame.timingDir * miniGame.timingStep;
+      if (miniGame.timingPos >= 1) {
+        miniGame.timingPos = 1;
+        miniGame.timingDir = -1;
+      } else if (miniGame.timingPos <= 0) {
+        miniGame.timingPos = 0;
+        miniGame.timingDir = 1;
+      }
+
+      this.renderMiniGame();
+    }, 34);
+  }
+
+  stopMiniGameTicker() {
+    if (this.miniGameTickerId) {
+      window.clearInterval(this.miniGameTickerId);
+      this.miniGameTickerId = null;
+    }
+  }
+
+  getSvgPointFromEvent(event) {
+    if (!this.ui.miniGameSvg || !(event instanceof MouseEvent)) {
+      return null;
+    }
+
+    const ctm = this.ui.miniGameSvg.getScreenCTM();
+    if (!ctm) {
+      return null;
+    }
+
+    const point = this.ui.miniGameSvg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+    const local = point.matrixTransform(ctm.inverse());
+    return { x: local.x, y: local.y };
+  }
+
+  handleMiniGamePointerDown(event) {
+    const miniGame = this.state.miniGame;
+    if (!miniGame.active || miniGame.mode !== "scrub") {
+      return;
+    }
+
+    const point = this.getSvgPointFromEvent(event);
+    if (!point) {
+      return;
+    }
+
+    miniGame.scrubbing = true;
+    miniGame.lastPointer = point;
+  }
+
+  handleMiniGamePointerMove(event) {
+    const miniGame = this.state.miniGame;
+    if (!miniGame.active || miniGame.mode !== "scrub" || !miniGame.scrubbing) {
+      return;
+    }
+
+    const point = this.getSvgPointFromEvent(event);
+    if (!point || !miniGame.lastPointer) {
+      return;
+    }
+
+    const dx = point.x - miniGame.lastPointer.x;
+    const dy = point.y - miniGame.lastPointer.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance <= 0.2) {
+      return;
+    }
+
+    miniGame.scrubProgress = Math.min(
+      miniGame.scrubTarget,
+      miniGame.scrubProgress + distance * 1.25
     );
+    miniGame.lastPointer = point;
+
+    if (miniGame.scrubProgress >= miniGame.scrubTarget) {
+      this.completeMiniGame();
+      return;
+    }
+
+    this.state.selectedSeverity = "medium";
+    this.state.diagnosticText =
+      `Mini-jeu ${miniGame.repairName}: frottage en cours.\n`
+      + this.getMiniGameInstructionText(miniGame);
+    this.render();
+  }
+
+  handleMiniGamePointerUp() {
+    const miniGame = this.state.miniGame;
+    if (!miniGame.active || miniGame.mode !== "scrub") {
+      return;
+    }
+
+    miniGame.scrubbing = false;
+    miniGame.lastPointer = null;
+  }
+
+  handleTimingAttempt() {
+    const miniGame = this.state.miniGame;
+    if (!miniGame.active || miniGame.mode !== "timing") {
+      return;
+    }
+
+    const isInWindow =
+      miniGame.timingPos >= miniGame.timingTargetStart
+      && miniGame.timingPos <= miniGame.timingTargetEnd;
+
+    if (isInWindow) {
+      const center = (miniGame.timingTargetStart + miniGame.timingTargetEnd) / 2;
+      const halfWindow = Math.max(0.01, (miniGame.timingTargetEnd - miniGame.timingTargetStart) / 2);
+      const distanceFromCenter = Math.abs(miniGame.timingPos - center);
+      miniGame.lastTimingPrecision = clamp(1 - distanceFromCenter / halfWindow, 0.4, 1);
+      miniGame.hits = 1;
+      this.completeMiniGame();
+      return;
+    }
+
+    miniGame.misses += 1;
+    if (miniGame.misses > miniGame.timingMaxMisses) {
+      this.failMiniGame("Collage imprecis.");
+      return;
+    }
+
+    this.state.selectedSeverity = "medium";
+    this.state.diagnosticText =
+      `Mini-jeu ${miniGame.repairName}: timing manque.\n`
+      + this.getMiniGameInstructionText(miniGame);
+    this.render();
+  }
+
+  handleMultiClick(point = null) {
+    const miniGame = this.state.miniGame;
+    if (!miniGame.active || miniGame.mode !== "multi_click") {
+      return;
+    }
+
+    if (point && miniGame.hitArea) {
+      const area = miniGame.hitArea;
+      const insideArea =
+        point.x >= area.x
+        && point.x <= area.x + area.width
+        && point.y >= area.y
+        && point.y <= area.y + area.height;
+
+      if (!insideArea) {
+        return;
+      }
+    }
+
+    miniGame.hits += 1;
+    if (miniGame.hits >= miniGame.requiredClicks) {
+      this.completeMiniGame();
+      return;
+    }
+
+    this.state.selectedSeverity = "medium";
+    this.state.diagnosticText =
+      `Mini-jeu ${miniGame.repairName}: ${miniGame.hits}/${miniGame.requiredClicks} coups.\n`
+      + this.getMiniGameInstructionText(miniGame);
+    this.render();
+  }
+
+  handleMiniGameSurfaceClick(event) {
+    const miniGame = this.state.miniGame;
+    if (!miniGame.active) {
+      return;
+    }
+
+    if (miniGame.mode === "timing") {
+      this.handleTimingAttempt();
+      return;
+    }
+
+    if (miniGame.mode === "multi_click") {
+      this.handleMultiClick(this.getSvgPointFromEvent(event));
+    }
+  }
+
+  handleMiniGameSurfaceKeydown(event) {
+    const miniGame = this.state.miniGame;
+    if (!miniGame.active) {
+      return;
+    }
+
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    if (miniGame.mode === "timing") {
+      this.handleTimingAttempt();
+      return;
+    }
+
+    if (miniGame.mode === "multi_click") {
+      this.handleMultiClick();
+      return;
+    }
+
+    if (miniGame.mode === "scrub") {
+      miniGame.scrubProgress = Math.min(miniGame.scrubTarget, miniGame.scrubProgress + 10);
+      if (miniGame.scrubProgress >= miniGame.scrubTarget) {
+        this.completeMiniGame();
+      } else {
+        this.render();
+      }
+    }
+  }
+
+  computeMiniGamePrecision(miniGame) {
+    if (miniGame.mode === "scrub") {
+      return clamp(miniGame.scrubProgress / Math.max(1, miniGame.scrubTarget), 0, 1);
+    }
+
+    if (miniGame.mode === "timing") {
+      return clamp(miniGame.lastTimingPrecision || 0.6, 0, 1);
+    }
+
+    if (miniGame.mode === "multi_click") {
+      return clamp(miniGame.hits / Math.max(1, miniGame.requiredClicks), 0, 1);
+    }
+
+    const attempts = miniGame.hits + miniGame.misses;
+    return attempts > 0 ? clamp(miniGame.hits / attempts, 0, 1) : 1;
   }
 
   startRepairMiniGame(repairId) {
@@ -1125,13 +1473,19 @@ class Game {
       return false;
     }
 
+    this.stopMiniGameTicker();
     this.state.miniGame = miniGame;
+    if (miniGame.mode === "timing") {
+      this.startMiniGameTicker();
+    }
+
     this.state.selectedSeverity = "medium";
     this.state.diagnosticText =
       `Mini-jeu lance: ${repair.name}.\n`
       + this.getMiniGameInstructionText(miniGame);
     this.appendHistory(`Mini-jeu lance: ${repair.name} (${this.getPartLabel(selectedPart)}).`);
     this.render();
+    this.ui.miniGameSvg?.focus();
     return true;
   }
 
@@ -1141,6 +1495,7 @@ class Game {
     }
 
     const repairName = this.state.miniGame.repairName;
+    this.stopMiniGameTicker();
     this.state.miniGame = createMiniGameState();
     this.state.selectedSeverity = "neutral";
     this.state.diagnosticText =
@@ -1152,6 +1507,7 @@ class Game {
 
   failMiniGame(reason) {
     const repairName = this.state.miniGame.repairName;
+    this.stopMiniGameTicker();
     this.state.miniGame = createMiniGameState();
     this.state.selectedSeverity = "critical";
     this.state.diagnosticText =
@@ -1169,9 +1525,8 @@ class Game {
       return;
     }
 
-    const attempts = miniGame.hits + miniGame.misses;
-    const precision = attempts > 0 ? miniGame.hits / attempts : 1;
-    const perfectRun = miniGame.misses === 0;
+    const precision = this.computeMiniGamePrecision(miniGame);
+    const perfectRun = miniGame.misses === 0 && precision >= 0.98;
     const scoreBonus = Math.max(
       0,
       Math.round(repair.difficulty * 6 * precision) + (perfectRun ? 12 : 0)
@@ -1182,6 +1537,7 @@ class Game {
       `Mini-jeu valide: ${repair.name} (precision ${Math.round(precision * 100)}%).`
     );
 
+    this.stopMiniGameTicker();
     this.state.miniGame = createMiniGameState();
     this.applyRepair(repair.id, {
       fromMiniGame: true,
@@ -1196,7 +1552,7 @@ class Game {
 
   handleMiniTargetInput(targetIndex) {
     const miniGame = this.state.miniGame;
-    if (!miniGame.active) {
+    if (!miniGame.active || miniGame.mode !== "points") {
       return;
     }
 
@@ -1309,6 +1665,7 @@ class Game {
   // Genere un client complet: type de chaussure aleatoire + 1 a 3 pannes compatibles.
   generateClient() {
     this.state.transitionLock = false;
+    this.stopMiniGameTicker();
     const availableTypes = Object.values(SHOE_TYPES);
     let shoeType = pickRandom(availableTypes);
 
@@ -1729,6 +2086,7 @@ class Game {
 
     this.syncPlayerState();
     this.stopTimer();
+    this.stopMiniGameTicker();
     this.state.miniGame = createMiniGameState();
 
     this.state.selectedSeverity = "critical";
@@ -1746,6 +2104,7 @@ class Game {
 
   reset() {
     this.stopTimer();
+    this.stopMiniGameTicker();
     this.player.reset({ score: 0, reputation: 50, xp: 0, streak: 0 });
 
     this.state = {
@@ -1929,6 +2288,8 @@ class Game {
       panel.hidden = true;
       track.setAttribute("d", "");
       targetsContainer.innerHTML = "";
+      this.ui.miniGameSvg?.removeAttribute("data-mini-mode");
+      this.ui.miniGameSvg?.setAttribute("tabindex", "-1");
       if (this.ui.miniGameCancelBtn) {
         this.ui.miniGameCancelBtn.disabled = true;
       }
@@ -1936,11 +2297,11 @@ class Game {
     }
 
     panel.hidden = false;
+    this.ui.miniGameSvg?.setAttribute("data-mini-mode", miniGame.mode);
+    this.ui.miniGameSvg?.setAttribute("tabindex", "0");
+    this.ui.miniGameSvg?.setAttribute("aria-label", miniGame.title);
     if (this.ui.miniGameTitle) {
       this.ui.miniGameTitle.textContent = miniGame.title;
-    }
-    if (this.ui.miniGameProgress) {
-      this.ui.miniGameProgress.textContent = `${miniGame.hits} / ${miniGame.targets.length}`;
     }
     if (this.ui.miniGameInstruction) {
       this.ui.miniGameInstruction.textContent = this.getMiniGameInstructionText(miniGame);
@@ -1949,39 +2310,154 @@ class Game {
       this.ui.miniGameCancelBtn.disabled = false;
     }
 
-    track.setAttribute("d", miniGame.trackPath);
+    track.setAttribute("d", miniGame.mode === "points" ? miniGame.trackPath : "");
     targetsContainer.innerHTML = "";
 
-    miniGame.targets.forEach((target, index) => {
-      const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      node.setAttribute("cx", String(target.x));
-      node.setAttribute("cy", String(target.y));
-      node.setAttribute("r", String(target.r));
-      node.setAttribute("role", "button");
-      node.setAttribute("aria-label", `Point ${index + 1} sur ${miniGame.targets.length}`);
-      node.classList.add("mini-target");
-
-      if (target.hit) {
-        node.classList.add("is-hit");
-        node.setAttribute("tabindex", "-1");
-        node.setAttribute("aria-pressed", "true");
-      } else {
-        node.setAttribute("tabindex", "0");
-        node.setAttribute("aria-pressed", "false");
-        if (miniGame.ordered && miniGame.nextIndex === index) {
-          node.classList.add("is-next");
-        }
-        node.addEventListener("click", () => this.handleMiniTargetInput(index));
-        node.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            this.handleMiniTargetInput(index);
-          }
-        });
+    if (miniGame.mode === "points") {
+      if (this.ui.miniGameProgress) {
+        this.ui.miniGameProgress.textContent = `${miniGame.hits} / ${miniGame.targets.length}`;
       }
 
-      targetsContainer.appendChild(node);
-    });
+      miniGame.targets.forEach((target, index) => {
+        const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        node.setAttribute("cx", String(target.x));
+        node.setAttribute("cy", String(target.y));
+        node.setAttribute("r", String(target.r));
+        node.setAttribute("role", "button");
+        node.setAttribute("aria-label", `Point ${index + 1} sur ${miniGame.targets.length}`);
+        node.classList.add("mini-target");
+
+        if (target.hit) {
+          node.classList.add("is-hit");
+          node.setAttribute("tabindex", "-1");
+          node.setAttribute("aria-pressed", "true");
+        } else {
+          node.setAttribute("tabindex", "0");
+          node.setAttribute("aria-pressed", "false");
+          if (miniGame.ordered && miniGame.nextIndex === index) {
+            node.classList.add("is-next");
+          }
+          node.addEventListener("click", (event) => {
+            event.stopPropagation();
+            this.handleMiniTargetInput(index);
+          });
+          node.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              event.stopPropagation();
+              this.handleMiniTargetInput(index);
+            }
+          });
+        }
+
+        targetsContainer.appendChild(node);
+      });
+      return;
+    }
+
+    if (miniGame.mode === "scrub") {
+      const scrubPercent = clamp(
+        Math.round((miniGame.scrubProgress / Math.max(1, miniGame.scrubTarget)) * 100),
+        0,
+        100
+      );
+      if (this.ui.miniGameProgress) {
+        this.ui.miniGameProgress.textContent = `${scrubPercent}%`;
+      }
+
+      const ns = "http://www.w3.org/2000/svg";
+      const stage = document.createElementNS(ns, "rect");
+      stage.setAttribute("x", "28");
+      stage.setAttribute("y", "18");
+      stage.setAttribute("width", "264");
+      stage.setAttribute("height", "64");
+      stage.setAttribute("rx", "10");
+      stage.setAttribute("class", "mini-stage");
+      targetsContainer.appendChild(stage);
+
+      const trackBar = document.createElementNS(ns, "rect");
+      trackBar.setAttribute("x", "28");
+      trackBar.setAttribute("y", "92");
+      trackBar.setAttribute("width", "264");
+      trackBar.setAttribute("height", "12");
+      trackBar.setAttribute("rx", "6");
+      trackBar.setAttribute("class", "mini-progress-track");
+      targetsContainer.appendChild(trackBar);
+
+      const fillBar = document.createElementNS(ns, "rect");
+      fillBar.setAttribute("x", "28");
+      fillBar.setAttribute("y", "92");
+      fillBar.setAttribute("width", String((264 * scrubPercent) / 100));
+      fillBar.setAttribute("height", "12");
+      fillBar.setAttribute("rx", "6");
+      fillBar.setAttribute("class", "mini-progress-fill");
+      targetsContainer.appendChild(fillBar);
+      return;
+    }
+
+    if (miniGame.mode === "timing") {
+      if (this.ui.miniGameProgress) {
+        this.ui.miniGameProgress.textContent = `Erreurs ${miniGame.misses}/${miniGame.timingMaxMisses}`;
+      }
+
+      const ns = "http://www.w3.org/2000/svg";
+      const baseX = 28;
+      const baseY = 58;
+      const barWidth = 264;
+      const barHeight = 16;
+      const targetX = baseX + barWidth * miniGame.timingTargetStart;
+      const targetWidth = barWidth * (miniGame.timingTargetEnd - miniGame.timingTargetStart);
+      const markerX = baseX + barWidth * miniGame.timingPos;
+
+      const bar = document.createElementNS(ns, "rect");
+      bar.setAttribute("x", String(baseX));
+      bar.setAttribute("y", String(baseY));
+      bar.setAttribute("width", String(barWidth));
+      bar.setAttribute("height", String(barHeight));
+      bar.setAttribute("rx", "8");
+      bar.setAttribute("class", "mini-progress-track");
+      targetsContainer.appendChild(bar);
+
+      const targetZone = document.createElementNS(ns, "rect");
+      targetZone.setAttribute("x", String(targetX));
+      targetZone.setAttribute("y", String(baseY));
+      targetZone.setAttribute("width", String(targetWidth));
+      targetZone.setAttribute("height", String(barHeight));
+      targetZone.setAttribute("rx", "8");
+      targetZone.setAttribute("class", "mini-timing-zone");
+      targetsContainer.appendChild(targetZone);
+
+      const marker = document.createElementNS(ns, "line");
+      marker.setAttribute("x1", String(markerX));
+      marker.setAttribute("x2", String(markerX));
+      marker.setAttribute("y1", String(baseY - 12));
+      marker.setAttribute("y2", String(baseY + barHeight + 12));
+      marker.setAttribute("class", "mini-timing-marker");
+      targetsContainer.appendChild(marker);
+      return;
+    }
+
+    if (this.ui.miniGameProgress) {
+      this.ui.miniGameProgress.textContent = `${miniGame.hits} / ${miniGame.requiredClicks}`;
+    }
+
+    const ns = "http://www.w3.org/2000/svg";
+    const area = miniGame.hitArea || { x: 126, y: 24, width: 70, height: 70 };
+    const hitZone = document.createElementNS(ns, "rect");
+    hitZone.setAttribute("x", String(area.x));
+    hitZone.setAttribute("y", String(area.y));
+    hitZone.setAttribute("width", String(area.width));
+    hitZone.setAttribute("height", String(area.height));
+    hitZone.setAttribute("rx", "10");
+    hitZone.setAttribute("class", "mini-hammer-zone");
+    targetsContainer.appendChild(hitZone);
+
+    const pulse = document.createElementNS(ns, "circle");
+    pulse.setAttribute("cx", String(area.x + area.width / 2));
+    pulse.setAttribute("cy", String(area.y + area.height / 2));
+    pulse.setAttribute("r", "16");
+    pulse.setAttribute("class", "mini-hammer-core");
+    targetsContainer.appendChild(pulse);
   }
 
   renderSvgState() {
@@ -2053,6 +2529,12 @@ class Game {
 
     this.ui.resetBtn?.addEventListener("click", () => this.reset());
     this.ui.miniGameCancelBtn?.addEventListener("click", () => this.cancelMiniGame());
+    this.ui.miniGameSvg?.addEventListener("click", (event) => this.handleMiniGameSurfaceClick(event));
+    this.ui.miniGameSvg?.addEventListener("pointerdown", (event) => this.handleMiniGamePointerDown(event));
+    this.ui.miniGameSvg?.addEventListener("pointermove", (event) => this.handleMiniGamePointerMove(event));
+    this.ui.miniGameSvg?.addEventListener("pointerup", () => this.handleMiniGamePointerUp());
+    this.ui.miniGameSvg?.addEventListener("pointerleave", () => this.handleMiniGamePointerUp());
+    this.ui.miniGameSvg?.addEventListener("keydown", (event) => this.handleMiniGameSurfaceKeydown(event));
   }
 
   installHooksForTesting() {
@@ -2081,6 +2563,7 @@ class Game {
         inventory: { ...this.state.inventory },
         miniGame: {
           active: this.state.miniGame.active,
+          mode: this.state.miniGame.mode,
           repairId: this.state.miniGame.repairId,
           repairName: this.state.miniGame.repairName,
           part: this.state.miniGame.part,
@@ -2089,6 +2572,10 @@ class Game {
           misses: this.state.miniGame.misses,
           maxMisses: this.state.miniGame.maxMisses,
           totalTargets: this.state.miniGame.targets.length,
+          scrubProgress: this.state.miniGame.scrubProgress,
+          scrubTarget: this.state.miniGame.scrubTarget,
+          timingPos: this.state.miniGame.timingPos,
+          requiredClicks: this.state.miniGame.requiredClicks,
         },
         currentClient: client
           ? {
