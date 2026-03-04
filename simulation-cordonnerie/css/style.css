@@ -266,21 +266,10 @@ body {
 }
 
 /* Guide couleur pour les sandales:
-   rouge = changement de semelle, jaune = changement de lit de pied. */
-.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="semelle"] .part-shape,
-.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="talon"] .part-shape {
+   uniquement collage de semelle (rouge). */
+.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="semelle"] .part-shape {
   stroke: rgba(236, 63, 58, 0.95);
   fill: rgba(236, 63, 58, 0.14);
-}
-
-.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="couture"] .part-shape,
-.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="empeigne"] .part-shape {
-  stroke: rgba(248, 235, 43, 0.95);
-  fill: rgba(248, 235, 43, 0.13);
-}
-
-.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="couture"] .part-shape-line {
-  stroke: rgba(248, 235, 43, 0.95);
 }
 
 .shoe-part:hover .part-shape,

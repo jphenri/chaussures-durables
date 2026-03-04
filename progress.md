@@ -300,3 +300,35 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - nouveaux paths pour `semelle`, `talon`, `empeigne`, `couture` afin d'eviter les zones trop basses/oversize.
 - Verification:
   - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Sandale: suppression couture, collage semelle uniquement
+- `simulation-cordonnerie/js/game.js` adapte pour la regle metier utilisateur:
+  - sandale = uniquement collage de semelle.
+- Changements:
+  - `SANDAL_PART_GUIDE` limite a `semelle`/`talon` avec action `Collage de semelle`.
+  - actions autorisees limitees a `recollage_semelle`.
+  - `problemPool` sandale limite a `decollement_semelle_sandale`.
+  - remap `sandale`: `talon`, `couture`, `empeigne` -> `semelle` (robustesse).
+  - ajout `applyPartVisibility()` pour masquer `couture` et `empeigne` quand type = sandale.
+- `simulation-cordonnerie/css/style.css`:
+  - styles sandale simplifies en rouge (semelle/talon) uniquement.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Modulaire sans talon
+- `simulation-cordonnerie/js/game.js` ajuste pour masquer la zone `talon` sur `trepointe_modulaire`.
+- `applyPartVisibility()` gere maintenant explicitement les pieces visibles par type:
+  - modulaire: `semelle`, `empeigne`, `couture`.
+  - sandale: `semelle`, `talon`.
+- Retrait de l'entree `talon` de `MODULAR_PART_GUIDE`.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Sandale sans talon
+- Ajustement final demande utilisateur:
+  - type `sandale` affiche uniquement la zone `semelle` (plus de `talon`, `empeigne`, `couture`).
+- Fichiers:
+  - `simulation-cordonnerie/js/game.js`: `applyPartVisibility()` pour `sandale` -> `new Set(["semelle"])`, `SANDAL_PART_GUIDE` reduit a `semelle`.
+  - `simulation-cordonnerie/css/style.css`: style sandale applique uniquement a `semelle`.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.

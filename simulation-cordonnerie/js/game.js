@@ -37,15 +37,6 @@ const MODULAR_PART_GUIDE = {
       "remplacement_insert_caoutchouc",
     ],
   },
-  talon: {
-    color: "jaune",
-    actionLabel: "Changement de semelle modulaire",
-    allowedRepairIds: [
-      "remplacement_module_avant",
-      "remplacement_module_talon",
-      "remplacement_insert_caoutchouc",
-    ],
-  },
   couture: {
     color: "bleu",
     actionLabel: "Changement de couture trepointe",
@@ -88,23 +79,8 @@ const HIGH_HEEL_PART_GUIDE = {
 const SANDAL_PART_GUIDE = {
   semelle: {
     color: "rouge",
-    actionLabel: "Changement de semelle",
-    allowedRepairIds: ["remplacement_semelle_liege", "recollage_semelle"],
-  },
-  talon: {
-    color: "rouge",
-    actionLabel: "Changement de semelle",
-    allowedRepairIds: ["remplacement_semelle_liege", "recollage_semelle"],
-  },
-  couture: {
-    color: "jaune",
-    actionLabel: "Changement de lit de pied",
-    allowedRepairIds: ["refection_lit_plantaire"],
-  },
-  empeigne: {
-    color: "jaune",
-    actionLabel: "Changement de lit de pied",
-    allowedRepairIds: ["refection_lit_plantaire"],
+    actionLabel: "Collage de semelle",
+    allowedRepairIds: ["recollage_semelle"],
   },
 };
 
@@ -235,9 +211,7 @@ export const SHOE_TYPES = {
     iconPath: `${ASSET_BASE}/birkenstock.png`,
     construction: "Sandale anatomique liege et cuir",
     problemPool: [
-      "liege_tasse",
       "decollement_semelle_sandale",
-      "lit_plantaire_affaisse",
     ],
   },
 };
@@ -866,8 +840,8 @@ class Game {
     if (shoeTypeId === "sandale" && part === "talon") {
       return "semelle";
     }
-    if (shoeTypeId === "sandale" && part === "couture") {
-      return "empeigne";
+    if (shoeTypeId === "sandale" && (part === "couture" || part === "empeigne")) {
+      return "semelle";
     }
 
     return part;
@@ -946,6 +920,28 @@ class Game {
     }
   }
 
+  applyPartVisibility(shoeTypeId) {
+    let visibleParts = new Set(["semelle", "talon", "empeigne", "couture"]);
+
+    if (shoeTypeId === "sandale") {
+      visibleParts = new Set(["semelle"]);
+    }
+
+    if (shoeTypeId === "trepointe_modulaire") {
+      // Le modulaire ne presente pas de talon separe dans cette simulation.
+      visibleParts = new Set(["semelle", "empeigne", "couture"]);
+    }
+
+    this.ui.parts.forEach((partNode) => {
+      const part = partNode.dataset.part;
+      const isVisible = visibleParts.has(part);
+
+      partNode.style.display = isVisible ? "" : "none";
+      partNode.setAttribute("aria-hidden", isVisible ? "false" : "true");
+      partNode.setAttribute("tabindex", isVisible ? "0" : "-1");
+    });
+  }
+
   startTimer() {
     this.stopTimer();
 
@@ -987,6 +983,7 @@ class Game {
       this.ui.svgShell.setAttribute("data-shoe-type", shoeType.id);
     }
     this.applyInteractiveLayout(shoeType.id);
+    this.applyPartVisibility(shoeType.id);
 
     this.ui.shoeTypeImage.style.pointerEvents = "none";
     this.ui.shoeTypeImage.dataset.fallbackTried = "false";
