@@ -221,6 +221,68 @@ body {
   pointer-events: stroke;
 }
 
+/* Guide couleur pour la trepointe modulaire:
+   jaune = semelle, bleu = couture, rose = cirage/nettoyage (empeigne). */
+.svg-shell[data-shoe-type="trepointe_modulaire"] .shoe-part[data-part="semelle"] .part-shape,
+.svg-shell[data-shoe-type="trepointe_modulaire"] .shoe-part[data-part="talon"] .part-shape {
+  stroke: rgba(248, 235, 43, 0.95);
+  fill: rgba(248, 235, 43, 0.14);
+}
+
+.svg-shell[data-shoe-type="trepointe_modulaire"] .shoe-part[data-part="couture"] .part-shape {
+  stroke: rgba(53, 98, 255, 0.95);
+  fill: rgba(53, 98, 255, 0.1);
+}
+
+.svg-shell[data-shoe-type="trepointe_modulaire"] .shoe-part[data-part="couture"] .part-shape-line {
+  stroke: rgba(53, 98, 255, 0.95);
+}
+
+.svg-shell[data-shoe-type="trepointe_modulaire"] .shoe-part[data-part="empeigne"] .part-shape {
+  stroke: rgba(235, 72, 231, 0.95);
+  fill: rgba(235, 72, 231, 0.1);
+}
+
+/* Guide couleur pour les talons hauts:
+   jaune = talon caoutchouc, blanc = semelle, rose = cirage/nettoyage. */
+.svg-shell[data-shoe-type="talons_hauts"] .shoe-part[data-part="talon"] .part-shape {
+  stroke: rgba(248, 235, 43, 0.96);
+  fill: rgba(248, 235, 43, 0.15);
+}
+
+.svg-shell[data-shoe-type="talons_hauts"] .shoe-part[data-part="semelle"] .part-shape {
+  stroke: rgba(245, 245, 245, 0.95);
+  fill: rgba(255, 255, 255, 0.12);
+}
+
+.svg-shell[data-shoe-type="talons_hauts"] .shoe-part[data-part="couture"] .part-shape,
+.svg-shell[data-shoe-type="talons_hauts"] .shoe-part[data-part="empeigne"] .part-shape {
+  stroke: rgba(235, 72, 231, 0.95);
+  fill: rgba(235, 72, 231, 0.1);
+}
+
+.svg-shell[data-shoe-type="talons_hauts"] .shoe-part[data-part="couture"] .part-shape-line {
+  stroke: rgba(235, 72, 231, 0.95);
+}
+
+/* Guide couleur pour les sandales:
+   rouge = changement de semelle, jaune = changement de lit de pied. */
+.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="semelle"] .part-shape,
+.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="talon"] .part-shape {
+  stroke: rgba(236, 63, 58, 0.95);
+  fill: rgba(236, 63, 58, 0.14);
+}
+
+.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="couture"] .part-shape,
+.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="empeigne"] .part-shape {
+  stroke: rgba(248, 235, 43, 0.95);
+  fill: rgba(248, 235, 43, 0.13);
+}
+
+.svg-shell[data-shoe-type="sandale"] .shoe-part[data-part="couture"] .part-shape-line {
+  stroke: rgba(248, 235, 43, 0.95);
+}
+
 .shoe-part:hover .part-shape,
 .shoe-part:focus-visible .part-shape,
 .shoe-part.is-active .part-shape {

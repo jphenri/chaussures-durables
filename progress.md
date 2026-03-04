@@ -217,3 +217,55 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - `assets/img/sora/louboutin.png`
 - Ajout d'un fallback de nom pour talons hauts: `loubloutin.png` si present en production.
 - Verification syntaxique: `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Mapping metier trepointe modulaire (jaune/bleu/rose)
+- Adaptation logique metier pour `trepointe_modulaire` dans `simulation-cordonnerie/js/game.js`:
+  - jaune (`semelle`) -> changement semelle modulaire (avant/talon).
+  - bleu (`couture`) -> changement couture trepointe.
+  - rose (`empeigne`) -> cirage et nettoyage.
+- Ajustements de pannes/reparations:
+  - `module_talon_use` remappe sur `part: semelle`.
+  - labels reparation alignes metier (semelle modulaire, couture trepointe, cirage/nettoyage).
+  - clic `talon` normalise vers `semelle` pour ce type.
+- Ajustement UX:
+  - diagnostic ajoute un repere couleur explicite (jaune/bleu/rose).
+  - tooltip et libelles dynamiques selon type de chaussure.
+- Ajustement CSS dans `simulation-cordonnerie/css/style.css`:
+  - guide couleur visuel pour les zones modulaire via `data-shoe-type="trepointe_modulaire"`.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Mapping talons hauts (jaune/blanc/rose)
+- `simulation-cordonnerie/js/game.js` etendu pour `talons_hauts`:
+  - jaune (`talon`) -> "Changement talon caoutchouc".
+  - blanc (`semelle`) -> "Changement semelle".
+  - rose (`empeigne`/`couture`) -> "Cirage et nettoyage".
+- Ajouts metier:
+  - nouvelle reparation `cirage_nettoyage_talons_hauts` (part `empeigne`).
+  - nouvelle panne `cuir_talon_haut_terni` liee a cette reparation.
+  - ajout de cette panne au `problemPool` des talons hauts.
+- UX dynamique:
+  - label de piece + repere couleur adaptes par type (`getPartGuide`).
+  - `couture` remappe vers `empeigne` sur talons hauts.
+- CSS:
+  - nouvelles couleurs de zones pour `data-shoe-type="talons_hauts"` dans `simulation-cordonnerie/css/style.css`.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Mapping sandales (rouge/jaune)
+- Ajout du guide `SANDAL_PART_GUIDE` dans `simulation-cordonnerie/js/game.js`:
+  - rouge (`semelle`/`talon`) -> "Changement de semelle".
+  - jaune (`empeigne`/`couture`) -> "Changement de lit de pied".
+- Ajustements metier sandales:
+  - `remplacement_semelle_liege` renomme en "Changement de semelle".
+  - `refection_lit_plantaire` renomme en "Changement de lit de pied" et remappe sur `part: empeigne`.
+  - `lit_plantaire_affaisse` remappe sur `part: empeigne`.
+  - `problemPool` sandales recentre sur semelle/lit de pied.
+- Normalisation clics:
+  - `talon -> semelle`, `couture -> empeigne` pour le type `sandale`.
+- Filtrage d'actions par guide couleur:
+  - `getActionsForSelectedPart()` utilise `allowedRepairIds` du guide de type.
+- CSS:
+  - ajout des couleurs de zones pour `data-shoe-type="sandale"` dans `simulation-cordonnerie/css/style.css`.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.

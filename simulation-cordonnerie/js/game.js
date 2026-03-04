@@ -26,6 +26,87 @@ const PART_LABELS = {
   empeigne: "Empeigne",
 };
 
+const MODULAR_PART_GUIDE = {
+  semelle: {
+    color: "jaune",
+    actionLabel: "Changement de semelle modulaire",
+    allowedRepairIds: [
+      "remplacement_module_avant",
+      "remplacement_module_talon",
+      "remplacement_insert_caoutchouc",
+    ],
+  },
+  talon: {
+    color: "jaune",
+    actionLabel: "Changement de semelle modulaire",
+    allowedRepairIds: [
+      "remplacement_module_avant",
+      "remplacement_module_talon",
+      "remplacement_insert_caoutchouc",
+    ],
+  },
+  couture: {
+    color: "bleu",
+    actionLabel: "Changement de couture trepointe",
+    allowedRepairIds: ["reglage_systeme_modulaire"],
+  },
+  empeigne: {
+    color: "rose",
+    actionLabel: "Cirage et nettoyage",
+    allowedRepairIds: ["nettoyage_technique"],
+  },
+};
+
+const HIGH_HEEL_PART_GUIDE = {
+  talon: {
+    color: "jaune",
+    actionLabel: "Changement de talon en caoutchouc",
+    allowedRepairIds: [
+      "remplacement_bonbout_aiguille",
+      "renfort_talon",
+      "reparation_talon_casse",
+    ],
+  },
+  semelle: {
+    color: "blanc",
+    actionLabel: "Changement semelle",
+    allowedRepairIds: ["pose_patin_rouge", "recoloration_semelle"],
+  },
+  couture: {
+    color: "rose",
+    actionLabel: "Cirage et nettoyage",
+    allowedRepairIds: ["cirage_nettoyage_talons_hauts"],
+  },
+  empeigne: {
+    color: "rose",
+    actionLabel: "Cirage et nettoyage",
+    allowedRepairIds: ["cirage_nettoyage_talons_hauts"],
+  },
+};
+
+const SANDAL_PART_GUIDE = {
+  semelle: {
+    color: "rouge",
+    actionLabel: "Changement de semelle",
+    allowedRepairIds: ["remplacement_semelle_liege", "recollage_semelle"],
+  },
+  talon: {
+    color: "rouge",
+    actionLabel: "Changement de semelle",
+    allowedRepairIds: ["remplacement_semelle_liege", "recollage_semelle"],
+  },
+  couture: {
+    color: "jaune",
+    actionLabel: "Changement de lit de pied",
+    allowedRepairIds: ["refection_lit_plantaire"],
+  },
+  empeigne: {
+    color: "jaune",
+    actionLabel: "Changement de lit de pied",
+    allowedRepairIds: ["refection_lit_plantaire"],
+  },
+};
+
 const SEVERITY_LABELS = {
   neutral: "Aucun",
   good: "Bon",
@@ -80,6 +161,7 @@ export const SHOE_TYPES = {
       "patin_rouge_decolle",
       "semelle_rouge_fanee",
       "instabilite_talon",
+      "cuir_talon_haut_terni",
     ],
   },
   sandale: {
@@ -90,10 +172,8 @@ export const SHOE_TYPES = {
     construction: "Sandale anatomique liege et cuir",
     problemPool: [
       "liege_tasse",
-      "bride_cassee",
       "decollement_semelle_sandale",
       "lit_plantaire_affaisse",
-      "cuir_bride_sec",
     ],
   },
 };
@@ -179,7 +259,7 @@ export const REPAIRS = {
   },
   remplacement_module_avant: {
     id: "remplacement_module_avant",
-    name: "Remplacement module avant",
+    name: "Changement semelle modulaire (avant)",
     shoeTypes: ["trepointe_modulaire"],
     parts: ["semelle"],
     difficulty: 3,
@@ -190,9 +270,9 @@ export const REPAIRS = {
   },
   remplacement_module_talon: {
     id: "remplacement_module_talon",
-    name: "Remplacement module talon",
+    name: "Changement semelle modulaire (talon)",
     shoeTypes: ["trepointe_modulaire"],
-    parts: ["talon"],
+    parts: ["semelle"],
     difficulty: 3,
     timeMinutes: 50,
     reputationImpact: 5,
@@ -201,7 +281,7 @@ export const REPAIRS = {
   },
   reglage_systeme_modulaire: {
     id: "reglage_systeme_modulaire",
-    name: "Reglage systeme modulaire",
+    name: "Changement couture trepointe",
     shoeTypes: ["trepointe_modulaire"],
     parts: ["couture"],
     difficulty: 4,
@@ -223,7 +303,7 @@ export const REPAIRS = {
   },
   nettoyage_technique: {
     id: "nettoyage_technique",
-    name: "Nettoyage technique",
+    name: "Cirage et nettoyage",
     shoeTypes: ["trepointe_modulaire"],
     parts: ["empeigne"],
     difficulty: 2,
@@ -234,7 +314,7 @@ export const REPAIRS = {
   },
   remplacement_bonbout_aiguille: {
     id: "remplacement_bonbout_aiguille",
-    name: "Remplacement bonbout aiguille",
+    name: "Changement talon caoutchouc",
     shoeTypes: ["talons_hauts"],
     parts: ["talon"],
     difficulty: 3,
@@ -256,7 +336,7 @@ export const REPAIRS = {
   },
   pose_patin_rouge: {
     id: "pose_patin_rouge",
-    name: "Pose patin rouge",
+    name: "Changement semelle",
     shoeTypes: ["talons_hauts"],
     parts: ["semelle"],
     difficulty: 3,
@@ -287,9 +367,20 @@ export const REPAIRS = {
     price: 240,
     stockCost: { semelles: 0, fil: 1, cuir: 1, colle: 1 },
   },
+  cirage_nettoyage_talons_hauts: {
+    id: "cirage_nettoyage_talons_hauts",
+    name: "Cirage et nettoyage",
+    shoeTypes: ["talons_hauts"],
+    parts: ["empeigne"],
+    difficulty: 2,
+    timeMinutes: 28,
+    reputationImpact: 3,
+    price: 70,
+    stockCost: { semelles: 0, fil: 0, cuir: 1, colle: 0 },
+  },
   remplacement_semelle_liege: {
     id: "remplacement_semelle_liege",
-    name: "Remplacement semelle liege",
+    name: "Changement de semelle",
     shoeTypes: ["sandale"],
     parts: ["semelle"],
     difficulty: 4,
@@ -322,9 +413,9 @@ export const REPAIRS = {
   },
   refection_lit_plantaire: {
     id: "refection_lit_plantaire",
-    name: "Refection lit plantaire",
+    name: "Changement de lit de pied",
     shoeTypes: ["sandale"],
-    parts: ["semelle"],
+    parts: ["empeigne"],
     difficulty: 3,
     timeMinutes: 70,
     reputationImpact: 6,
@@ -404,7 +495,7 @@ const PROBLEM_LIBRARY = {
   module_talon_use: {
     id: "module_talon_use",
     label: "Module talon use",
-    part: "talon",
+    part: "semelle",
     severity: "medium",
     idealRepairId: "remplacement_module_talon",
     acceptedRepairs: ["remplacement_module_talon"],
@@ -481,6 +572,14 @@ const PROBLEM_LIBRARY = {
     idealRepairId: "renfort_talon",
     acceptedRepairs: ["renfort_talon"],
   },
+  cuir_talon_haut_terni: {
+    id: "cuir_talon_haut_terni",
+    label: "Cuir terni et traces de surface",
+    part: "empeigne",
+    severity: "good",
+    idealRepairId: "cirage_nettoyage_talons_hauts",
+    acceptedRepairs: ["cirage_nettoyage_talons_hauts"],
+  },
   liege_tasse: {
     id: "liege_tasse",
     label: "Semelle liege tassee",
@@ -508,10 +607,10 @@ const PROBLEM_LIBRARY = {
   lit_plantaire_affaisse: {
     id: "lit_plantaire_affaisse",
     label: "Lit plantaire affaisse",
-    part: "semelle",
+    part: "empeigne",
     severity: "medium",
     idealRepairId: "refection_lit_plantaire",
-    acceptedRepairs: ["refection_lit_plantaire", "remplacement_semelle_liege"],
+    acceptedRepairs: ["refection_lit_plantaire"],
   },
   cuir_bride_sec: {
     id: "cuir_bride_sec",
@@ -685,6 +784,50 @@ class Game {
     }
   }
 
+  getEffectivePart(part) {
+    const shoeTypeId = this.state.currentClient?.shoeType?.id;
+
+    if (shoeTypeId === "trepointe_modulaire" && part === "talon") {
+      return "semelle";
+    }
+    if (shoeTypeId === "talons_hauts" && part === "couture") {
+      return "empeigne";
+    }
+    if (shoeTypeId === "sandale" && part === "talon") {
+      return "semelle";
+    }
+    if (shoeTypeId === "sandale" && part === "couture") {
+      return "empeigne";
+    }
+
+    return part;
+  }
+
+  getPartGuide(part) {
+    const shoeTypeId = this.state.currentClient?.shoeType?.id;
+
+    if (shoeTypeId === "trepointe_modulaire") {
+      return MODULAR_PART_GUIDE[part] || null;
+    }
+    if (shoeTypeId === "talons_hauts") {
+      return HIGH_HEEL_PART_GUIDE[part] || null;
+    }
+    if (shoeTypeId === "sandale") {
+      return SANDAL_PART_GUIDE[part] || null;
+    }
+
+    return null;
+  }
+
+  getPartLabel(part) {
+    const guide = this.getPartGuide(part);
+    if (guide) {
+      return `${PART_LABELS[part]} (${guide.color})`;
+    }
+
+    return PART_LABELS[part] || part;
+  }
+
   startTimer() {
     this.stopTimer();
 
@@ -721,6 +864,9 @@ class Game {
   setShoeVisual(shoeType) {
     if (!this.ui.shoeTypeImage || !this.ui.shoeBaseShape) {
       return;
+    }
+    if (this.ui.svgShell) {
+      this.ui.svgShell.setAttribute("data-shoe-type", shoeType.id);
     }
 
     this.ui.shoeTypeImage.style.pointerEvents = "none";
@@ -860,13 +1006,15 @@ class Game {
       return;
     }
 
-    this.state.selectedPart = part;
-    const pending = this.getPendingProblemsForPart(part);
+    const effectivePart = this.getEffectivePart(part);
+    const partLabel = this.getPartLabel(effectivePart);
+    this.state.selectedPart = effectivePart;
+    const pending = this.getPendingProblemsForPart(effectivePart);
 
     if (pending.length === 0) {
       this.state.selectedSeverity = "good";
       this.state.diagnosticText =
-        `Zone ${PART_LABELS[part]} controlee.\n`
+        `Zone ${partLabel} controlee.\n`
         + "Aucun defaut critique detecte sur cette zone pour ce client.";
     } else {
       const strongestSeverity = pending.reduce((acc, problem) => {
@@ -876,14 +1024,19 @@ class Game {
       const listed = pending.map((problem) => `- ${problem.label}`).join("\n");
       this.state.selectedSeverity = strongestSeverity;
       this.state.diagnosticText =
-        `Diagnostic ${PART_LABELS[part]}:\n${listed}\n`
+        `Diagnostic ${partLabel}:\n${listed}\n`
         + `Niveau de gravite: ${SEVERITY_LABELS[strongestSeverity]}.`;
     }
 
-    this.appendHistory(`Zone inspectee: ${PART_LABELS[part]}.`);
+    const guide = this.getPartGuide(effectivePart);
+    if (guide) {
+      this.state.diagnosticText += `\nRepere ${guide.color}: ${guide.actionLabel}.`;
+    }
+
+    this.appendHistory(`Zone inspectee: ${partLabel}.`);
 
     callLegacyHook("updateStats", {
-      selectedPart: part,
+      selectedPart: effectivePart,
       severity: this.state.selectedSeverity,
       pendingProblems: pending.length,
     });
@@ -910,9 +1063,22 @@ class Game {
     }
 
     const shoeTypeId = this.state.currentClient.shoeType.id;
+    const partGuide = this.getPartGuide(this.state.selectedPart);
+    const allowedRepairIds = partGuide?.allowedRepairIds || null;
 
     return Object.values(REPAIRS).filter((repair) => {
-      return repair.shoeTypes.includes(shoeTypeId) && repair.parts.includes(this.state.selectedPart);
+      const basicMatch =
+        repair.shoeTypes.includes(shoeTypeId) && repair.parts.includes(this.state.selectedPart);
+
+      if (!basicMatch) {
+        return false;
+      }
+
+      if (!allowedRepairIds) {
+        return true;
+      }
+
+      return allowedRepairIds.includes(repair.id);
     });
   }
 
@@ -1001,7 +1167,7 @@ class Game {
 
     if (!repair.parts.includes(selectedPart)) {
       this.handleWrongRepair(
-        `${repair.name} n'est pas une action valable sur ${PART_LABELS[selectedPart]}.`,
+        `${repair.name} n'est pas une action valable sur ${this.getPartLabel(selectedPart)}.`,
         repair
       );
       this.render();
@@ -1029,7 +1195,7 @@ class Game {
     if (!matchingProblem) {
       this.consumeStock(repair.stockCost);
       this.handleWrongRepair(
-        `Mauvais diagnostic sur ${PART_LABELS[selectedPart]}: cette action ne traite pas la panne active.`,
+        `Mauvais diagnostic sur ${this.getPartLabel(selectedPart)}: cette action ne traite pas la panne active.`,
         repair
       );
       this.render();
@@ -1200,7 +1366,7 @@ class Game {
       return;
     }
 
-    this.ui.selectedPartLabel.textContent = PART_LABELS[this.state.selectedPart] || this.state.selectedPart;
+    this.ui.selectedPartLabel.textContent = this.getPartLabel(this.state.selectedPart);
     this.ui.diagnosticText.textContent =
       `${this.state.diagnosticText}\n`
       + `Pannes restantes: ${pendingCount} | ${timerText}\n${inventoryText}`;
@@ -1320,7 +1486,6 @@ class Game {
   bindEvents() {
     this.ui.parts.forEach((partNode) => {
       const part = partNode.dataset.part;
-      const label = PART_LABELS[part] || part;
 
       partNode.addEventListener("click", () => this.selectPart(part));
 
@@ -1331,10 +1496,16 @@ class Game {
         }
       });
 
-      partNode.addEventListener("mouseenter", (event) => this.showTooltip(event, label));
-      partNode.addEventListener("mousemove", (event) => this.showTooltip(event, label));
+      partNode.addEventListener("mouseenter", (event) => {
+        this.showTooltip(event, this.getPartLabel(this.getEffectivePart(part)));
+      });
+      partNode.addEventListener("mousemove", (event) => {
+        this.showTooltip(event, this.getPartLabel(this.getEffectivePart(part)));
+      });
       partNode.addEventListener("mouseleave", () => this.hideTooltip());
-      partNode.addEventListener("focus", (event) => this.showTooltip(event, label));
+      partNode.addEventListener("focus", (event) => {
+        this.showTooltip(event, this.getPartLabel(this.getEffectivePart(part)));
+      });
       partNode.addEventListener("blur", () => this.hideTooltip());
     });
 
