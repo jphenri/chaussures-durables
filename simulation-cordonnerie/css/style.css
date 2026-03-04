@@ -376,6 +376,84 @@ body {
   gap: 0.5rem;
 }
 
+.mini-game-panel {
+  margin-top: 0.8rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.mini-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mini-head strong {
+  font-size: 0.92rem;
+}
+
+.mini-head span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.mini-instruction {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.mini-game-svg {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #19120f 0%, #130e0c 100%);
+}
+
+.mini-game-track {
+  fill: none;
+  stroke: rgba(198, 164, 90, 0.52);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mini-target {
+  fill: rgba(198, 164, 90, 0.2);
+  stroke: rgba(198, 164, 90, 0.92);
+  stroke-width: 2;
+  cursor: pointer;
+  transition: transform var(--trans), fill var(--trans), stroke var(--trans), filter var(--trans);
+  transform-origin: center;
+}
+
+.mini-target:hover,
+.mini-target:focus-visible {
+  fill: rgba(198, 164, 90, 0.42);
+  filter: drop-shadow(0 0 5px rgba(198, 164, 90, 0.45));
+  transform: scale(1.05);
+}
+
+.mini-target.is-next {
+  fill: rgba(243, 238, 231, 0.24);
+  stroke: rgba(243, 238, 231, 0.95);
+}
+
+.mini-target.is-hit {
+  fill: rgba(95, 170, 119, 0.82);
+  stroke: rgba(209, 242, 205, 0.95);
+  cursor: default;
+}
+
+.mini-cancel-btn {
+  justify-self: start;
+}
+
 .action-guide {
   margin: 0;
   font-size: 0.82rem;

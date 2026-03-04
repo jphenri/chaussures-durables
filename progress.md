@@ -332,3 +332,29 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
   - `simulation-cordonnerie/css/style.css`: style sandale applique uniquement a `semelle`.
 - Verification:
   - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Mini-jeu par reparation (nouvelle mecanique)
+- Ajout d'un mini-jeu obligatoire avant validation de chaque reparation dans `simulation-cordonnerie/js/game.js`.
+- Nouveau state central `miniGame` (active, repairId, part, targets, progression, misses).
+- Nouveau flux:
+  - clic bouton action -> lancement mini-jeu par piece (`semelle`, `talon`, `couture`, `empeigne`),
+  - validation des cibles (ordre impose pour couture/semelle),
+  - succes mini-jeu -> `applyRepair(..., { fromMiniGame: true, miniGameResult })`,
+  - bonus score/reputation selon precision/perfect run.
+- Ajouts UI/UX:
+  - panel mini-jeu deja present dans `index.html` maintenant pilote en JS,
+  - bouton `Annuler mini-jeu`,
+  - verrouillage de changement de piece pendant mini-jeu,
+  - actions desactivees pendant mini-jeu en cours.
+- Accessibilite:
+  - cibles mini-jeu focusables clavier (`tab`, `enter`, `space`) avec labels ARIA.
+- Hook test enrichi:
+  - `window.render_game_to_text` inclut maintenant l'etat `miniGame`.
+- Styles ajoutes dans `simulation-cordonnerie/css/style.css`:
+  - `.mini-game-panel`, `.mini-game-svg`, `.mini-game-track`, `.mini-target`, etats `is-next`/`is-hit`.
+
+## Verification 2026-03-03
+- `node --check simulation-cordonnerie/js/game.js` OK
+- `node --check simulation-cordonnerie/js/levels.js` OK
+- `node --check simulation-cordonnerie/js/score.js` OK
+- Boucle Playwright du skill re-tentee mais bloquee: package `playwright` absent (`ERR_MODULE_NOT_FOUND`).

@@ -188,6 +188,26 @@
               role="group"
               aria-label="Actions de reparation"
             ></div>
+            <section id="mini-game-panel" class="mini-game-panel" aria-live="polite" hidden>
+              <div class="mini-head">
+                <strong id="mini-game-title">Mini-jeu</strong>
+                <span id="mini-game-progress">0 / 0</span>
+              </div>
+              <p id="mini-game-instruction" class="mini-instruction"></p>
+              <svg
+                id="mini-game-svg"
+                class="mini-game-svg"
+                viewBox="0 0 320 120"
+                role="img"
+                aria-label="Mini-jeu de reparation"
+              >
+                <path id="mini-game-track" class="mini-game-track" />
+                <g id="mini-game-targets"></g>
+              </svg>
+              <button id="mini-game-cancel-btn" class="btn mini-cancel-btn" type="button">
+                Annuler mini-jeu
+              </button>
+            </section>
           </section>
 
           <section class="panel" aria-labelledby="history-title">

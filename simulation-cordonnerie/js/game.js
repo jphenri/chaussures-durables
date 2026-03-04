@@ -18,6 +18,14 @@ const ui = {
   shoeBaseShape: document.getElementById("shoe-base-shape"),
   sourceStitch: document.querySelector(".src-stitch"),
   parts: Array.from(document.querySelectorAll(".shoe-part[data-part]")),
+  miniGamePanel: document.getElementById("mini-game-panel"),
+  miniGameTitle: document.getElementById("mini-game-title"),
+  miniGameProgress: document.getElementById("mini-game-progress"),
+  miniGameInstruction: document.getElementById("mini-game-instruction"),
+  miniGameSvg: document.getElementById("mini-game-svg"),
+  miniGameTrack: document.getElementById("mini-game-track"),
+  miniGameTargets: document.getElementById("mini-game-targets"),
+  miniGameCancelBtn: document.getElementById("mini-game-cancel-btn"),
 };
 
 const PART_LABELS = {
@@ -667,6 +675,63 @@ const DEFAULT_STOCK = {
   colle: 9,
 };
 
+const MINI_GAME_BY_PART = {
+  couture: {
+    title: "Mini-jeu: couture trepointe",
+    instruction: "Cliquez chaque point de couture dans l'ordre.",
+    trackPath: "M 22 86 C 86 58 168 50 298 72",
+    ordered: true,
+    basePoints: 5,
+    maxMisses: 2,
+    radius: 6.5,
+  },
+  semelle: {
+    title: "Mini-jeu: collage semelle",
+    instruction: "Suivez la ligne de semelle en validant les points.",
+    trackPath: "M 18 88 C 90 102 182 102 304 86",
+    ordered: true,
+    basePoints: 4,
+    maxMisses: 2,
+    radius: 7.5,
+  },
+  talon: {
+    title: "Mini-jeu: fixation talon",
+    instruction: "Fixez les points d'ancrage du talon.",
+    trackPath: "M 228 34 C 253 38 266 56 260 82 C 253 100 232 103 212 94",
+    ordered: false,
+    basePoints: 4,
+    maxMisses: 3,
+    radius: 8,
+  },
+  empeigne: {
+    title: "Mini-jeu: soin empeigne",
+    instruction: "Traitez les zones de l'empeigne avec precision.",
+    trackPath: "M 34 92 C 102 34 188 30 292 74",
+    ordered: false,
+    basePoints: 4,
+    maxMisses: 3,
+    radius: 8,
+  },
+};
+
+function createMiniGameState() {
+  return {
+    active: false,
+    repairId: null,
+    repairName: "",
+    part: null,
+    title: "Mini-jeu",
+    baseInstruction: "",
+    trackPath: "",
+    ordered: false,
+    maxMisses: 0,
+    misses: 0,
+    hits: 0,
+    nextIndex: 0,
+    targets: [],
+  };
+}
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
@@ -753,6 +818,7 @@ class Game {
       history: [],
       transitionLock: false,
       lastShoeTypeId: null,
+      miniGame: createMiniGameState(),
     };
 
     this.clients = [];
@@ -942,6 +1008,236 @@ class Game {
     });
   }
 
+  samplePointsOnPath(pathData, count) {
+    if (!pathData || count <= 0 || !this.ui.miniGameSvg) {
+      return [];
+    }
+
+    const ns = "http://www.w3.org/2000/svg";
+    const probePath = document.createElementNS(ns, "path");
+    probePath.setAttribute("d", pathData);
+    probePath.setAttribute("fill", "none");
+    probePath.setAttribute("stroke", "none");
+
+    const mountTarget = this.ui.miniGameTargets || this.ui.miniGameSvg;
+    mountTarget.appendChild(probePath);
+
+    const points = [];
+    try {
+      const total = probePath.getTotalLength();
+      for (let index = 0; index < count; index += 1) {
+        const ratio = count === 1 ? 0.5 : index / (count - 1);
+        const point = probePath.getPointAtLength(total * ratio);
+        points.push({
+          x: Number(point.x.toFixed(2)),
+          y: Number(point.y.toFixed(2)),
+        });
+      }
+    } catch (_error) {
+      for (let index = 0; index < count; index += 1) {
+        points.push({
+          x: 24 + index * 24,
+          y: 60,
+        });
+      }
+    } finally {
+      probePath.remove();
+    }
+
+    return points;
+  }
+
+  buildMiniGameFromRepair(repair) {
+    const part = this.state.selectedPart || repair.parts[0] || "semelle";
+    const profile = MINI_GAME_BY_PART[part] || MINI_GAME_BY_PART.semelle;
+    const extraPoints = clamp(repair.difficulty - 2, 0, 3);
+    const pointCount = profile.basePoints + extraPoints;
+    const sampledPoints = this.samplePointsOnPath(profile.trackPath, pointCount);
+    const targets = sampledPoints.map((point, index) => ({
+      id: index,
+      x: point.x,
+      y: point.y,
+      r: profile.radius,
+      hit: false,
+    }));
+
+    return {
+      repairId: repair.id,
+      repairName: repair.name,
+      part,
+      title: profile.title,
+      baseInstruction: profile.instruction,
+      trackPath: profile.trackPath,
+      ordered: profile.ordered,
+      maxMisses: profile.maxMisses,
+      misses: 0,
+      hits: 0,
+      nextIndex: 0,
+      targets,
+      active: targets.length > 0,
+    };
+  }
+
+  getMiniGameInstructionText(miniGame) {
+    if (!miniGame?.active) {
+      return "";
+    }
+
+    const attempts = miniGame.hits + miniGame.misses;
+    const precision = attempts > 0 ? Math.round((miniGame.hits / attempts) * 100) : 100;
+    const orderText = miniGame.ordered ? " Ordre obligatoire." : "";
+    const remainingErrors = Math.max(0, miniGame.maxMisses - miniGame.misses);
+
+    return (
+      `${miniGame.baseInstruction}${orderText}`
+      + ` Erreurs restantes: ${remainingErrors}.`
+      + ` Precision: ${precision}%.`
+    );
+  }
+
+  startRepairMiniGame(repairId) {
+    if (this.state.transitionLock || this.state.miniGame.active) {
+      return false;
+    }
+
+    const client = this.state.currentClient;
+    const selectedPart = this.state.selectedPart;
+    const repair = REPAIRS[repairId];
+
+    if (!client || !selectedPart || !repair) {
+      return false;
+    }
+
+    if (!repair.shoeTypes.includes(client.shoeType.id)) {
+      return false;
+    }
+
+    if (!repair.parts.includes(selectedPart)) {
+      return false;
+    }
+
+    if (!this.hasStock(repair.stockCost)) {
+      return false;
+    }
+
+    const miniGame = this.buildMiniGameFromRepair(repair);
+    if (!miniGame.active) {
+      return false;
+    }
+
+    this.state.miniGame = miniGame;
+    this.state.selectedSeverity = "medium";
+    this.state.diagnosticText =
+      `Mini-jeu lance: ${repair.name}.\n`
+      + this.getMiniGameInstructionText(miniGame);
+    this.appendHistory(`Mini-jeu lance: ${repair.name} (${this.getPartLabel(selectedPart)}).`);
+    this.render();
+    return true;
+  }
+
+  cancelMiniGame() {
+    if (!this.state.miniGame.active) {
+      return;
+    }
+
+    const repairName = this.state.miniGame.repairName;
+    this.state.miniGame = createMiniGameState();
+    this.state.selectedSeverity = "neutral";
+    this.state.diagnosticText =
+      `Mini-jeu annule pour ${repairName}.\n`
+      + "Relancez une action pour recommencer la reparation.";
+    this.appendHistory(`Mini-jeu annule: ${repairName}.`);
+    this.render();
+  }
+
+  failMiniGame(reason) {
+    const repairName = this.state.miniGame.repairName;
+    this.state.miniGame = createMiniGameState();
+    this.state.selectedSeverity = "critical";
+    this.state.diagnosticText =
+      `Mini-jeu echoue pour ${repairName}.\n`
+      + `${reason} Relancez l'action pour reessayer.`;
+    this.appendHistory(`Mini-jeu echoue: ${repairName} (${reason}).`);
+    this.render();
+  }
+
+  completeMiniGame() {
+    const miniGame = this.state.miniGame;
+    const repair = REPAIRS[miniGame.repairId];
+
+    if (!miniGame.active || !repair) {
+      return;
+    }
+
+    const attempts = miniGame.hits + miniGame.misses;
+    const precision = attempts > 0 ? miniGame.hits / attempts : 1;
+    const perfectRun = miniGame.misses === 0;
+    const scoreBonus = Math.max(
+      0,
+      Math.round(repair.difficulty * 6 * precision) + (perfectRun ? 12 : 0)
+    );
+    const reputationBonus = perfectRun ? Math.max(1, Math.ceil(repair.difficulty / 2)) : 0;
+
+    this.appendHistory(
+      `Mini-jeu valide: ${repair.name} (precision ${Math.round(precision * 100)}%).`
+    );
+
+    this.state.miniGame = createMiniGameState();
+    this.applyRepair(repair.id, {
+      fromMiniGame: true,
+      miniGameResult: {
+        precision,
+        perfectRun,
+        scoreBonus,
+        reputationBonus,
+      },
+    });
+  }
+
+  handleMiniTargetInput(targetIndex) {
+    const miniGame = this.state.miniGame;
+    if (!miniGame.active) {
+      return;
+    }
+
+    const target = miniGame.targets[targetIndex];
+    if (!target || target.hit) {
+      return;
+    }
+
+    if (miniGame.ordered && targetIndex !== miniGame.nextIndex) {
+      miniGame.misses += 1;
+      if (miniGame.misses > miniGame.maxMisses) {
+        this.failMiniGame("Trop d'erreurs de precision.");
+        return;
+      }
+
+      this.state.selectedSeverity = "medium";
+      this.state.diagnosticText =
+        `Mini-jeu ${miniGame.repairName}: point hors ordre.\n`
+        + this.getMiniGameInstructionText(miniGame);
+      this.render();
+      return;
+    }
+
+    target.hit = true;
+    miniGame.hits += 1;
+    if (miniGame.ordered) {
+      miniGame.nextIndex += 1;
+    }
+
+    if (miniGame.hits >= miniGame.targets.length) {
+      this.completeMiniGame();
+      return;
+    }
+
+    this.state.selectedSeverity = "good";
+    this.state.diagnosticText =
+      `Mini-jeu ${miniGame.repairName}: ${miniGame.hits}/${miniGame.targets.length} points valides.\n`
+      + this.getMiniGameInstructionText(miniGame);
+    this.render();
+  }
+
   startTimer() {
     this.stopTimer();
 
@@ -1076,6 +1372,7 @@ class Game {
     this.state.currentClient = client;
     this.state.selectedPart = null;
     this.state.selectedSeverity = "neutral";
+    this.state.miniGame = createMiniGameState();
     this.state.diagnosticText =
       `Client: ${sanitize(profile.name)}\n`
       + `Type: ${shoeType.name} (${shoeType.construction})\n`
@@ -1122,6 +1419,14 @@ class Game {
 
   selectPart(part) {
     if (!this.state.currentClient || this.state.transitionLock) {
+      return;
+    }
+
+    if (this.state.miniGame.active) {
+      this.state.diagnosticText =
+        `Mini-jeu en cours: ${this.state.miniGame.repairName}.\n`
+        + "Terminez ou annulez le mini-jeu avant de changer de piece.";
+      this.render();
       return;
     }
 
@@ -1266,13 +1571,26 @@ class Game {
     }, 800);
   }
 
-  applyRepair(repairId) {
+  applyRepair(repairId, options = {}) {
+    const fromMiniGame = Boolean(options?.fromMiniGame);
+    const miniGameResult = options?.miniGameResult || null;
     const client = this.state.currentClient;
     const selectedPart = this.state.selectedPart;
     const repair = REPAIRS[repairId];
 
     if (!client || !selectedPart || !repair || this.state.transitionLock) {
       return null;
+    }
+
+    if (!fromMiniGame && this.state.miniGame.active) {
+      return { success: false, reason: "mini_game_active" };
+    }
+
+    if (!fromMiniGame) {
+      const started = this.startRepairMiniGame(repairId);
+      if (started) {
+        return { success: false, reason: "mini_game_started" };
+      }
     }
 
     if (!repair.shoeTypes.includes(client.shoeType.id)) {
@@ -1342,6 +1660,15 @@ class Game {
       reputationSuccessDelta: repair.reputationImpact + Math.ceil(repair.difficulty / 2),
     });
 
+    const miniScoreBonus = Math.max(0, Math.round(miniGameResult?.scoreBonus || 0));
+    const miniReputationBonus = Math.max(0, Math.round(miniGameResult?.reputationBonus || 0));
+    if (miniScoreBonus > 0) {
+      this.player.score += miniScoreBonus;
+    }
+    if (miniReputationBonus > 0) {
+      this.player.reputation = clamp(this.player.reputation + miniReputationBonus, 0, 100);
+    }
+
     if (this.state.level.timerEnabled) {
       client.remainingSeconds = Math.max(0, client.remainingSeconds - Math.round(repair.timeMinutes * 60 * 0.35));
       if (client.remainingSeconds <= 0) {
@@ -1357,13 +1684,18 @@ class Game {
     this.syncPlayerState();
 
     this.state.selectedSeverity = perfectRepair ? "good" : "medium";
+    const miniBonusSummary =
+      miniScoreBonus > 0 || miniReputationBonus > 0
+        ? ` Bonus mini-jeu: +${miniScoreBonus} score${miniReputationBonus > 0 ? `, rep +${miniReputationBonus}` : ""}.`
+        : "";
     this.state.diagnosticText =
       `${repair.name} appliquee avec succes.\n`
-      + `${matchingProblem.label} resolu.${perfectRepair ? " Reparation parfaite: bonus score." : ""}`;
+      + `${matchingProblem.label} resolu.${perfectRepair ? " Reparation parfaite: bonus score." : ""}`
+      + miniBonusSummary;
 
     this.appendHistory(
       `${repair.name}: ${matchingProblem.label} resolu `
-      + `(+${outcome.deltaScore} score, rep +${outcome.reputationDelta}).`
+      + `(+${outcome.deltaScore + miniScoreBonus} score, rep +${outcome.reputationDelta + miniReputationBonus}).`
     );
 
     callLegacyHook("applyRepair", {
@@ -1397,6 +1729,7 @@ class Game {
 
     this.syncPlayerState();
     this.stopTimer();
+    this.state.miniGame = createMiniGameState();
 
     this.state.selectedSeverity = "critical";
     this.state.diagnosticText =
@@ -1430,6 +1763,7 @@ class Game {
       history: [],
       transitionLock: false,
       lastShoeTypeId: null,
+      miniGame: createMiniGameState(),
     };
 
     this.generateClient();
@@ -1494,6 +1828,7 @@ class Game {
 
   renderActions() {
     this.ui.actionsList.innerHTML = "";
+    const miniGameActive = this.state.miniGame.active;
 
     if (!this.state.currentClient) {
       const note = document.createElement("p");
@@ -1515,6 +1850,15 @@ class Game {
     const guide = this.getPartGuide(this.state.selectedPart);
     const colorKey = toColorKey(guide?.color);
 
+    if (miniGameActive) {
+      const running = document.createElement("p");
+      running.className = "action-guide";
+      running.textContent =
+        `Mini-jeu en cours: ${this.state.miniGame.repairName}. `
+        + "Terminez-le ou annulez-le.";
+      this.ui.actionsList.appendChild(running);
+    }
+
     if (guide) {
       const guideNote = document.createElement("p");
       guideNote.className = "action-guide";
@@ -1535,7 +1879,7 @@ class Game {
       const stockAvailable = this.hasStock(action.stockCost);
       button.type = "button";
       button.className = `action-btn action-color-${colorKey}`;
-      button.disabled = this.state.transitionLock || !stockAvailable;
+      button.disabled = this.state.transitionLock || miniGameActive || !stockAvailable;
 
       const difficultyLabel = `Difficulte ${action.difficulty}/5`;
       button.textContent =
@@ -1571,6 +1915,75 @@ class Game {
     });
   }
 
+  renderMiniGame() {
+    const panel = this.ui.miniGamePanel;
+    const track = this.ui.miniGameTrack;
+    const targetsContainer = this.ui.miniGameTargets;
+    const miniGame = this.state.miniGame;
+
+    if (!panel || !track || !targetsContainer) {
+      return;
+    }
+
+    if (!miniGame.active) {
+      panel.hidden = true;
+      track.setAttribute("d", "");
+      targetsContainer.innerHTML = "";
+      if (this.ui.miniGameCancelBtn) {
+        this.ui.miniGameCancelBtn.disabled = true;
+      }
+      return;
+    }
+
+    panel.hidden = false;
+    if (this.ui.miniGameTitle) {
+      this.ui.miniGameTitle.textContent = miniGame.title;
+    }
+    if (this.ui.miniGameProgress) {
+      this.ui.miniGameProgress.textContent = `${miniGame.hits} / ${miniGame.targets.length}`;
+    }
+    if (this.ui.miniGameInstruction) {
+      this.ui.miniGameInstruction.textContent = this.getMiniGameInstructionText(miniGame);
+    }
+    if (this.ui.miniGameCancelBtn) {
+      this.ui.miniGameCancelBtn.disabled = false;
+    }
+
+    track.setAttribute("d", miniGame.trackPath);
+    targetsContainer.innerHTML = "";
+
+    miniGame.targets.forEach((target, index) => {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      node.setAttribute("cx", String(target.x));
+      node.setAttribute("cy", String(target.y));
+      node.setAttribute("r", String(target.r));
+      node.setAttribute("role", "button");
+      node.setAttribute("aria-label", `Point ${index + 1} sur ${miniGame.targets.length}`);
+      node.classList.add("mini-target");
+
+      if (target.hit) {
+        node.classList.add("is-hit");
+        node.setAttribute("tabindex", "-1");
+        node.setAttribute("aria-pressed", "true");
+      } else {
+        node.setAttribute("tabindex", "0");
+        node.setAttribute("aria-pressed", "false");
+        if (miniGame.ordered && miniGame.nextIndex === index) {
+          node.classList.add("is-next");
+        }
+        node.addEventListener("click", () => this.handleMiniTargetInput(index));
+        node.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            this.handleMiniTargetInput(index);
+          }
+        });
+      }
+
+      targetsContainer.appendChild(node);
+    });
+  }
+
   renderSvgState() {
     this.ui.parts.forEach((partNode) => {
       const isActive = partNode.dataset.part === this.state.selectedPart;
@@ -1583,6 +1996,7 @@ class Game {
     this.renderHeader();
     this.renderDiagnostic();
     this.renderActions();
+    this.renderMiniGame();
     this.renderHistory();
     this.renderSvgState();
   }
@@ -1638,6 +2052,7 @@ class Game {
     });
 
     this.ui.resetBtn?.addEventListener("click", () => this.reset());
+    this.ui.miniGameCancelBtn?.addEventListener("click", () => this.cancelMiniGame());
   }
 
   installHooksForTesting() {
@@ -1645,7 +2060,11 @@ class Game {
       const client = this.state.currentClient;
 
       return JSON.stringify({
-        mode: this.state.selectedPart ? "repair" : "diagnostic",
+        mode: this.state.miniGame.active
+          ? "mini_game"
+          : this.state.selectedPart
+            ? "repair"
+            : "diagnostic",
         day: this.state.day,
         selectedPart: this.state.selectedPart,
         level: {
@@ -1660,6 +2079,17 @@ class Game {
           xp: this.state.xp,
         },
         inventory: { ...this.state.inventory },
+        miniGame: {
+          active: this.state.miniGame.active,
+          repairId: this.state.miniGame.repairId,
+          repairName: this.state.miniGame.repairName,
+          part: this.state.miniGame.part,
+          ordered: this.state.miniGame.ordered,
+          hits: this.state.miniGame.hits,
+          misses: this.state.miniGame.misses,
+          maxMisses: this.state.miniGame.maxMisses,
+          totalTargets: this.state.miniGame.targets.length,
+        },
         currentClient: client
           ? {
               id: client.id,
