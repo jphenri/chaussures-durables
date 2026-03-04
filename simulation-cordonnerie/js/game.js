@@ -16,6 +16,7 @@ const ui = {
   tooltip: document.getElementById("part-tooltip"),
   shoeTypeImage: document.getElementById("shoe-type-image"),
   shoeBaseShape: document.getElementById("shoe-base-shape"),
+  sourceStitch: document.querySelector(".src-stitch"),
   parts: Array.from(document.querySelectorAll(".shoe-part[data-part]")),
 };
 
@@ -115,6 +116,69 @@ const SEVERITY_LABELS = {
 };
 
 const ASSET_BASE = "../assets/img/sora";
+
+const INTERACTIVE_LAYOUTS = {
+  trepointe_plate: {
+    imageFrame: {
+      x: 0,
+      y: 0,
+      width: 188.76117,
+      height: 127.00133,
+      preserveAspectRatio: "xMidYMid meet",
+    },
+    parts: {
+      semelle: "M 4 97 C 18 104 37 109 56 111 C 70 113 84 114 96 114 C 97 117 97 121 95 124 C 73 124 48 121 26 115 C 14 111 6 104 4 97 Z",
+      talon: "M 121 108 L 151 107 L 149 119 L 120 120 Z",
+      empeigne: "M 66 79 C 84 65 108 57 136 58 C 153 59 165 66 168 81 L 164 102 C 142 100 118 100 96 103 C 82 105 71 102 66 94 Z",
+      couture: "M 8 100 C 26 108 52 109 79 108 C 101 107 124 105 146 103",
+    },
+  },
+  trepointe_modulaire: {
+    imageFrame: {
+      x: 0,
+      y: 0,
+      width: 188.76117,
+      height: 127.00133,
+      preserveAspectRatio: "xMidYMid meet",
+    },
+    parts: {
+      semelle: "M 10 96 C 34 101 73 104 114 104 C 145 103 170 100 183 96 L 182 106 C 160 111 126 114 91 114 C 52 113 24 109 10 103 Z",
+      talon: "M 147 92 L 182 91 L 181 108 L 146 110 Z",
+      empeigne: "M 11 48 C 27 34 53 25 80 23 C 111 21 145 30 174 46 L 177 78 C 153 87 120 91 83 91 C 51 91 28 86 15 78 Z",
+      couture: "M 16 88 C 52 96 98 96 154 91",
+    },
+  },
+  talons_hauts: {
+    imageFrame: {
+      x: -6,
+      y: -3,
+      width: 201,
+      height: 134,
+      preserveAspectRatio: "xMidYMid meet",
+    },
+    parts: {
+      semelle: "M 10 95 C 38 100 77 102 112 101 C 143 100 167 97 183 94 L 181 103 C 151 109 102 111 57 110 C 32 109 16 106 10 101 Z",
+      talon: "M 145 88 L 159 88 L 158 105 L 144 106 Z",
+      empeigne: "M 35 44 C 49 30 71 21 93 21 C 112 21 132 31 148 48 L 146 80 C 125 88 99 89 74 86 C 55 84 42 78 34 67 Z",
+      couture: "M 13 90 C 45 96 90 96 149 92",
+    },
+  },
+  sandale: {
+    imageFrame: {
+      x: -3,
+      y: -2,
+      width: 196,
+      height: 132,
+      preserveAspectRatio: "xMidYMid meet",
+    },
+    parts: {
+      semelle: "M 10 98 C 34 103 74 106 116 105 C 149 104 173 101 184 97 L 183 108 C 160 113 126 116 91 116 C 52 115 24 111 10 105 Z",
+      talon: "M 148 94 L 186 92 L 184 109 L 146 111 Z",
+      empeigne: "M 17 52 C 42 45 74 42 110 43 C 140 44 164 50 178 60 L 175 86 C 152 94 118 98 84 98 C 52 97 30 92 17 83 Z",
+      couture: "M 14 89 C 44 95 88 95 164 86",
+    },
+  },
+};
 
 // Catalogue metier: types de chaussures servis par l'atelier.
 export const SHOE_TYPES = {
@@ -834,6 +898,54 @@ class Game {
     return PART_LABELS[part] || part;
   }
 
+  getInteractivePartNode(part) {
+    return this.ui.parts.find((node) => node.dataset.part === part) || null;
+  }
+
+  applyInteractiveLayout(shoeTypeId) {
+    const layout = INTERACTIVE_LAYOUTS[shoeTypeId] || INTERACTIVE_LAYOUTS.trepointe_plate;
+    const imageFrame = layout.imageFrame;
+    const parts = layout.parts || {};
+
+    if (this.ui.shoeTypeImage && imageFrame) {
+      this.ui.shoeTypeImage.setAttribute("x", String(imageFrame.x));
+      this.ui.shoeTypeImage.setAttribute("y", String(imageFrame.y));
+      this.ui.shoeTypeImage.setAttribute("width", String(imageFrame.width));
+      this.ui.shoeTypeImage.setAttribute("height", String(imageFrame.height));
+      this.ui.shoeTypeImage.setAttribute(
+        "preserveAspectRatio",
+        imageFrame.preserveAspectRatio || "xMidYMid meet"
+      );
+    }
+
+    ["semelle", "talon", "empeigne"].forEach((part) => {
+      const d = parts[part];
+      const node = this.getInteractivePartNode(part);
+      const shape = node?.querySelector(".part-shape");
+
+      if (d && shape) {
+        shape.setAttribute("d", d);
+      }
+    });
+
+    const coutureD = parts.couture;
+    const coutureNode = this.getInteractivePartNode("couture");
+    const coutureHitline = coutureNode?.querySelector(".part-hitline");
+    const coutureShape = coutureNode?.querySelector(".part-shape");
+
+    if (coutureD && coutureHitline && coutureShape) {
+      coutureHitline.setAttribute("d", coutureD);
+      coutureShape.setAttribute("d", coutureD);
+    }
+
+    if (this.ui.sourceStitch) {
+      this.ui.sourceStitch.setAttribute(
+        "d",
+        parts.couture || INTERACTIVE_LAYOUTS.trepointe_plate.parts.couture
+      );
+    }
+  }
+
   startTimer() {
     this.stopTimer();
 
@@ -874,6 +986,7 @@ class Game {
     if (this.ui.svgShell) {
       this.ui.svgShell.setAttribute("data-shoe-type", shoeType.id);
     }
+    this.applyInteractiveLayout(shoeType.id);
 
     this.ui.shoeTypeImage.style.pointerEvents = "none";
     this.ui.shoeTypeImage.dataset.fallbackTried = "false";
@@ -893,6 +1006,9 @@ class Game {
 
     const useSourceShape = shoeType.id === "trepointe_plate";
     this.ui.shoeBaseShape.style.display = useSourceShape ? "" : "none";
+    if (this.ui.sourceStitch) {
+      this.ui.sourceStitch.style.display = useSourceShape ? "" : "none";
+    }
     // Important: ne pas remettre a "" car la classe CSS a "display: none".
     this.ui.shoeTypeImage.style.display = useSourceShape ? "none" : "block";
   }

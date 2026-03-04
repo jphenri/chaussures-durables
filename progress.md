@@ -276,3 +276,20 @@ Original prompt: Contexte : Je veux creer une nouvelle page web independante app
 - `style.css` enrichi avec variantes de boutons `.action-color-*` (border/texte/hover coherents).
 - Verification:
   - `node --check simulation-cordonnerie/js/game.js` OK.
+
+## 2026-03-03 - Fix bug hitboxes par photo
+- Correction du bug principal signale (zones cliquables non alignees aux photos):
+  - ajout `INTERACTIVE_LAYOUTS` dans `simulation-cordonnerie/js/game.js` avec geomettries par type:
+    - `trepointe_plate`
+    - `trepointe_modulaire`
+    - `talons_hauts`
+    - `sandale`
+- `setShoeVisual()` applique maintenant dynamiquement:
+  - cadrage image (`x/y/width/height/preserveAspectRatio`) par type,
+  - paths des zones interactives (`semelle`, `talon`, `empeigne`, `couture`) par photo,
+  - masquage du trait de couture source (`src-stitch`) hors `trepointe_plate`.
+- Impact attendu:
+  - les clics correspondent visuellement a la photo active,
+  - les actions proposees restent filtrees par type + couleur metier de la photo.
+- Verification:
+  - `node --check simulation-cordonnerie/js/game.js` OK.
